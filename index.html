@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Gestão Completa</title>
+    <title>SIAVEL - Layout Limpo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -55,10 +55,18 @@
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
-        /* Botões de Ação na Tabela */
-        .btn-table { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 2px; }
-        .btn-edit { background: #FF9800; color: white; }
-        .btn-del { background: #f44336; color: white; }
+        /* Botões de Ação na Tabela (ALTERADO PARA FICAR SÓ O ÍCONE) */
+        .btn-table {
+            padding: 6px 8px;
+            border: none;
+            background: transparent; /* Fundo transparente */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem; /* Ícone um pouco maior */
+            margin-right: 5px;
+            transition: background 0.2s;
+        }
+        .btn-table:hover { background: #e0e0e0; /* Efeito sutil ao passar o mouse */ }
 
         /* Filtros */
         .filter-container { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -169,15 +177,27 @@
                         <option value="5º Ano">5º Ano</option>
                         <option value="Multisseriada">Multisseriada</option>
                     </select>
+                    <select id="prof-filtro-turma" onchange="aplicarFiltrosProf()">
+                        <option value="TODAS">Todas as Turmas</option>
+                        <option value="A">Turma A</option>
+                        <option value="B">Turma B</option>
+                        <option value="C">Turma C</option>
+                        <option value="D">Turma D</option>
+                        <option value="Unica">Única</option>
+                    </select>
                 </div>
                 <div class="filter-row" style="background:#eee; padding:5px; border-radius:6px;">
                     <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
                     <div class="date-select-group">
                         <select id="prof-mes-filtro" onchange="aplicarFiltrosProf()">
                             <option value="TODOS">Mês (Todos)</option>
-                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                            <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                            <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                            <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                         </select>
                         <select id="prof-ano-filtro" onchange="aplicarFiltrosProf()">
+                            <option value="TODOS">Todos os Anos</option>
                             <option value="2026">2026</option><option value="2025">2025</option>
                         </select>
                     </div>
@@ -190,6 +210,7 @@
                 <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:#d32f2f;">0%</div><div style="font-size:0.8rem;">Níveis Iniciais</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:#FBC02D;">0%</div><div style="font-size:0.8rem;">Ausência</div></div>
             </div>
+
             <div class="card">
                 <h3>Minhas Turmas</h3>
                 <button onclick="carregarHistoricoProf()" style="float:right; font-size:0.7rem;">Atualizar</button>
@@ -341,19 +362,9 @@
         window.mudarAbaProf = (aba) => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             ['view-nova','view-hist','view-evo'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            
-            if(aba === 'nova') {
-                document.getElementById('tab-nova').classList.add('active');
-                document.getElementById('view-nova').classList.remove('hidden');
-            } else if(aba === 'hist') {
-                document.getElementById('tab-hist').classList.add('active');
-                document.getElementById('view-hist').classList.remove('hidden');
-                carregarHistoricoProf();
-            } else if(aba === 'evo') {
-                document.getElementById('tab-evo').classList.add('active');
-                document.getElementById('view-evo').classList.remove('hidden');
-                prepararComparativo();
-            }
+            if(aba === 'nova') { document.getElementById('tab-nova').classList.add('active'); document.getElementById('view-nova').classList.remove('hidden'); }
+            else if(aba === 'hist') { document.getElementById('tab-hist').classList.add('active'); document.getElementById('view-hist').classList.remove('hidden'); carregarHistoricoProf(); }
+            else if(aba === 'evo') { document.getElementById('tab-evo').classList.add('active'); document.getElementById('view-evo').classList.remove('hidden'); prepararComparativo(); }
         };
 
         function configurarInterfaceProfessor() {
@@ -469,7 +480,7 @@
 
             if (snapshot.exists()) {
                 const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                meusEnviosCache = all.filter(d => d.professor === usuarioAtual.nome);
+                meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
                 meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
                 const escolasProf = [...new Set(meusEnviosCache.map(d => d.escola))].sort();
@@ -500,26 +511,27 @@
                     dadosTurma = {
                         escola: item.escola,
                         serie: item.serie,
-                        turma: item.turma,
+                        turma: item.turma || "A",
                         data: item.data_avaliacao,
                         alunos: item.detalhes || []
                     };
                     
                     document.getElementById('sel-escola').value = item.escola;
                     document.getElementById('sel-serie').value = item.serie;
-                    document.getElementById('sel-turma').value = item.turma;
+                    document.getElementById('sel-turma').value = item.turma || "A";
                     document.getElementById('lista-alunos').value = item.detalhes.map(a => a.nome).join('\n');
                     
-                    // Tratamento híbrido de Data para edição
-                    let dia, mes, ano;
-                    if(item.data_avaliacao.includes('/')) {
-                        [dia, mes, ano] = item.data_avaliacao.split('/');
-                    } else {
-                        [ano, mes, dia] = item.data_avaliacao.split('-');
-                    }
-                    document.getElementById('sel-dia').value = dia;
-                    document.getElementById('sel-mes').value = mes;
-                    document.getElementById('sel-ano').value = ano;
+                    try {
+                        let dia, mes, ano;
+                        if(item.data_avaliacao.includes('/')) {
+                            [dia, mes, ano] = item.data_avaliacao.split('/');
+                        } else {
+                            [ano, mes, dia] = item.data_avaliacao.split('-');
+                        }
+                        document.getElementById('sel-dia').value = parseInt(dia) < 10 ? "0"+parseInt(dia) : dia;
+                        document.getElementById('sel-mes').value = parseInt(mes) < 10 ? "0"+parseInt(mes) : mes;
+                        document.getElementById('sel-ano').value = ano;
+                    } catch(e) { console.log("Data inválida ao editar, ignorando."); }
 
                     await remove(ref(db, 'avaliacoes/' + id));
                     mudarAbaProf('nova');
@@ -538,30 +550,40 @@
             let html = "";
 
             meusEnviosCache.forEach(d => {
-                if (fEsc !== "TODAS" && d.escola !== fEsc) return;
-                if (fSer !== "TODAS" && d.serie !== fSer) return;
-                if (fTur !== "TODAS" && d.turma !== fTur) return;
-                
-                // DATA HÍBRIDA (CORREÇÃO AQUI)
-                let dia, mes, ano;
-                if(d.data_avaliacao.includes('/')) {
-                    [dia, mes, ano] = d.data_avaliacao.split('/');
-                } else {
-                    [ano, mes, dia] = d.data_avaliacao.split('-');
-                }
+                let dia = "01", mes = "01", ano = "2026";
+                try {
+                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) {
+                        [dia, mes, ano] = d.data_avaliacao.split('/');
+                    } else if (d.data_avaliacao && d.data_avaliacao.includes('-')) {
+                        [ano, mes, dia] = d.data_avaliacao.split('-');
+                    }
+                    if(mes) mes = mes.padStart(2, '0');
+                } catch(e) {}
 
-                if (fMes !== "TODOS" && mes !== fMes) return;
-                if (ano !== fAno) return;
+                // Filtros
+                let mostrar = true;
+                if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
+                if (fSer !== "TODAS" && d.serie !== fSer) mostrar = false;
+                if (fTur !== "TODAS" && d.turma !== fTur) mostrar = false;
+                if (fMes !== "TODOS" && mes !== fMes) mostrar = false;
+                if (fAno !== "TODOS" && ano !== fAno) mostrar = false;
 
-                tAlunos += d.total_alunos; tAval += d.total_avaliados; tAus += d.total_ausentes;
+                if (!mostrar) return;
+
+                tAlunos += d.total_alunos || 0; tAval += d.total_avaliados || 0; tAus += d.total_ausentes || 0;
                 if(d.resultados) {
                     tFlu += (d.resultados["Fluente"] || 0);
                     tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
                 }
 
+                const txtEscola = d.escola || "Escola?";
+                const txtSerie = d.serie || "?";
+                const txtTurma = d.turma || "?";
+                const txtData = d.data_avaliacao || "Data?";
+
                 html += `<tr>
-                    <td>${d.escola}<br><small>${d.serie} ${d.turma}</small></td>
-                    <td>${d.data_avaliacao}</td>
+                    <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
+                    <td>${txtData}</td>
                     <td>
                         <button class="btn-table btn-edit" onclick="editarAvaliacao('${d.id}')">✏️</button>
                         <button class="btn-table btn-del" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
@@ -569,11 +591,17 @@
                 </tr>`;
             });
 
-            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado.</td></tr>";
+            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
+            
+            // ATUALIZA KPIs (Antigo Estilo)
+            const pctFluente = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
+            const pctCritico = tAval > 0 ? (tCrit/tAval*100).toFixed(1) : 0;
+            const pctAusente = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1) : 0;
+
             document.getElementById('prof-total').innerText = tAval;
-            document.getElementById('prof-fluente').innerText = tAval > 0 ? (tFlu/tAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('prof-critico').innerText = tAval > 0 ? (tCrit/tAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('prof-ausente').innerText = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1)+"%" : "0%";
+            document.getElementById('prof-fluente').innerText = pctFluente + "%";
+            document.getElementById('prof-critico').innerText = pctCritico + "%";
+            document.getElementById('prof-ausente').innerText = pctAusente + "%";
         };
 
         window.prepararComparativo = () => {
@@ -633,10 +661,7 @@
         window.aplicarFiltros = () => {
             const fEscola = document.getElementById('filtro-escola').value;
             const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-            
-            // Filtro DATA (ADM Híbrido)
             const fDia = document.getElementById('adm-dia-ini').value;
-            // (Para simplificar, ADM aqui só filtra dia exato se selecionado, mas lê tudo)
 
             let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0;
             let htmlTabela = "";
@@ -644,13 +669,12 @@
             todosDadosAdm.forEach(d => {
                 if (fEscola !== "TODAS" && d.escola !== fEscola) return;
                 
-                // DATA HÍBRIDA
                 let dia, mes, ano;
-                if(d.data_avaliacao.includes('/')) {
-                    [dia, mes, ano] = d.data_avaliacao.split('/');
-                } else {
-                    [ano, mes, dia] = d.data_avaliacao.split('-');
-                }
+                try {
+                    if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    dia = dia.padStart(2, '0');
+                } catch(e) { return; }
 
                 if(fDia && dia !== fDia) return;
 
