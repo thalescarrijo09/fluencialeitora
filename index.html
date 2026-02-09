@@ -55,7 +55,7 @@
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
-        /* Botões de Ação na Tabela (Novo) */
+        /* Botões de Ação na Tabela */
         .btn-table { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 2px; }
         .btn-edit { background: #FF9800; color: white; }
         .btn-del { background: #f44336; color: white; }
@@ -175,7 +175,7 @@
                     <div class="date-select-group">
                         <select id="prof-mes-filtro" onchange="aplicarFiltrosProf()">
                             <option value="TODOS">Mês (Todos)</option>
-                            <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                         </select>
                         <select id="prof-ano-filtro" onchange="aplicarFiltrosProf()">
                             <option value="2026">2026</option><option value="2025">2025</option>
@@ -402,13 +402,10 @@
             if(!d) return alert("Selecione o Dia!");
             if (!escola || lista.length === 0) return alert("Preencha dados!");
 
-            // Se estiver em modo edição, usamos os dados carregados, senão cria novo
             if(!dadosTurma.alunos || dadosTurma.alunos.length === 0) {
                  dadosTurma.alunos = lista.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '' }));
             } else {
-                // Atualiza lista se o texto mudou
                 const nomesAtuais = lista;
-                // Lógica simples: recria se mudou tamanho (poderia ser mais complexo)
                 if(nomesAtuais.length !== dadosTurma.alunos.length) {
                      dadosTurma.alunos = nomesAtuais.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '' }));
                 }
@@ -430,7 +427,6 @@
             document.getElementById('resumo-sub').innerText = `${dadosTurma.serie} - Turma ${dadosTurma.turma}`;
             const container = document.getElementById('container-alunos'); container.innerHTML = '';
             
-            // Garante que temos alunos
             if(!dadosTurma.alunos) dadosTurma.alunos = [];
 
             dadosTurma.alunos.forEach((aluno, idx) => {
@@ -472,7 +468,6 @@
             meusEnviosCache = [];
 
             if (snapshot.exists()) {
-                // Pegar chave e valor para poder excluir
                 const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
                 meusEnviosCache = all.filter(d => d.professor === usuarioAtual.nome);
                 meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
@@ -502,7 +497,6 @@
             if(confirm("Ao editar, a versão anterior será APAGADA e os dados carregados para você salvar novamente. Confirmar?")) {
                 const item = meusEnviosCache.find(d => d.id === id);
                 if(item) {
-                    // Carrega dados na memória
                     dadosTurma = {
                         escola: item.escola,
                         serie: item.serie,
@@ -511,28 +505,27 @@
                         alunos: item.detalhes || []
                     };
                     
-                    // Preenche campos visuais da aba Config
                     document.getElementById('sel-escola').value = item.escola;
                     document.getElementById('sel-serie').value = item.serie;
                     document.getElementById('sel-turma').value = item.turma;
                     document.getElementById('lista-alunos').value = item.detalhes.map(a => a.nome).join('\n');
                     
-                    // Data
-                    const [d, m, a] = item.data_avaliacao.split('/');
-                    document.getElementById('sel-dia').value = d;
-                    document.getElementById('sel-mes').value = m;
-                    document.getElementById('sel-ano').value = a;
+                    // Tratamento híbrido de Data para edição
+                    let dia, mes, ano;
+                    if(item.data_avaliacao.includes('/')) {
+                        [dia, mes, ano] = item.data_avaliacao.split('/');
+                    } else {
+                        [ano, mes, dia] = item.data_avaliacao.split('-');
+                    }
+                    document.getElementById('sel-dia').value = dia;
+                    document.getElementById('sel-mes').value = mes;
+                    document.getElementById('sel-ano').value = ano;
 
-                    // Apaga o antigo
                     await remove(ref(db, 'avaliacoes/' + id));
-                    
-                    // Vai para a tela
                     mudarAbaProf('nova');
                 }
             }
         };
-
-        function parseDataBR(strData) { const p = strData.split('/'); return new Date(p[2], p[1]-1, p[0]); }
 
         window.aplicarFiltrosProf = () => {
             const fEsc = document.getElementById('prof-filtro-escola').value;
@@ -549,10 +542,16 @@
                 if (fSer !== "TODAS" && d.serie !== fSer) return;
                 if (fTur !== "TODAS" && d.turma !== fTur) return;
                 
-                // Filtro Data
-                const [dd, mm, aa] = d.data_avaliacao.split('/');
-                if (fMes !== "TODOS" && mm !== fMes) return;
-                if (aa !== fAno) return;
+                // DATA HÍBRIDA (CORREÇÃO AQUI)
+                let dia, mes, ano;
+                if(d.data_avaliacao.includes('/')) {
+                    [dia, mes, ano] = d.data_avaliacao.split('/');
+                } else {
+                    [ano, mes, dia] = d.data_avaliacao.split('-');
+                }
+
+                if (fMes !== "TODOS" && mes !== fMes) return;
+                if (ano !== fAno) return;
 
                 tAlunos += d.total_alunos; tAval += d.total_avaliados; tAus += d.total_ausentes;
                 if(d.resultados) {
@@ -635,10 +634,9 @@
             const fEscola = document.getElementById('filtro-escola').value;
             const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
             
-            // Filtro DATA (ADM)
+            // Filtro DATA (ADM Híbrido)
             const fDia = document.getElementById('adm-dia-ini').value;
-            const fMes = document.getElementById('adm-mes-ini').value;
-            const fAno = document.getElementById('adm-ano-ini').value;
+            // (Para simplificar, ADM aqui só filtra dia exato se selecionado, mas lê tudo)
 
             let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0;
             let htmlTabela = "";
@@ -646,12 +644,15 @@
             todosDadosAdm.forEach(d => {
                 if (fEscola !== "TODAS" && d.escola !== fEscola) return;
                 
-                // Validação de Data (Apenas se filtro ativado)
-                if(fDia) { 
-                    const [dd, mm, aa] = d.data_avaliacao.split('/');
-                    if(dd !== fDia) return; // Filtro exato de dia, se quiser intervalo precisa mudar lógica
+                // DATA HÍBRIDA
+                let dia, mes, ano;
+                if(d.data_avaliacao.includes('/')) {
+                    [dia, mes, ano] = d.data_avaliacao.split('/');
+                } else {
+                    [ano, mes, dia] = d.data_avaliacao.split('-');
                 }
-                // (Para simplificar, ADM vê tudo por padrão. Se quiser filtrar mês, precisa implementar lógica similar ao prof)
+
+                if(fDia && dia !== fDia) return;
 
                 let contribuiu = false;
                 let tAval = 0, tFlu = 0;
