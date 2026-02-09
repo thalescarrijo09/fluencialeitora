@@ -169,6 +169,14 @@
                         <option value="5º Ano">5º Ano</option>
                         <option value="Multisseriada">Multisseriada</option>
                     </select>
+                    <select id="prof-filtro-turma" onchange="aplicarFiltrosProf()">
+                        <option value="TODAS">Todas as Turmas</option>
+                        <option value="A">Turma A</option>
+                        <option value="B">Turma B</option>
+                        <option value="C">Turma C</option>
+                        <option value="D">Turma D</option>
+                        <option value="Unica">Única</option>
+                    </select>
                 </div>
                 <div class="filter-row" style="background:#eee; padding:5px; border-radius:6px;">
                     <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
@@ -197,6 +205,7 @@
                     <thead><tr><th>Turma</th><th>Data</th><th>Ações</th></tr></thead>
                     <tbody id="tabela-prof"></tbody>
                 </table>
+                <div id="debug-msg" style="text-align:center; font-size:0.8rem; color:#666; margin-top:5px;"></div>
             </div>
         </div>
 
@@ -510,15 +519,15 @@
                     document.getElementById('sel-turma').value = item.turma;
                     document.getElementById('lista-alunos').value = item.detalhes.map(a => a.nome).join('\n');
                     
-                    // Tratamento híbrido de Data para edição
                     let dia, mes, ano;
                     if(item.data_avaliacao.includes('/')) {
                         [dia, mes, ano] = item.data_avaliacao.split('/');
                     } else {
                         [ano, mes, dia] = item.data_avaliacao.split('-');
                     }
-                    document.getElementById('sel-dia').value = dia;
-                    document.getElementById('sel-mes').value = mes;
+                    // Remove zeros a esquerda para select
+                    document.getElementById('sel-dia').value = parseInt(dia) < 10 ? "0"+parseInt(dia) : dia;
+                    document.getElementById('sel-mes').value = parseInt(mes) < 10 ? "0"+parseInt(mes) : mes;
                     document.getElementById('sel-ano').value = ano;
 
                     await remove(ref(db, 'avaliacoes/' + id));
@@ -536,22 +545,33 @@
 
             let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0;
             let html = "";
+            let ocultos = 0;
 
             meusEnviosCache.forEach(d => {
-                if (fEsc !== "TODAS" && d.escola !== fEsc) return;
-                if (fSer !== "TODAS" && d.serie !== fSer) return;
-                if (fTur !== "TODAS" && d.turma !== fTur) return;
-                
-                // DATA HÍBRIDA (CORREÇÃO AQUI)
+                // DATA HÍBRIDA + CORREÇÃO ZERO (05 vs 5)
                 let dia, mes, ano;
                 if(d.data_avaliacao.includes('/')) {
                     [dia, mes, ano] = d.data_avaliacao.split('/');
                 } else {
                     [ano, mes, dia] = d.data_avaliacao.split('-');
                 }
+                
+                // Normaliza para 2 dígitos (01, 02...)
+                mes = mes.padStart(2, '0');
+                dia = dia.padStart(2, '0');
 
-                if (fMes !== "TODOS" && mes !== fMes) return;
-                if (ano !== fAno) return;
+                // Lógica de Filtro
+                let mostrar = true;
+                if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
+                if (fSer !== "TODAS" && d.serie !== fSer) mostrar = false;
+                if (fTur !== "TODAS" && d.turma !== fTur) mostrar = false;
+                if (fMes !== "TODOS" && mes !== fMes) mostrar = false;
+                if (ano !== fAno) mostrar = false;
+
+                if (!mostrar) {
+                    ocultos++;
+                    return;
+                }
 
                 tAlunos += d.total_alunos; tAval += d.total_avaliados; tAus += d.total_ausentes;
                 if(d.resultados) {
@@ -569,7 +589,17 @@
                 </tr>`;
             });
 
-            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado.</td></tr>";
+            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
+            
+            // Mensagem de Debug Inteligente
+            const debugMsg = document.getElementById('debug-msg');
+            if (ocultos > 0 && html === "") {
+                debugMsg.innerText = `⚠️ Atenção: Existem ${ocultos} avaliações salvas, mas os filtros acima estão escondendo elas. Tente mudar o Mês ou a Escola.`;
+                debugMsg.style.display = 'block';
+            } else {
+                debugMsg.style.display = 'none';
+            }
+
             document.getElementById('prof-total').innerText = tAval;
             document.getElementById('prof-fluente').innerText = tAval > 0 ? (tFlu/tAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('prof-critico').innerText = tAval > 0 ? (tCrit/tAval*100).toFixed(1)+"%" : "0%";
@@ -636,7 +666,6 @@
             
             // Filtro DATA (ADM Híbrido)
             const fDia = document.getElementById('adm-dia-ini').value;
-            // (Para simplificar, ADM aqui só filtra dia exato se selecionado, mas lê tudo)
 
             let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0;
             let htmlTabela = "";
@@ -651,6 +680,8 @@
                 } else {
                     [ano, mes, dia] = d.data_avaliacao.split('-');
                 }
+                // padStart para garantir (05 vs 5)
+                dia = dia.padStart(2, '0');
 
                 if(fDia && dia !== fDia) return;
 
