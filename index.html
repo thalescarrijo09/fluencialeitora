@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Sistema Integrado</title>
+    <title>SIAVEL - Gestão 360</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root { --primary: #2E7D32; --secondary: #1565C0; --bg-light: #f4f4f9; --text: #333; --red: #d32f2f; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:10px; }
         
-        .screen { display: none; max-width: 900px; margin: 0 auto; } /* Largura maior para ADM */
+        .screen { display: none; max-width: 900px; margin: 0 auto; }
         .screen.active { display: block; }
 
         /* Login */
@@ -20,6 +20,11 @@
         /* Header */
         .app-header { background: var(--primary); color: white; padding: 15px; border-radius: 0 0 12px 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .btn-logout { background: rgba(0,0,0,0.2); border: none; color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+
+        /* ABAS (Novo) */
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #ddd; border-radius: 8px; font-weight: bold; cursor: pointer; color: #555; }
+        .tab-btn.active { background: var(--secondary); color: white; }
 
         /* Componentes */
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -34,28 +39,37 @@
         select { padding: 8px; border-radius: 4px; flex: 1; border: 1px solid #ccc; }
         .laudo-chk { background: #eee; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
         
-        /* Dashboard ADM */
+        /* Ações */
+        .action-bar { display: flex; gap: 5px; margin-bottom: 15px; }
+        .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
+        
+        /* Dashboard Cards */
         .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .kpi-card { background: white; padding: 15px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .kpi-num { font-size: 1.5rem; font-weight: bold; color: var(--secondary); }
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
-        /* FILTROS ADM AVANÇADOS */
+        /* Filtros Avançados */
         .filter-container { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .filter-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        .filter-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
         .chk-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .chk-label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; background: #eee; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
         .chk-label input { width: auto; margin: 0; }
         .chk-label:has(input:checked) { background: #c8e6c9; border: 1px solid var(--primary); }
+        .date-input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
 
         /* Utilitários */
         .hidden { display: none; }
         .tag-laudo { color: var(--red); font-weight: bold; font-size: 0.75rem; display: none; }
         .aluno-row.com-laudo .tag-laudo { display: inline; }
-        .no-print { }
+        
         @media print { .no-print { display: none !important; } }
-        @media (max-width: 600px) { .dash-grid { grid-template-columns: 1fr 1fr; } .filter-row { flex-direction: column; align-items: flex-start; } }
+        @media (max-width: 600px) { 
+            .dash-grid { grid-template-columns: 1fr 1fr; } 
+            .filter-row { flex-direction: column; align-items: flex-start; }
+            .tabs { flex-direction: column; } 
+        }
     </style>
 </head>
 <body>
@@ -63,8 +77,8 @@
     <div id="screen-login" class="screen active">
         <div class="login-box">
             <h1>📚 SIAVEL</h1>
-            <p>Faça login para acessar</p>
-            <input type="text" id="email" placeholder="E-mail (ex: jane@siavel.com)">
+            <p>Gestão de Fluência Leitora</p>
+            <input type="text" id="email" placeholder="E-mail">
             <input type="password" id="senha" placeholder="Senha">
             <button class="btn-main" onclick="login()">ENTRAR</button>
             <p id="msg-login" style="color:red; margin-top:10px;"></p>
@@ -77,42 +91,66 @@
             <button class="btn-logout" onclick="logout()">Sair</button>
         </div>
 
-        <div id="area-config" class="card">
-            <h3>Nova Avaliação</h3>
-            <label>Data:</label>
-            <div style="display:flex; gap:5px; margin-bottom:10px;">
-                <select id="sel-dia"><option value="">Dia</option></select>
-                <select id="sel-mes"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
-                <select id="sel-ano"><option value="2026">2026</option></select>
-            </div>
-            <label>Escola:</label>
-            <select id="sel-escola" style="width:100%; margin-bottom:10px;"></select>
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;"><label>Série:</label><select id="sel-serie" style="width:100%;"></select></div>
-                <div style="flex:1;"><label>Turma:</label><select id="sel-turma" style="width:100%;"><option>A</option><option>B</option><option>C</option><option>D</option><option>Unica</option></select></div>
-            </div>
-            <label style="display:block; margin-top:10px;">Alunos (Cole a lista):</label>
-            <textarea id="lista-alunos" style="width:100%; height:100px; border-radius:8px; border:1px solid #ccc;"></textarea>
-            <button class="btn-main" onclick="iniciarAvaliacao()">COMEÇAR</button>
+        <div class="tabs no-print">
+            <button class="tab-btn active" onclick="mudarAbaProf('nova')" id="tab-nova">📝 Nova Avaliação</button>
+            <button class="tab-btn" onclick="mudarAbaProf('hist')" id="tab-hist">📊 Meu Painel</button>
         </div>
 
-        <div id="area-avaliacao" class="hidden">
-            <div class="action-bar no-print">
-                <button class="btn-tool" style="background:#1565C0;" onclick="salvarNaNuvem()">☁️ SALVAR</button>
-                <button class="btn-tool" style="background:#D32F2F;" onclick="gerarPDF()">📄 PDF</button>
-                <button class="btn-tool" style="background:#2E7D32;" onclick="compartilharZap()">📱 Zap</button>
+        <div id="view-nova">
+            <div id="area-config" class="card">
+                <h3>Configurar</h3>
+                <label>Data:</label>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <select id="sel-dia"><option value="">Dia</option></select>
+                    <select id="sel-mes"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
+                    <select id="sel-ano"><option value="2026">2026</option><option value="2025">2025</option></select>
+                </div>
+                <label>Escola:</label>
+                <select id="sel-escola" style="width:100%; margin-bottom:10px;"></select>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label>Série:</label><select id="sel-serie" style="width:100%;"></select></div>
+                    <div style="flex:1;"><label>Turma:</label><select id="sel-turma" style="width:100%;"><option>A</option><option>B</option><option>C</option><option>D</option><option>Unica</option></select></div>
+                </div>
+                <label style="display:block; margin-top:10px;">Alunos (Lista):</label>
+                <textarea id="lista-alunos" style="width:100%; height:100px; border-radius:8px; border:1px solid #ccc;"></textarea>
+                <button class="btn-main" onclick="iniciarAvaliacao()">COMEÇAR</button>
             </div>
-            <div class="card" style="border-left:5px solid var(--secondary);">
-                <h3 id="resumo-titulo" style="margin:0;">Escola</h3>
-                <p style="margin:5px 0; color:#666;"><span id="resumo-data">--</span> | <span id="resumo-sub">Turma</span></p>
-                <div id="stats-rapido" style="font-weight:bold;">0 Avaliados</div>
+
+            <div id="area-avaliacao" class="hidden">
+                <div class="action-bar no-print">
+                    <button class="btn-tool" style="background:#1565C0;" onclick="salvarNaNuvem()">☁️ SALVAR</button>
+                    <button class="btn-tool" style="background:#D32F2F;" onclick="gerarPDF()">📄 PDF</button>
+                    <button class="btn-tool" style="background:#2E7D32;" onclick="compartilharZap()">📱 Zap</button>
+                </div>
+                <div class="card" style="border-left:5px solid var(--secondary);">
+                    <h3 id="resumo-titulo" style="margin:0;">Escola</h3>
+                    <p style="margin:5px 0; color:#666;"><span id="resumo-data">--</span> | <span id="resumo-sub">Turma</span></p>
+                    <div id="stats-rapido" style="font-weight:bold;">0 Avaliados</div>
+                </div>
+                <div id="container-alunos"></div>
+                <div class="card no-print" style="background:#eee; text-align:center;">
+                    <input type="text" id="extra-nome" placeholder="Aluno extra..." style="width:70%;">
+                    <button onclick="addExtra()" style="width:20%; padding:10px;">+</button>
+                </div>
+                <button class="btn-main no-print" style="background:#666;" onclick="voltarConfig()">VOLTAR</button>
             </div>
-            <div id="container-alunos"></div>
-            <div class="card no-print" style="background:#eee; text-align:center;">
-                <input type="text" id="extra-nome" placeholder="Aluno extra..." style="width:70%;">
-                <button onclick="addExtra()" style="width:20%; padding:10px;">+</button>
+        </div>
+
+        <div id="view-hist" class="hidden">
+            <div class="dash-grid">
+                <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div style="font-size:0.8rem;">Meus Avaliados</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:#2E7D32;">0%</div><div style="font-size:0.8rem;">Fluentes</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:#d32f2f;">0%</div><div style="font-size:0.8rem;">Níveis Iniciais</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:#FBC02D;">0%</div><div style="font-size:0.8rem;">Ausência</div></div>
             </div>
-            <button class="btn-main no-print" style="background:#666;" onclick="voltarConfig()">VOLTAR</button>
+            <div class="card">
+                <h3>Minhas Turmas Enviadas</h3>
+                <button onclick="carregarHistoricoProf()" style="float:right; font-size:0.7rem;">Atualizar</button>
+                <table class="adm-table">
+                    <thead><tr><th>Escola</th><th>Turma</th><th>Data</th><th>Status</th></tr></thead>
+                    <tbody id="tabela-prof"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -124,11 +162,20 @@
 
         <div class="filter-container">
             <div style="margin-bottom:10px; font-weight:bold; color:#555;">Filtros:</div>
+            
             <div class="filter-row">
                 <select id="filtro-escola" onchange="aplicarFiltros()" style="max-width:200px;">
                     <option value="TODAS">Todas as Escolas</option>
                 </select>
-                
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <span style="font-size:0.8rem;">De:</span>
+                    <input type="date" id="filtro-data-ini" class="date-input" onchange="aplicarFiltros()">
+                    <span style="font-size:0.8rem;">Até:</span>
+                    <input type="date" id="filtro-data-fim" class="date-input" onchange="aplicarFiltros()">
+                </div>
+            </div>
+
+            <div class="filter-row">
                 <div class="chk-group" id="chk-series">
                     <label class="chk-label"><input type="checkbox" value="1º Ano" checked onchange="aplicarFiltros()"> 1º Ano</label>
                     <label class="chk-label"><input type="checkbox" value="2º Ano" checked onchange="aplicarFiltros()"> 2º Ano</label>
@@ -136,23 +183,21 @@
                     <label class="chk-label"><input type="checkbox" value="4º Ano" checked onchange="aplicarFiltros()"> 4º Ano</label>
                     <label class="chk-label"><input type="checkbox" value="5º Ano" checked onchange="aplicarFiltros()"> 5º Ano</label>
                 </div>
-                
                 <button onclick="carregarAdmin()" style="background:var(--primary); color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-left:auto;">🔄 Atualizar</button>
             </div>
         </div>
 
         <div class="dash-grid">
-            <div class="kpi-card"><div class="kpi-num" id="adm-total">0</div><div style="font-size:0.8rem;">Avaliados (Filtrado)</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-total">0</div><div style="font-size:0.8rem;">Avaliados</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-fluente" style="color:#2E7D32;">0%</div><div style="font-size:0.8rem;">Fluentes</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-critico" style="color:#d32f2f;">0%</div><div style="font-size:0.8rem;">Níveis Iniciais</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:#FBC02D;">0%</div><div style="font-size:0.8rem;">Ausência</div></div>
         </div>
 
         <div class="card">
-            <h3>Registros</h3>
-            <p style="font-size:0.8rem; color:#666;">*Se a escola for rural, os números refletem apenas as séries selecionadas.</p>
+            <h3>Registros Filtrados</h3>
             <table class="adm-table">
-                <thead><tr><th>Escola</th><th>Turma</th><th>Avaliados</th><th>Fluência</th></tr></thead>
+                <thead><tr><th>Escola</th><th>Turma</th><th>Data</th><th>Prof.</th><th>Fluência</th></tr></thead>
                 <tbody id="tabela-envios"></tbody>
             </table>
         </div>
@@ -163,7 +208,7 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIGURAÇÃO
+        // 1. CONFIGURAÇÃO
         const firebaseConfig = {
             apiKey: "AIzaSyCYV-OOz55TvJ7cLPfJkDP7idGL25MXxis",
             authDomain: "leituramineiros.firebaseapp.com",
@@ -178,6 +223,7 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        // 2. PERFIS E CONSTANTES
         const PERFIS = {
             'jane@siavel.com': { nome: 'Jane', escolas: ['Paniago', 'Otalécio', 'Maria Eduarda', 'Salviano', 'Dom Bosco', 'Santo Antônio', 'Elias Carrijo', 'Tonico', 'Professor Juarez'], series: ['4º Ano', '5º Ano'], modo: 'padrao' },
             'wellita@siavel.com': { nome: 'Wellita', escolas: ['Paniago', 'Otalécio', 'Maria Eduarda', 'Salviano', 'Dom Bosco', 'Santo Antônio', 'Elias Carrijo', 'Tonico', 'Professor Juarez'], series: ['3º Ano'], modo: 'padrao' },
@@ -193,6 +239,7 @@
 
         (function initDias() { const s = document.getElementById('sel-dia'); for(let i=1; i<=31; i++){ let o = document.createElement('option'); o.value = i < 10 ? "0"+i : i; o.innerText = i; s.appendChild(o); } })();
 
+        // --- SISTEMA DE LOGIN ---
         window.login = () => {
             const e = document.getElementById('email').value;
             const s = document.getElementById('senha').value;
@@ -213,10 +260,27 @@
                     } else {
                         document.getElementById('screen-app').classList.add('active');
                         configurarInterfaceProfessor();
+                        carregarHistoricoProf(); // Carrega o dashboard pessoal
                     }
                 } else { alert("Usuário não configurado."); signOut(auth); }
             } else { document.getElementById('screen-login').classList.add('active'); }
         });
+
+        // --- LÓGICA PROFESSOR ---
+        window.mudarAbaProf = (aba) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-nova').classList.add('hidden');
+            document.getElementById('view-hist').classList.add('hidden');
+            
+            if(aba === 'nova') {
+                document.getElementById('tab-nova').classList.add('active');
+                document.getElementById('view-nova').classList.remove('hidden');
+            } else {
+                document.getElementById('tab-hist').classList.add('active');
+                document.getElementById('view-hist').classList.remove('hidden');
+                carregarHistoricoProf();
+            }
+        };
 
         function configurarInterfaceProfessor() {
             document.getElementById('header-user').innerText = `Olá, ${usuarioAtual.nome}`;
@@ -224,8 +288,7 @@
             usuarioAtual.escolas.forEach(esc => se.innerHTML += `<option>${esc}</option>`);
             const ss = document.getElementById('sel-serie'); ss.innerHTML = '';
             usuarioAtual.series.forEach(ser => ss.innerHTML += `<option>${ser}</option>`);
-            document.getElementById('area-config').classList.remove('hidden');
-            document.getElementById('area-avaliacao').classList.add('hidden');
+            mudarAbaProf('nova'); // Volta para aba inicial
         }
 
         window.iniciarAvaliacao = () => {
@@ -283,7 +346,44 @@
         window.gerarPDF = () => { const el = document.getElementById('area-avaliacao'); document.querySelectorAll('.no-print').forEach(e => e.style.display = 'none'); html2pdf().from(el).save(`${dadosTurma.escola}.pdf`).then(() => { document.querySelectorAll('.no-print').forEach(e => e.style.display = ''); }); };
         window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nData: ${dadosTurma.data}\nAv: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente').length}\n\n`; dadosTurma.alunos.forEach(a => { if(a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
 
-        // --- LÓGICA DO ADMIN COM DEEP FILTER ---
+        // --- DASHBOARD DO PROFESSOR (NOVO) ---
+        window.carregarHistoricoProf = async () => {
+            const dbRef = ref(db, 'avaliacoes');
+            const snapshot = await get(dbRef);
+            let meusDados = [];
+            let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0;
+
+            if (snapshot.exists()) {
+                const all = Object.values(snapshot.val());
+                // Filtra só o professor atual
+                meusDados = all.filter(d => d.professor === usuarioAtual.nome);
+                meusDados.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+
+                meusDados.forEach(d => {
+                    tAlunos += d.total_alunos;
+                    tAval += d.total_avaliados;
+                    tAus += d.total_ausentes;
+                    if(d.resultados) {
+                        tFlu += (d.resultados["Fluente"] || 0);
+                        tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
+                    }
+                });
+            }
+
+            let html = "";
+            meusDados.forEach(d => {
+                html += `<tr><td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td style="color:green;">✅ Enviado</td></tr>`;
+            });
+            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='4'>Nenhum envio ainda.</td></tr>";
+
+            // KPI Prof
+            document.getElementById('prof-total').innerText = tAval;
+            document.getElementById('prof-fluente').innerText = tAval > 0 ? (tFlu/tAval*100).toFixed(1)+"%" : "0%";
+            document.getElementById('prof-critico').innerText = tAval > 0 ? (tCrit/tAval*100).toFixed(1)+"%" : "0%";
+            document.getElementById('prof-ausente').innerText = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1)+"%" : "0%";
+        };
+
+        // --- ADMIN AVANÇADO (FILTROS ESCOLA, SÉRIE E DATA) ---
         window.carregarAdmin = async () => {
             try {
                 const dbRef = ref(db, 'avaliacoes');
@@ -298,15 +398,24 @@
                     escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
 
                     aplicarFiltros();
-                } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='4'>Nenhum dado encontrado.</td></tr>"; }
+                } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='5'>Nenhum dado.</td></tr>"; }
             } catch (error) { console.error(error); alert("Erro ao carregar dados."); }
         };
 
+        // Helper para converter "DD/MM/YYYY" em Objeto Date
+        function parseDataBR(strData) {
+            const partes = strData.split('/');
+            return new Date(partes[2], partes[1] - 1, partes[0]); // Ano, Mes (0-11), Dia
+        }
+
         window.aplicarFiltros = () => {
             const fEscola = document.getElementById('filtro-escola').value;
-            const chkSeries = document.querySelectorAll('#chk-series input:checked');
-            const seriesSelecionadas = Array.from(chkSeries).map(c => c.value);
-
+            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
+            
+            // Filtro Data
+            const fDataIni = document.getElementById('filtro-data-ini').value; // YYYY-MM-DD
+            const fDataFim = document.getElementById('filtro-data-fim').value;
+            
             let gAlunos = 0, gFlu = 0, gCrit = 0, gAus = 0, gAval = 0;
             let htmlTabela = "";
 
@@ -314,16 +423,22 @@
                 // 1. Filtro Escola
                 if (fEscola !== "TODAS" && d.escola !== fEscola) return;
 
-                // 2. Filtro Série (Lógica Híbrida)
+                // 2. Filtro Data (Comparando data da avaliação)
+                if (fDataIni || fDataFim) {
+                    const dataAval = parseDataBR(d.data_avaliacao);
+                    if (fDataIni && dataAval < new Date(fDataIni)) return;
+                    if (fDataFim && dataAval > new Date(fDataFim)) return;
+                }
+
+                // 3. Filtro Série (Híbrido)
                 let contribuiu = false;
                 let tAval = 0, tFlu = 0;
 
-                // Caso RURAL: Verifica aluno por aluno
+                // Caso RURAL
                 if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
                     if (d.detalhes && Array.isArray(d.detalhes)) {
                         d.detalhes.forEach(aluno => {
-                            // Se a série do aluno está selecionada
-                            if (seriesSelecionadas.includes(aluno.serieRural)) {
+                            if (chkSeries.includes(aluno.serieRural)) {
                                 gAlunos++;
                                 if (aluno.nivel === 'Ausente') { gAus++; }
                                 else if (aluno.nivel) {
@@ -336,14 +451,12 @@
                         });
                     }
                 } 
-                // Caso URBANO: Verifica a série da turma inteira
+                // Caso URBANO
                 else {
-                    if (seriesSelecionadas.includes(d.serie)) {
-                        // Soma totais da turma
+                    if (chkSeries.includes(d.serie)) {
                         gAlunos += d.total_alunos;
                         gAus += d.total_ausentes;
                         gAval += d.total_avaliados;
-                        
                         if(d.resultados) {
                             const flu = (d.resultados["Fluente"] || 0);
                             gFlu += flu; tFlu += flu; tAval += d.total_avaliados;
@@ -355,12 +468,11 @@
 
                 if (contribuiu) {
                     let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
-                    htmlTabela += `<tr><td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.total_avaliados}</td><td>${pct}</td></tr>`;
+                    htmlTabela += `<tr><td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td>${d.professor}</td><td>${pct}</td></tr>`;
                 }
             });
 
-            // Atualiza KPI
-            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='4'>Sem dados para este filtro.</td></tr>";
+            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='5'>Sem dados para este filtro.</td></tr>";
             document.getElementById('adm-total').innerText = gAval;
             document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
