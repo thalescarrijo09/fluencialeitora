@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Gestão Inteligente</title>
+    <title>SIAVEL - Gestão Completa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -52,7 +52,18 @@
         .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .kpi-card { background: white; padding: 15px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .kpi-num { font-size: 1.5rem; font-weight: bold; color: var(--secondary); }
+        .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
+        /* Filtros */
+        .filter-container { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+        .chk-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .chk-label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; background: #eee; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
+        .chk-label input { width: auto; margin: 0; }
+        .chk-label:has(input:checked) { background: #c8e6c9; border: 1px solid var(--primary); }
+        .date-input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+
         /* Utilitários */
         .hidden { display: none; }
         .tag-laudo { color: var(--red); font-weight: bold; font-size: 0.75rem; display: none; }
@@ -60,20 +71,11 @@
         .action-bar { display: flex; gap: 5px; margin-bottom: 15px; }
         .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
         
-        /* Filtros ADM */
-        .filter-container { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .filter-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-        .chk-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .chk-label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; background: #eee; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
-        .chk-label input { width: auto; margin: 0; }
-        .chk-label:has(input:checked) { background: #c8e6c9; border: 1px solid var(--primary); }
-        .date-input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
-
         @media print { .no-print { display: none !important; } }
         @media (max-width: 600px) { 
             .dash-grid { grid-template-columns: 1fr 1fr; } 
             .tabs { flex-wrap: wrap; } 
-            .filter-row { flex-direction: column; align-items: flex-start; }
+            .filter-row { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -98,7 +100,7 @@
 
         <div class="tabs no-print">
             <button class="tab-btn active" onclick="mudarAbaProf('nova')" id="tab-nova">📝 Nova</button>
-            <button class="tab-btn" onclick="mudarAbaProf('hist')" id="tab-hist">📊 Painel</button>
+            <button class="tab-btn" onclick="mudarAbaProf('hist')" id="tab-hist">📊 Meu Painel</button>
             <button class="tab-btn" onclick="mudarAbaProf('evo')" id="tab-evo">📈 Evolução</button>
         </div>
 
@@ -117,7 +119,6 @@
                     <div style="flex:1;"><label>Série:</label><select id="sel-serie" style="width:100%;" onchange="verificarHistoricoTurma()"></select></div>
                     <div style="flex:1;"><label>Turma:</label><select id="sel-turma" style="width:100%;" onchange="verificarHistoricoTurma()"><option>A</option><option>B</option><option>C</option><option>D</option><option>Unica</option></select></div>
                 </div>
-                
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <label style="margin:0;">Alunos:</label>
                     <small id="msg-importacao" style="color:var(--primary); font-weight:bold; display:none;">📋 Lista carregada!</small>
@@ -147,8 +148,38 @@
         </div>
 
         <div id="view-hist" class="hidden">
+            <div class="filter-container">
+                <div style="margin-bottom:5px; font-weight:bold; color:#555; font-size:0.9rem;">Filtrar meus dados:</div>
+                <div class="filter-row">
+                    <select id="prof-filtro-escola" onchange="aplicarFiltrosProf()">
+                        <option value="TODAS">Todas as Escolas</option>
+                    </select>
+                    <select id="prof-filtro-serie" onchange="aplicarFiltrosProf()">
+                        <option value="TODAS">Todas as Séries</option>
+                        <option value="1º Ano">1º Ano</option>
+                        <option value="2º Ano">2º Ano</option>
+                        <option value="3º Ano">3º Ano</option>
+                        <option value="4º Ano">4º Ano</option>
+                        <option value="5º Ano">5º Ano</option>
+                        <option value="Multisseriada">Multisseriada</option>
+                    </select>
+                    <select id="prof-filtro-turma" onchange="aplicarFiltrosProf()">
+                        <option value="TODAS">Todas as Turmas</option>
+                        <option value="A">Turma A</option>
+                        <option value="B">Turma B</option>
+                        <option value="C">Turma C</option>
+                        <option value="D">Turma D</option>
+                        <option value="Unica">Única</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <span style="font-size:0.8rem;">De:</span><input type="date" id="prof-data-ini" class="date-input" onchange="aplicarFiltrosProf()">
+                    <span style="font-size:0.8rem;">Até:</span><input type="date" id="prof-data-fim" class="date-input" onchange="aplicarFiltrosProf()">
+                </div>
+            </div>
+
             <div class="dash-grid">
-                <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div style="font-size:0.8rem;">Meus Avaliados</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div style="font-size:0.8rem;">Avaliados (Filtro)</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:#2E7D32;">0%</div><div style="font-size:0.8rem;">Fluentes</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:#d32f2f;">0%</div><div style="font-size:0.8rem;">Níveis Iniciais</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:#FBC02D;">0%</div><div style="font-size:0.8rem;">Ausência</div></div>
@@ -321,13 +352,11 @@
             mudarAbaProf('nova');
         }
 
-        // --- NOVA FUNÇÃO: VERIFICAR HISTÓRICO PARA IMPORTAÇÃO ---
         window.verificarHistoricoTurma = async () => {
             const esc = document.getElementById('sel-escola').value;
             const ser = document.getElementById('sel-serie').value;
             const tur = document.getElementById('sel-turma').value;
             const msg = document.getElementById('msg-importacao');
-            
             msg.style.display = 'none';
 
             if(esc && ser && tur) {
@@ -335,20 +364,14 @@
                 const snapshot = await get(dbRef);
                 if (snapshot.exists()) {
                     const all = Object.values(snapshot.val());
-                    // Filtra: Mesma escola, série e turma
                     const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
                     
                     if (matches.length > 0) {
-                        // Pega a mais recente
                         matches.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
                         const ultima = matches[0];
-                        
                         if (ultima.detalhes && Array.isArray(ultima.detalhes)) {
-                            // Extrai nomes
                             const nomes = ultima.detalhes.map(a => a.nome).join('\n');
                             document.getElementById('lista-alunos').value = nomes;
-                            
-                            // Feedback visual
                             msg.innerText = `📋 Lista importada de ${ultima.data_avaliacao}`;
                             msg.style.display = 'block';
                         }
@@ -412,36 +435,72 @@
         window.gerarPDF = () => { const el = document.getElementById('area-avaliacao'); document.querySelectorAll('.no-print').forEach(e => e.style.display = 'none'); html2pdf().from(el).save(`${dadosTurma.escola}.pdf`).then(() => { document.querySelectorAll('.no-print').forEach(e => e.style.display = ''); }); };
         window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nData: ${dadosTurma.data}\nAv: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente').length}\n\n`; dadosTurma.alunos.forEach(a => { if(a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
 
-        // --- HISTÓRICO & EVOLUÇÃO ---
+        // --- DASHBOARD PROFESSOR COM FILTROS (NOVO) ---
         window.carregarHistoricoProf = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
-            let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0;
             meusEnviosCache = [];
 
             if (snapshot.exists()) {
                 const all = Object.values(snapshot.val());
                 meusEnviosCache = all.filter(d => d.professor === usuarioAtual.nome);
-                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio)); 
+                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
-                meusEnviosCache.forEach(d => {
-                    tAlunos += d.total_alunos; tAval += d.total_avaliados; tAus += d.total_ausentes;
-                    if(d.resultados) {
-                        tFlu += (d.resultados["Fluente"] || 0);
-                        tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
-                    }
-                });
+                // Popula Filtro de Escolas do Prof
+                const escolasProf = [...new Set(meusEnviosCache.map(d => d.escola))].sort();
+                const sel = document.getElementById('prof-filtro-escola');
+                sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
+                escolasProf.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+
+                aplicarFiltrosProf();
+            } else {
+                aplicarFiltrosProf(); // Renderiza vazio
             }
+        };
 
+        window.aplicarFiltrosProf = () => {
+            const fEsc = document.getElementById('prof-filtro-escola').value;
+            const fSer = document.getElementById('prof-filtro-serie').value;
+            const fTur = document.getElementById('prof-filtro-turma').value;
+            const fIni = document.getElementById('prof-data-ini').value;
+            const fFim = document.getElementById('prof-data-fim').value;
+
+            let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0;
             let html = "";
-            meusEnviosCache.forEach(d => { html += `<tr><td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td style="color:green;">✅ Enviado</td></tr>`; });
-            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='4'>Nenhum envio.</td></tr>";
+
+            meusEnviosCache.forEach(d => {
+                // Checa filtros
+                if (fEsc !== "TODAS" && d.escola !== fEsc) return;
+                if (fSer !== "TODAS" && d.serie !== fSer) return;
+                if (fTur !== "TODAS" && d.turma !== fTur) return;
+                
+                if (fIni || fFim) {
+                    const dataAval = parseDataBR(d.data_avaliacao);
+                    if (fIni && dataAval < new Date(fIni)) return;
+                    if (fFim && dataAval > new Date(fFim)) return;
+                }
+
+                // Soma Estatísticas
+                tAlunos += d.total_alunos; tAval += d.total_avaliados; tAus += d.total_ausentes;
+                if(d.resultados) {
+                    tFlu += (d.resultados["Fluente"] || 0);
+                    tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
+                }
+
+                html += `<tr><td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td style="color:green;">✅ Enviado</td></tr>`;
+            });
+
+            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='4'>Nenhum dado encontrado com este filtro.</td></tr>";
+            
+            // Atualiza KPI
             document.getElementById('prof-total').innerText = tAval;
             document.getElementById('prof-fluente').innerText = tAval > 0 ? (tFlu/tAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('prof-critico').innerText = tAval > 0 ? (tCrit/tAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('prof-ausente').innerText = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1)+"%" : "0%";
         };
 
+        // ... Resto do código (Evolução, Admin) mantém igual ...
+        
         window.prepararComparativo = () => {
             const select = document.getElementById('filtro-evo-turma');
             select.innerHTML = '<option value="">Selecione...</option>';
@@ -458,14 +517,11 @@
             avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
             if(avaliacoesTurma.length < 2) {
-                document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações para comparar.</td></tr>";
-                document.getElementById('resultado-evo').classList.remove('hidden');
-                return;
+                document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações.</td></tr>";
+                document.getElementById('resultado-evo').classList.remove('hidden'); return;
             }
-
-            const atual = avaliacoesTurma[0];
-            const anterior = avaliacoesTurma[1];
-            document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} (Atual) vs ${anterior.data_avaliacao} (Anterior)`;
+            const atual = avaliacoesTurma[0]; const anterior = avaliacoesTurma[1];
+            document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} vs ${anterior.data_avaliacao}`;
 
             let html = "";
             if(atual.detalhes) {
@@ -485,7 +541,6 @@
             document.getElementById('resultado-evo').classList.remove('hidden');
         };
 
-        // --- ADMIN ---
         window.carregarAdmin = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
