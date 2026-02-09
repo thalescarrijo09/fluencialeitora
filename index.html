@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Gestão & Evolução</title>
+    <title>SIAVEL - Gestão Inteligente</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -39,7 +39,7 @@
         select { padding: 8px; border-radius: 4px; flex: 1; border: 1px solid #ccc; }
         .laudo-chk { background: #eee; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
         
-        /* Tabela Comparativa (Novo) */
+        /* Tabela Comparativa */
         .comp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .comp-table th { background: #f0f0f0; padding: 8px; text-align: left; color: #555; }
         .comp-table td { padding: 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
@@ -112,12 +112,16 @@
                     <select id="sel-ano"><option value="2026">2026</option><option value="2025">2025</option></select>
                 </div>
                 <label>Escola:</label>
-                <select id="sel-escola" style="width:100%; margin-bottom:10px;"></select>
+                <select id="sel-escola" style="width:100%; margin-bottom:10px;" onchange="verificarHistoricoTurma()"></select>
                 <div style="display:flex; gap:10px;">
-                    <div style="flex:1;"><label>Série:</label><select id="sel-serie" style="width:100%;"></select></div>
-                    <div style="flex:1;"><label>Turma:</label><select id="sel-turma" style="width:100%;"><option>A</option><option>B</option><option>C</option><option>D</option><option>Unica</option></select></div>
+                    <div style="flex:1;"><label>Série:</label><select id="sel-serie" style="width:100%;" onchange="verificarHistoricoTurma()"></select></div>
+                    <div style="flex:1;"><label>Turma:</label><select id="sel-turma" style="width:100%;" onchange="verificarHistoricoTurma()"><option>A</option><option>B</option><option>C</option><option>D</option><option>Unica</option></select></div>
                 </div>
-                <label style="display:block; margin-top:10px;">Alunos:</label>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <label style="margin:0;">Alunos:</label>
+                    <small id="msg-importacao" style="color:var(--primary); font-weight:bold; display:none;">📋 Lista carregada!</small>
+                </div>
                 <textarea id="lista-alunos" style="width:100%; height:100px; border-radius:8px; border:1px solid #ccc;"></textarea>
                 <button class="btn-main" onclick="iniciarAvaliacao()">COMEÇAR</button>
             </div>
@@ -232,7 +236,6 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIGURAÇÃO
         const firebaseConfig = {
             apiKey: "AIzaSyCYV-OOz55TvJ7cLPfJkDP7idGL25MXxis",
             authDomain: "leituramineiros.firebaseapp.com",
@@ -247,7 +250,6 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // PERFIS E DADOS
         const PERFIS = {
             'jane@siavel.com': { nome: 'Jane', escolas: ['Paniago', 'Otalécio', 'Maria Eduarda', 'Salviano', 'Dom Bosco', 'Santo Antônio', 'Elias Carrijo', 'Tonico', 'Professor Juarez'], series: ['4º Ano', '5º Ano'], modo: 'padrao' },
             'wellita@siavel.com': { nome: 'Wellita', escolas: ['Paniago', 'Otalécio', 'Maria Eduarda', 'Salviano', 'Dom Bosco', 'Santo Antônio', 'Elias Carrijo', 'Tonico', 'Professor Juarez'], series: ['3º Ano'], modo: 'padrao' },
@@ -257,7 +259,6 @@
         };
 
         const NIVEIS = ["Nível 1", "Nível 2", "Nível 3", "Nível 4", "Iniciante", "Fluente"];
-        // Mapa de Peso para comparação
         const PESO_NIVEL = { "Ausente": 0, "Nível 1": 1, "Nível 2": 2, "Nível 3": 3, "Nível 4": 4, "Iniciante": 5, "Fluente": 6 };
         
         let usuarioAtual = null;
@@ -320,7 +321,42 @@
             mudarAbaProf('nova');
         }
 
-        // --- SISTEMA DE AVALIAÇÃO ---
+        // --- NOVA FUNÇÃO: VERIFICAR HISTÓRICO PARA IMPORTAÇÃO ---
+        window.verificarHistoricoTurma = async () => {
+            const esc = document.getElementById('sel-escola').value;
+            const ser = document.getElementById('sel-serie').value;
+            const tur = document.getElementById('sel-turma').value;
+            const msg = document.getElementById('msg-importacao');
+            
+            msg.style.display = 'none';
+
+            if(esc && ser && tur) {
+                const dbRef = ref(db, 'avaliacoes');
+                const snapshot = await get(dbRef);
+                if (snapshot.exists()) {
+                    const all = Object.values(snapshot.val());
+                    // Filtra: Mesma escola, série e turma
+                    const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
+                    
+                    if (matches.length > 0) {
+                        // Pega a mais recente
+                        matches.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+                        const ultima = matches[0];
+                        
+                        if (ultima.detalhes && Array.isArray(ultima.detalhes)) {
+                            // Extrai nomes
+                            const nomes = ultima.detalhes.map(a => a.nome).join('\n');
+                            document.getElementById('lista-alunos').value = nomes;
+                            
+                            // Feedback visual
+                            msg.innerText = `📋 Lista importada de ${ultima.data_avaliacao}`;
+                            msg.style.display = 'block';
+                        }
+                    }
+                }
+            }
+        };
+
         window.iniciarAvaliacao = () => {
             const escola = document.getElementById('sel-escola').value;
             const lista = document.getElementById('lista-alunos').value.split('\n').filter(n=>n.trim()!=='');
@@ -386,7 +422,7 @@
             if (snapshot.exists()) {
                 const all = Object.values(snapshot.val());
                 meusEnviosCache = all.filter(d => d.professor === usuarioAtual.nome);
-                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio)); // Do mais recente
+                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio)); 
 
                 meusEnviosCache.forEach(d => {
                     tAlunos += d.total_alunos; tAval += d.total_avaliados; tAus += d.total_ausentes;
@@ -407,36 +443,18 @@
         };
 
         window.prepararComparativo = () => {
-            // Popula o select com turmas únicas encontradas no histórico
             const select = document.getElementById('filtro-evo-turma');
             select.innerHTML = '<option value="">Selecione...</option>';
-            
-            // Cria lista única de "Escola - Turma"
             const chavesUnicas = new Set();
-            meusEnviosCache.forEach(d => {
-                const key = `${d.escola}|${d.serie}|${d.turma}`;
-                chavesUnicas.add(key);
-            });
-
-            chavesUnicas.forEach(key => {
-                const [esc, ser, tur] = key.split('|');
-                const opt = document.createElement('option');
-                opt.value = key;
-                opt.innerText = `${esc} - ${ser} ${tur}`;
-                select.appendChild(opt);
-            });
+            meusEnviosCache.forEach(d => { chavesUnicas.add(`${d.escola}|${d.serie}|${d.turma}`); });
+            chavesUnicas.forEach(key => { const [esc, ser, tur] = key.split('|'); const opt = document.createElement('option'); opt.value = key; opt.innerText = `${esc} - ${ser} ${tur}`; select.appendChild(opt); });
         };
 
         window.gerarRelatorioEvolucao = () => {
             const key = document.getElementById('filtro-evo-turma').value;
             if(!key) return alert("Selecione uma turma.");
-            
             const [esc, ser, tur] = key.split('|');
-            
-            // Pega todas avaliações dessa turma
             const avaliacoesTurma = meusEnviosCache.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
-            
-            // Ordena da mais recente para antiga
             avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
             if(avaliacoesTurma.length < 2) {
@@ -445,35 +463,24 @@
                 return;
             }
 
-            const atual = avaliacoesTurma[0]; // Mais recente
-            const anterior = avaliacoesTurma[1]; // Penúltima
-
+            const atual = avaliacoesTurma[0];
+            const anterior = avaliacoesTurma[1];
             document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} (Atual) vs ${anterior.data_avaliacao} (Anterior)`;
 
             let html = "";
-            // Itera sobre alunos da avaliação atual
             if(atual.detalhes) {
                 atual.detalhes.forEach(alunoAtual => {
-                    // Tenta achar o aluno na avaliação anterior
                     const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
-                    
                     const nivelAtual = alunoAtual.nivel || "-";
                     const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
-                    
-                    // Lógica da Seta
                     let badge = '<span class="badge badge-same">➖ Manteve</span>';
-                    
                     if (alunoAnt && PESO_NIVEL[nivelAtual] !== undefined && PESO_NIVEL[nivelAnt] !== undefined) {
                         if (PESO_NIVEL[nivelAtual] > PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-up">⬆️ Evoluiu</span>';
                         else if (PESO_NIVEL[nivelAtual] < PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-down">⬇️ Regrediu</span>';
-                    } else if (nivelAnt === "Novo") {
-                        badge = '<span class="badge" style="background:#e3f2fd; color:#1565C0;">🆕 Novo</span>';
-                    }
-
+                    } else if (nivelAnt === "Novo") { badge = '<span class="badge" style="background:#e3f2fd; color:#1565C0;">🆕 Novo</span>'; }
                     html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
                 });
             }
-            
             document.getElementById('tabela-evo').innerHTML = html;
             document.getElementById('resultado-evo').classList.remove('hidden');
         };
