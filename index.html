@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Layout Limpo</title>
+    <title>SIAVEL - Sistema Oficial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -55,18 +55,18 @@
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
-        /* Botões de Ação na Tabela (ALTERADO PARA FICAR SÓ O ÍCONE) */
+        /* Botões de Ação na Tabela */
         .btn-table {
             padding: 6px 8px;
             border: none;
-            background: transparent; /* Fundo transparente */
+            background: transparent;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 1.1rem; /* Ícone um pouco maior */
+            font-size: 1.1rem;
             margin-right: 5px;
             transition: background 0.2s;
         }
-        .btn-table:hover { background: #e0e0e0; /* Efeito sutil ao passar o mouse */ }
+        .btn-table:hover { background: #e0e0e0; }
 
         /* Filtros */
         .filter-container { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -131,7 +131,14 @@
                 <select id="sel-escola" style="width:100%; margin-bottom:10px;" onchange="verificarHistoricoTurma()"></select>
                 <div style="display:flex; gap:10px;">
                     <div style="flex:1;"><label>Série:</label><select id="sel-serie" style="width:100%;" onchange="verificarHistoricoTurma()"></select></div>
-                    <div style="flex:1;"><label>Turma:</label><select id="sel-turma" style="width:100%;" onchange="verificarHistoricoTurma()"><option>A</option><option>B</option><option>C</option><option>D</option><option>Unica</option></select></div>
+                    <div style="flex:1;">
+                        <label>Turma:</label>
+                        <select id="sel-turma" style="width:100%;" onchange="verificarHistoricoTurma()">
+                            <option>A</option><option>B</option><option>C</option><option>D</option><option>E</option>
+                            <option>F</option><option>G</option><option>H</option><option>I</option><option>J</option><option>K</option>
+                            <option>Unica</option>
+                        </select>
+                    </div>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <label style="margin:0;">Alunos:</label>
@@ -179,10 +186,9 @@
                     </select>
                     <select id="prof-filtro-turma" onchange="aplicarFiltrosProf()">
                         <option value="TODAS">Todas as Turmas</option>
-                        <option value="A">Turma A</option>
-                        <option value="B">Turma B</option>
-                        <option value="C">Turma C</option>
-                        <option value="D">Turma D</option>
+                        <option value="A">Turma A</option><option value="B">Turma B</option><option value="C">Turma C</option><option value="D">Turma D</option>
+                        <option value="E">Turma E</option><option value="F">Turma F</option><option value="G">Turma G</option><option value="H">Turma H</option>
+                        <option value="I">Turma I</option><option value="J">Turma J</option><option value="K">Turma K</option>
                         <option value="Unica">Única</option>
                     </select>
                 </div>
@@ -585,8 +591,8 @@
                     <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
                     <td>${txtData}</td>
                     <td>
-                        <button class="btn-table btn-edit" onclick="editarAvaliacao('${d.id}')">✏️</button>
-                        <button class="btn-table btn-del" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
+                        <button class="btn-table btn-edit" title="Editar" onclick="editarAvaliacao('${d.id}')">✏️</button>
+                        <button class="btn-table btn-del" title="Excluir" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
                     </td>
                 </tr>`;
             });
