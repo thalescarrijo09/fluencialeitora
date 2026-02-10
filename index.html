@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Sistema Oficial</title>
+    <title>SIAVEL - Inclusão & Dados</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        :root { --primary: #2E7D32; --secondary: #1565C0; --bg-light: #f4f4f9; --text: #333; --red: #d32f2f; --orange: #f57c00; }
+        :root { --primary: #2E7D32; --secondary: #1565C0; --bg-light: #f4f4f9; --text: #333; --red: #d32f2f; --orange: #f57c00; --purple: #8e24aa; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:10px; }
         
-        .screen { display: none; max-width: 950px; margin: 0 auto; }
+        .screen { display: none; max-width: 1000px; margin: 0 auto; } /* Aumentei um pouco a largura */
         .screen.active { display: block; }
 
         /* Login */
@@ -48,24 +48,17 @@
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
-        /* Dashboard KPI */
-        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
-        .kpi-card { background: white; padding: 15px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .kpi-num { font-size: 1.5rem; font-weight: bold; color: var(--secondary); }
+        /* Dashboard KPI (Agora com 5 colunas) */
+        .dash-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
+        .kpi-card { background: white; padding: 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); }
+        .kpi-label { font-size: 0.75rem; color: #666; margin-top: 2px; }
+        
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
         /* Botões de Ação na Tabela */
-        .btn-table {
-            padding: 6px 8px;
-            border: none;
-            background: transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            margin-right: 5px;
-            transition: background 0.2s;
-        }
+        .btn-table { padding: 6px 8px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 1.1rem; margin-right: 5px; transition: background 0.2s; }
         .btn-table:hover { background: #e0e0e0; }
 
         /* Filtros */
@@ -86,7 +79,8 @@
         .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
         
         @media print { .no-print { display: none !important; } }
-        @media (max-width: 600px) { 
+        /* Responsivo: Em celular, quebra as colunas */
+        @media (max-width: 700px) { 
             .dash-grid { grid-template-columns: 1fr 1fr; } 
             .tabs { flex-wrap: wrap; } 
             .filter-row { flex-direction: column; align-items: stretch; }
@@ -177,19 +171,11 @@
                     </select>
                     <select id="prof-filtro-serie" onchange="aplicarFiltrosProf()">
                         <option value="TODAS">Todas as Séries</option>
-                        <option value="1º Ano">1º Ano</option>
-                        <option value="2º Ano">2º Ano</option>
-                        <option value="3º Ano">3º Ano</option>
-                        <option value="4º Ano">4º Ano</option>
-                        <option value="5º Ano">5º Ano</option>
-                        <option value="Multisseriada">Multisseriada</option>
+                        <option value="1º Ano">1º Ano</option><option value="2º Ano">2º Ano</option><option value="3º Ano">3º Ano</option><option value="4º Ano">4º Ano</option><option value="5º Ano">5º Ano</option><option value="Multisseriada">Multisseriada</option>
                     </select>
                     <select id="prof-filtro-turma" onchange="aplicarFiltrosProf()">
                         <option value="TODAS">Todas as Turmas</option>
-                        <option value="A">Turma A</option><option value="B">Turma B</option><option value="C">Turma C</option><option value="D">Turma D</option>
-                        <option value="E">Turma E</option><option value="F">Turma F</option><option value="G">Turma G</option><option value="H">Turma H</option>
-                        <option value="I">Turma I</option><option value="J">Turma J</option><option value="K">Turma K</option>
-                        <option value="Unica">Única</option>
+                        <option value="A">Turma A</option><option value="B">Turma B</option><option value="C">Turma C</option><option value="D">Turma D</option><option value="E">Turma E</option><option value="F">Turma F</option><option value="G">Turma G</option><option value="H">Turma H</option><option value="I">Turma I</option><option value="J">Turma J</option><option value="K">Turma K</option><option value="Unica">Única</option>
                     </select>
                 </div>
                 <div class="filter-row" style="background:#eee; padding:5px; border-radius:6px;">
@@ -197,10 +183,7 @@
                     <div class="date-select-group">
                         <select id="prof-mes-filtro" onchange="aplicarFiltrosProf()">
                             <option value="TODOS">Mês (Todos)</option>
-                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
-                            <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
-                            <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
-                            <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                         </select>
                         <select id="prof-ano-filtro" onchange="aplicarFiltrosProf()">
                             <option value="TODOS">Todos os Anos</option>
@@ -211,10 +194,11 @@
             </div>
 
             <div class="dash-grid">
-                <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div style="font-size:0.8rem;">Avaliados</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:#2E7D32;">0%</div><div style="font-size:0.8rem;">Fluentes</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:#d32f2f;">0%</div><div style="font-size:0.8rem;">Níveis Iniciais</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:#FBC02D;">0%</div><div style="font-size:0.8rem;">Ausência</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div class="kpi-label">Avaliados</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:var(--primary);">0%</div><div class="kpi-label">Fluentes</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:var(--red);">0%</div><div class="kpi-label">Níveis Iniciais</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:var(--orange);">0%</div><div class="kpi-label">Ausência</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Com Laudo</div></div>
             </div>
 
             <div class="card">
@@ -281,10 +265,11 @@
         </div>
 
         <div class="dash-grid">
-            <div class="kpi-card"><div class="kpi-num" id="adm-total">0</div><div style="font-size:0.8rem;">Avaliados</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-fluente" style="color:#2E7D32;">0%</div><div style="font-size:0.8rem;">Fluentes</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-critico" style="color:#d32f2f;">0%</div><div style="font-size:0.8rem;">Níveis Iniciais</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:#FBC02D;">0%</div><div style="font-size:0.8rem;">Ausência</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-total">0</div><div class="kpi-label">Avaliados</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-fluente" style="color:var(--primary);">0%</div><div class="kpi-label">Fluentes</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-critico" style="color:var(--red);">0%</div><div class="kpi-label">Níveis Iniciais</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:var(--orange);">0%</div><div class="kpi-label">Ausência</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Com Laudo</div></div>
         </div>
 
         <div class="card">
@@ -552,7 +537,7 @@
             const fMes = document.getElementById('prof-mes-filtro').value;
             const fAno = document.getElementById('prof-ano-filtro').value;
 
-            let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0;
+            let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0, tLaudo=0;
             let html = "";
 
             meusEnviosCache.forEach(d => {
@@ -566,7 +551,6 @@
                     if(mes) mes = mes.padStart(2, '0');
                 } catch(e) {}
 
-                // Filtros
                 let mostrar = true;
                 if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
                 if (fSer !== "TODAS" && d.serie !== fSer) mostrar = false;
@@ -577,6 +561,12 @@
                 if (!mostrar) return;
 
                 tAlunos += d.total_alunos || 0; tAval += d.total_avaliados || 0; tAus += d.total_ausentes || 0;
+                
+                // CONTA LAUDOS
+                if(d.detalhes) {
+                    d.detalhes.forEach(a => { if(a.laudo) tLaudo++; });
+                }
+
                 if(d.resultados) {
                     tFlu += (d.resultados["Fluente"] || 0);
                     tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
@@ -591,15 +581,14 @@
                     <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
                     <td>${txtData}</td>
                     <td>
-                        <button class="btn-table btn-edit" title="Editar" onclick="editarAvaliacao('${d.id}')">✏️</button>
-                        <button class="btn-table btn-del" title="Excluir" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
+                        <button class="btn-table" title="Editar" onclick="editarAvaliacao('${d.id}')">✏️</button>
+                        <button class="btn-table" title="Excluir" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
                     </td>
                 </tr>`;
             });
 
             document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
             
-            // ATUALIZA KPIs (Antigo Estilo)
             const pctFluente = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
             const pctCritico = tAval > 0 ? (tCrit/tAval*100).toFixed(1) : 0;
             const pctAusente = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1) : 0;
@@ -608,6 +597,7 @@
             document.getElementById('prof-fluente').innerText = pctFluente + "%";
             document.getElementById('prof-critico').innerText = pctCritico + "%";
             document.getElementById('prof-ausente').innerText = pctAusente + "%";
+            document.getElementById('prof-laudo').innerText = tLaudo; // NOVO KPI
         };
 
         window.prepararComparativo = () => {
@@ -669,7 +659,7 @@
             const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
             const fDia = document.getElementById('adm-dia-ini').value;
 
-            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0;
+            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
             let htmlTabela = "";
 
             todosDadosAdm.forEach(d => {
@@ -698,6 +688,7 @@
                                     if (aluno.nivel === 'Fluente') { gFlu++; tFlu++; }
                                     if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(aluno.nivel)) gCrit++;
                                 }
+                                if(aluno.laudo) gLaudo++;
                                 contribuiu = true;
                             }
                         });
@@ -705,6 +696,12 @@
                 } else {
                     if (chkSeries.includes(d.serie)) {
                         gAlunos += d.total_alunos; gAus += d.total_ausentes; gAval += d.total_avaliados;
+                        
+                        // CONTA LAUDOS (URBANO)
+                        if(d.detalhes) {
+                            d.detalhes.forEach(a => { if(a.laudo) gLaudo++; });
+                        }
+
                         if(d.resultados) {
                             const flu = (d.resultados["Fluente"] || 0);
                             gFlu += flu; tFlu += flu; tAval += d.total_avaliados;
@@ -725,6 +722,7 @@
             document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-laudo').innerText = gLaudo; // NOVO KPI
         };
     </script>
 </body>
