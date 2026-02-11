@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Inclusão & Dados</title>
+    <title>SIAVEL - Versão Final 25.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        :root { --primary: #2E7D32; --secondary: #1565C0; --bg-light: #f4f4f9; --text: #333; --red: #d32f2f; --orange: #f57c00; --purple: #8e24aa; }
+        :root { --primary: #2E7D32; --secondary: #1565C0; --bg-light: #f4f4f9; --text: #333; --red: #d32f2f; --orange: #f57c00; --purple: #8e24aa; --gray: #9e9e9e; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:10px; }
         
-        .screen { display: none; max-width: 1000px; margin: 0 auto; } /* Aumentei um pouco a largura */
+        .screen { display: none; max-width: 950px; margin: 0 auto; }
         .screen.active { display: block; }
 
         /* Login */
@@ -31,13 +31,17 @@
         .btn-main { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
         /* Alunos e Tabelas */
-        .aluno-row { background: white; padding: 10px; margin-bottom: 5px; border-left: 5px solid #ccc; border-radius: 6px; }
+        .aluno-row { background: white; padding: 10px; margin-bottom: 5px; border-left: 5px solid #ccc; border-radius: 6px; transition: 0.3s; }
         .aluno-row.avaliado { border-left-color: var(--primary); background: #e8f5e9; }
         .aluno-row.ausente { border-left-color: var(--red); background: #ffebee; }
         
+        /* ESTILO TRANSFERIDO (NOVO) */
+        .aluno-row.transferido { border-left-color: var(--gray); background: #f0f0f0; opacity: 0.7; }
+        .aluno-row.transferido strong { text-decoration: line-through; color: #777; }
+        
         .controls { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
         select { padding: 8px; border-radius: 4px; flex: 1; border: 1px solid #ccc; }
-        .laudo-chk { background: #eee; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+        .laudo-chk { background: #eee; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         
         /* Tabela Comparativa */
         .comp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
@@ -48,7 +52,7 @@
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
-        /* Dashboard KPI (Agora com 5 colunas) */
+        /* Dashboard KPI */
         .dash-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
         .kpi-card { background: white; padding: 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); }
@@ -79,7 +83,7 @@
         .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
         
         @media print { .no-print { display: none !important; } }
-        /* Responsivo: Em celular, quebra as colunas */
+        /* Responsivo */
         @media (max-width: 700px) { 
             .dash-grid { grid-template-columns: 1fr 1fr; } 
             .tabs { flex-wrap: wrap; } 
@@ -405,11 +409,11 @@
             if (!escola || lista.length === 0) return alert("Preencha dados!");
 
             if(!dadosTurma.alunos || dadosTurma.alunos.length === 0) {
-                 dadosTurma.alunos = lista.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '' }));
+                 dadosTurma.alunos = lista.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
             } else {
                 const nomesAtuais = lista;
                 if(nomesAtuais.length !== dadosTurma.alunos.length) {
-                     dadosTurma.alunos = nomesAtuais.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '' }));
+                     dadosTurma.alunos = nomesAtuais.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
                 }
             }
 
@@ -435,11 +439,21 @@
                 const div = document.createElement('div'); div.className = 'aluno-row'; div.id = `row-${idx}`;
                 let htmlSerie = '';
                 if (usuarioAtual.modo === 'rural') {
-                    htmlSerie = `<select class="sel-serie-rural" onchange="window.updateLocal(${idx}, this.value)"><option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select>`;
+                    htmlSerie = `<select class="sel-serie-rural" onchange="window.updateLocal(${idx}, this.value)" ${aluno.transferido?'disabled':''}><option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select>`;
                 }
+                
+                if(aluno.transferido) div.classList.add('transferido');
+
                 div.innerHTML = `
                     <div style="display:flex; justify-content:space-between;"><strong>${aluno.nome} <span class="tag-laudo">(LAUDO)</span></strong></div>
-                    <div class="controls"><label class="laudo-chk"><input type="checkbox" onchange="window.toggleLaudo(${idx})" ${aluno.laudo?'checked':''}> Laudo</label>${htmlSerie}<select onchange="window.updateNivel(${idx}, this.value)"><option value="">Avaliar...</option><option value="Ausente">⚠️ Ausente</option>${NIVEIS.map(n=>`<option ${aluno.nivel===n?'selected':''}>${n}</option>`).join('')}</select></div>`;
+                    <div class="controls">
+                        <label class="laudo-chk"><input type="checkbox" onchange="window.toggleLaudo(${idx})" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}> Laudo</label>
+                        <label class="laudo-chk" style="color:var(--red);"><input type="checkbox" onchange="window.toggleTransferido(${idx})" ${aluno.transferido?'checked':''}> Transferido</label>
+                        ${htmlSerie}
+                        <select onchange="window.updateNivel(${idx}, this.value)" ${aluno.transferido?'disabled':''}>
+                            <option value="">Avaliar...</option><option value="Ausente">⚠️ Ausente</option>${NIVEIS.map(n=>`<option ${aluno.nivel===n?'selected':''}>${n}</option>`).join('')}
+                        </select>
+                    </div>`;
                 container.appendChild(div);
                 if(aluno.laudo) div.classList.add('com-laudo');
             });
@@ -447,21 +461,49 @@
         }
 
         window.toggleLaudo = (idx) => { dadosTurma.alunos[idx].laudo = !dadosTurma.alunos[idx].laudo; document.getElementById(`row-${idx}`).classList.toggle('com-laudo'); };
+        
+        // NOVA FUNÇÃO: Toggle Transferido
+        window.toggleTransferido = (idx) => {
+            dadosTurma.alunos[idx].transferido = !dadosTurma.alunos[idx].transferido;
+            if(dadosTurma.alunos[idx].transferido) { dadosTurma.alunos[idx].nivel = ""; } // Limpa nota se transferido
+            renderizarAvaliacao(); // Re-renderiza para aplicar estilo e desabilitar campos
+        };
+
         window.updateNivel = (idx, val) => { dadosTurma.alunos[idx].nivel = val; const row = document.getElementById(`row-${idx}`); row.className = 'aluno-row ' + (dadosTurma.alunos[idx].laudo ? 'com-laudo' : ''); if (val === 'Ausente') row.classList.add('ausente'); else if (val) row.classList.add('avaliado'); atualizarStats(); };
         window.updateLocal = (idx, val) => { dadosTurma.alunos[idx].serieRural = val; };
-        window.addExtra = () => { const nome = document.getElementById('extra-nome').value; if(nome) { dadosTurma.alunos.push({ nome, nivel: '', laudo: false, serieRural: '' }); renderizarAvaliacao(); document.getElementById('extra-nome').value = ''; } };
+        window.addExtra = () => { const nome = document.getElementById('extra-nome').value; if(nome) { dadosTurma.alunos.push({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }); renderizarAvaliacao(); document.getElementById('extra-nome').value = ''; } };
         window.voltarConfig = () => { if(confirm("Voltar sem salvar?")) { document.getElementById('area-avaliacao').classList.add('hidden'); document.getElementById('area-config').classList.remove('hidden'); dadosTurma = {}; } };
-        function atualizarStats() { const aval = dadosTurma.alunos.filter(a => a.nivel && a.nivel !== 'Ausente').length; const aus = dadosTurma.alunos.filter(a => a.nivel === 'Ausente').length; document.getElementById('stats-rapido').innerText = `Status: ${aval} Avaliados | ${aus} Ausentes`; }
+        
+        function atualizarStats() { 
+            // Stats visuais ignoram transferidos
+            const ativos = dadosTurma.alunos.filter(a => !a.transferido);
+            const aval = ativos.filter(a => a.nivel && a.nivel !== 'Ausente').length; 
+            const aus = ativos.filter(a => a.nivel === 'Ausente').length; 
+            document.getElementById('stats-rapido').innerText = `Status: ${aval} Avaliados | ${aus} Ausentes`; 
+        }
 
         window.salvarNaNuvem = async () => {
             const btn = document.querySelector('button[onclick="salvarNaNuvem()"]'); btn.innerText = "⏳ Enviando...";
+            
+            // FILTRA TRANSFERIDOS PARA O CÁLCULO GERAL
+            const ativos = dadosTurma.alunos.filter(a => !a.transferido);
+            
             const cont = {}; NIVEIS.forEach(n => cont[n] = 0); let aval = 0, aus = 0;
-            dadosTurma.alunos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
-            const pacote = { escola: dadosTurma.escola, turma: dadosTurma.turma, serie: dadosTurma.serie, professor: usuarioAtual.nome, data_avaliacao: dadosTurma.data, data_envio: new Date().toISOString(), total_alunos: dadosTurma.alunos.length, total_avaliados: aval, total_ausentes: aus, resultados: cont, detalhes: dadosTurma.alunos };
+            ativos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
+            
+            const pacote = { 
+                escola: dadosTurma.escola, turma: dadosTurma.turma, serie: dadosTurma.serie, professor: usuarioAtual.nome, 
+                data_avaliacao: dadosTurma.data, data_envio: new Date().toISOString(), 
+                total_alunos: ativos.length, // Só conta ativos
+                total_avaliados: aval, 
+                total_ausentes: aus, 
+                resultados: cont, 
+                detalhes: dadosTurma.alunos // Salva TODOS (inclusive transferidos) para histórico
+            };
             try { await push(ref(db, 'avaliacoes'), pacote); alert("✅ Sucesso!"); btn.innerText = "☁️ SALVAR"; document.getElementById('lista-alunos').value = ""; document.getElementById('area-avaliacao').classList.add('hidden'); document.getElementById('area-config').classList.remove('hidden'); dadosTurma = {}; } catch (e) { console.error(e); alert("Erro: " + e.message); btn.innerText = "☁️ Tentar Novamente"; }
         };
         window.gerarPDF = () => { const el = document.getElementById('area-avaliacao'); document.querySelectorAll('.no-print').forEach(e => e.style.display = 'none'); html2pdf().from(el).save(`${dadosTurma.escola}.pdf`).then(() => { document.querySelectorAll('.no-print').forEach(e => e.style.display = ''); }); };
-        window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nData: ${dadosTurma.data}\nAv: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente').length}\n\n`; dadosTurma.alunos.forEach(a => { if(a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
+        window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nData: ${dadosTurma.data}\nAv: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente' && !a.transferido).length}\n\n`; dadosTurma.alunos.forEach(a => { if(!a.transferido && a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
 
         // --- DASHBOARD PROFESSOR ---
         window.carregarHistoricoProf = async () => {
@@ -562,9 +604,9 @@
 
                 tAlunos += d.total_alunos || 0; tAval += d.total_avaliados || 0; tAus += d.total_ausentes || 0;
                 
-                // CONTA LAUDOS
+                // CONTA LAUDO (IGNORANDO TRANSFERIDOS)
                 if(d.detalhes) {
-                    d.detalhes.forEach(a => { if(a.laudo) tLaudo++; });
+                    d.detalhes.forEach(a => { if(a.laudo && !a.transferido) tLaudo++; });
                 }
 
                 if(d.resultados) {
@@ -597,7 +639,7 @@
             document.getElementById('prof-fluente').innerText = pctFluente + "%";
             document.getElementById('prof-critico').innerText = pctCritico + "%";
             document.getElementById('prof-ausente').innerText = pctAusente + "%";
-            document.getElementById('prof-laudo').innerText = tLaudo; // NOVO KPI
+            document.getElementById('prof-laudo').innerText = tLaudo;
         };
 
         window.prepararComparativo = () => {
@@ -625,6 +667,8 @@
             let html = "";
             if(atual.detalhes) {
                 atual.detalhes.forEach(alunoAtual => {
+                    if(alunoAtual.transferido) return; // PULA TRANSFERIDO NA EVOLUÇÃO
+
                     const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
                     const nivelAtual = alunoAtual.nivel || "-";
                     const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
@@ -680,6 +724,8 @@
                 if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
                     if (d.detalhes && Array.isArray(d.detalhes)) {
                         d.detalhes.forEach(aluno => {
+                            if(aluno.transferido) return; // PULA TRANSFERIDO (RURAL)
+
                             if (chkSeries.includes(aluno.serieRural)) {
                                 gAlunos++;
                                 if (aluno.nivel === 'Ausente') { gAus++; }
@@ -697,9 +743,9 @@
                     if (chkSeries.includes(d.serie)) {
                         gAlunos += d.total_alunos; gAus += d.total_ausentes; gAval += d.total_avaliados;
                         
-                        // CONTA LAUDOS (URBANO)
+                        // CONTA LAUDO (URBANO) - IGNORA TRANSFERIDO
                         if(d.detalhes) {
-                            d.detalhes.forEach(a => { if(a.laudo) gLaudo++; });
+                            d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; });
                         }
 
                         if(d.resultados) {
@@ -722,7 +768,7 @@
             document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
             document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-laudo').innerText = gLaudo; // NOVO KPI
+            document.getElementById('adm-laudo').innerText = gLaudo;
         };
     </script>
 </body>
