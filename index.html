@@ -17,9 +17,8 @@
         .login-box { background: white; padding: 30px; border-radius: 12px; text-align: center; margin-top: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin-left: auto; margin-right: auto; }
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
         
-        /* Container das Logos no Login (AUMENTADO) */
         .logos-login { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; align-items: center; }
-        .logos-login img { max-height: 120px; max-width: 180px; object-fit: contain; } /* Tamanho ampliado */
+        .logos-login img { max-height: 120px; max-width: 180px; object-fit: contain; }
 
         /* Header */
         .app-header { background: var(--primary); color: white; padding: 15px; border-radius: 0 0 12px 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -78,11 +77,24 @@
         .date-select-group select { padding: 6px; font-size: 0.85rem; min-width: 60px; }
 
         /* Utilitários */
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         .tag-laudo { color: var(--red); font-weight: bold; font-size: 0.75rem; display: none; }
         .aluno-row.com-laudo .tag-laudo { display: inline; }
         .action-bar { display: flex; gap: 5px; margin-bottom: 15px; }
         .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
+
+        /* ESTILOS DO MODAL (NOVO) */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
+        .modal-content { background: white; width: 100%; max-width: 650px; border-radius: 10px; display: flex; flex-direction: column; max-height: 90vh; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; border-radius: 10px 10px 0 0; }
+        .modal-header h3 { margin: 0; font-size: 1.1rem; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 15px; border-top: 1px solid #eee; background: #f9f9f9; border-radius: 0 0 10px 10px; }
+        .close-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: white; font-weight: bold; }
+        .modal-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .modal-table th, .modal-table td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
+        .modal-table tr.transferido { background: #f0f0f0; opacity: 0.7; }
+        .modal-table tr.transferido td:first-child { text-decoration: line-through; color: #777; }
         
         @media print { .no-print { display: none !important; } }
         @media (max-width: 700px) { 
@@ -96,14 +108,11 @@
 
     <div id="screen-login" class="screen active">
         <div class="login-box">
-            
             <div class="logos-login">
                 <img src="logo-prefeitura.png" alt="Prefeitura" onerror="this.style.display='none'">
                 <img src="logo-secretaria.png" alt="Secretaria" onerror="this.style.display='none'">
             </div>
-
             <p style="margin-top: 5px; font-weight: bold; font-size: 1.1rem; color: #555;">Gestão & Evolução de Leitura</p>
-            
             <input type="text" id="email" placeholder="E-mail">
             <input type="password" id="senha" placeholder="Senha">
             <button class="btn-main" onclick="login()">ENTRAR</button>
@@ -125,7 +134,7 @@
 
         <div id="view-nova">
             <div id="area-config" class="card">
-                <h3>Configurar / Editar</h3>
+                <h3>Criar Nova Avaliação</h3>
                 <label>Data:</label>
                 <div class="date-select-group" style="margin-bottom:10px;">
                     <select id="sel-dia"></select>
@@ -155,9 +164,9 @@
 
             <div id="area-avaliacao" class="hidden">
                 <div class="action-bar no-print">
-                    <button class="btn-tool" style="background:#1565C0;" onclick="salvarNaNuvem()">☁️ SALVAR</button>
-                    <button class="btn-tool" style="background:#D32F2F;" onclick="gerarPDF()">📄 PDF</button>
-                    <button class="btn-tool" style="background:#2E7D32;" onclick="compartilharZap()">📱 Zap</button>
+                    <button class="btn-tool" style="background:#1565C0;" onclick="salvarNaNuvem()">☁️ SALVAR NO BANCO</button>
+                    <button class="btn-tool" style="background:#D32F2F;" onclick="gerarPDF()">📄 GERAR PDF</button>
+                    <button class="btn-tool" style="background:#2E7D32;" onclick="compartilharZap()">📱 COMPARTILHAR ZAP</button>
                 </div>
                 <div class="card" style="border-left:5px solid var(--secondary);">
                     <h3 id="resumo-titulo" style="margin:0;">Escola</h3>
@@ -169,7 +178,7 @@
                     <input type="text" id="extra-nome" placeholder="Aluno extra..." style="width:70%;">
                     <button onclick="addExtra()" style="width:20%; padding:10px;">+</button>
                 </div>
-                <button class="btn-main no-print" style="background:#666;" onclick="voltarConfig()">VOLTAR</button>
+                <button class="btn-main no-print" style="background:#666;" onclick="voltarConfig()">VOLTAR E DESCARTAR</button>
             </div>
         </div>
 
@@ -286,16 +295,31 @@
         <div class="card">
             <h3>Registros</h3>
             <table class="adm-table">
-                <thead><tr><th>Escola</th><th>Turma</th><th>Data</th><th>Prof.</th><th>Fluência</th></tr></thead>
+                <thead><tr><th>Escola</th><th>Turma</th><th>Data</th><th>Prof.</th><th>Fluência</th><th>Ações</th></tr></thead>
                 <tbody id="tabela-envios"></tbody>
             </table>
         </div>
     </div>
 
+    <div id="modal-detalhes" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-titulo">Detalhes da Turma</h3>
+                <button class="close-btn" onclick="fecharModal()">X</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                </div>
+            <div class="modal-footer hidden" id="modal-footer">
+                <button class="btn-main" onclick="salvarEdicaoModal()" style="margin:0;">💾 SALVAR ALTERAÇÕES</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
+        // ATUALIZADO: Importando a função 'set' do Firebase para edição de registros
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, get, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCYV-OOz55TvJ7cLPfJkDP7idGL25MXxis",
@@ -326,6 +350,7 @@
         let dadosTurma = {};
         let meusEnviosCache = [];
         let todosDadosAdm = []; 
+        let turmaAtualEdicao = null; // Variável global para gerenciar a edição no Modal
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
@@ -391,7 +416,6 @@
                 if (snapshot.exists()) {
                     const all = Object.values(snapshot.val());
                     const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
-                    
                     if (matches.length > 0) {
                         matches.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
                         const ultima = matches[0];
@@ -423,12 +447,10 @@
                      dadosTurma.alunos = nomesAtuais.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
                 }
             }
-
             dadosTurma.escola = escola;
             dadosTurma.serie = document.getElementById('sel-serie').value;
             dadosTurma.turma = document.getElementById('sel-turma').value;
             dadosTurma.data = `${d}/${m}/${a}`;
-
             renderizarAvaliacao();
             document.getElementById('area-config').classList.add('hidden');
             document.getElementById('area-avaliacao').classList.remove('hidden');
@@ -441,14 +463,12 @@
             const container = document.getElementById('container-alunos'); container.innerHTML = '';
             
             if(!dadosTurma.alunos) dadosTurma.alunos = [];
-
             dadosTurma.alunos.forEach((aluno, idx) => {
                 const div = document.createElement('div'); div.className = 'aluno-row'; div.id = `row-${idx}`;
                 let htmlSerie = '';
                 if (usuarioAtual.modo === 'rural') {
                     htmlSerie = `<select class="sel-serie-rural" onchange="window.updateLocal(${idx}, this.value)" ${aluno.transferido?'disabled':''}><option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select>`;
                 }
-                
                 if(aluno.transferido) div.classList.add('transferido');
 
                 div.innerHTML = `
@@ -493,17 +513,110 @@
                 total_alunos: ativos.length, total_avaliados: aval, total_ausentes: aus, 
                 resultados: cont, detalhes: dadosTurma.alunos 
             };
-            try { await push(ref(db, 'avaliacoes'), pacote); alert("✅ Sucesso!"); btn.innerText = "☁️ SALVAR"; document.getElementById('lista-alunos').value = ""; document.getElementById('area-avaliacao').classList.add('hidden'); document.getElementById('area-config').classList.remove('hidden'); dadosTurma = {}; } catch (e) { console.error(e); alert("Erro: " + e.message); btn.innerText = "☁️ Tentar Novamente"; }
+            try { await push(ref(db, 'avaliacoes'), pacote); alert("✅ Sucesso!"); btn.innerText = "☁️ SALVAR NO BANCO"; document.getElementById('lista-alunos').value = ""; document.getElementById('area-avaliacao').classList.add('hidden'); document.getElementById('area-config').classList.remove('hidden'); dadosTurma = {}; } catch (e) { console.error(e); alert("Erro: " + e.message); btn.innerText = "☁️ Tentar Novamente"; }
         };
+
         window.gerarPDF = () => { const el = document.getElementById('area-avaliacao'); document.querySelectorAll('.no-print').forEach(e => e.style.display = 'none'); html2pdf().from(el).save(`${dadosTurma.escola}.pdf`).then(() => { document.querySelectorAll('.no-print').forEach(e => e.style.display = ''); }); };
         window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nData: ${dadosTurma.data}\nAv: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente' && !a.transferido).length}\n\n`; dadosTurma.alunos.forEach(a => { if(!a.transferido && a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
+
+        // ==========================================
+        // LÓGICA DO MODAL DE INSPEÇÃO E EDIÇÃO
+        // ==========================================
+        
+        window.fecharModal = () => {
+            document.getElementById('modal-detalhes').classList.add('hidden');
+            turmaAtualEdicao = null;
+        };
+
+        window.renderizarTabelaModal = (isProf) => {
+            let html = '<table class="modal-table"><thead><tr><th>Aluno</th><th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
+            
+            turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
+                if (isProf) {
+                    // MODO PROFESSOR: Edição Rápida
+                    let options = `<option value="">- Sem Nota -</option><option value="Ausente" ${aluno.nivel==='Ausente'?'selected':''}>Ausente</option>`;
+                    NIVEIS.forEach(n => { options += `<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`; });
+                    
+                    html += `<tr class="${aluno.transferido ? 'transferido' : ''}">
+                        <td><strong>${aluno.nome}</strong></td>
+                        <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].laudo = this.checked" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}></td>
+                        <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].transferido = this.checked; if(this.checked){turmaAtualEdicao.detalhes[${idx}].nivel=''} renderizarTabelaModal(true)" ${aluno.transferido?'checked':''}></td>
+                        <td><select onchange="turmaAtualEdicao.detalhes[${idx}].nivel = this.value" ${aluno.transferido?'disabled':''}>${options}</select></td>
+                    </tr>`;
+                } else {
+                    // MODO ADMIN: Apenas Leitura
+                    let badgeTransf = aluno.transferido ? '<span style="color:var(--gray)">Sim</span>' : 'Não';
+                    let badgeLaudo = aluno.laudo ? '<span style="color:var(--purple)">Sim</span>' : 'Não';
+                    let stilo = aluno.transferido ? 'class="transferido"' : '';
+                    
+                    html += `<tr ${stilo}>
+                        <td>${aluno.nome}</td>
+                        <td>${badgeLaudo}</td>
+                        <td>${badgeTransf}</td>
+                        <td><strong>${aluno.nivel || '-'}</strong></td>
+                    </tr>`;
+                }
+            });
+            html += '</tbody></table>';
+            document.getElementById('modal-body').innerHTML = html;
+        };
+
+        window.abrirModalTurma = (id, isAdmin) => {
+            const listaBase = isAdmin ? todosDadosAdm : meusEnviosCache;
+            const item = listaBase.find(d => d.id === id);
+            
+            if(item) {
+                // Faz uma cópia da turma para não bagunçar a tabela principal antes de salvar
+                turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
+                if(!turmaAtualEdicao.detalhes) turmaAtualEdicao.detalhes = [];
+                
+                document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma} (${item.data_avaliacao})`;
+                
+                renderizarTabelaModal(!isAdmin);
+
+                // Mostra/Esconde botão de salvar
+                const footer = document.getElementById('modal-footer');
+                if (isAdmin) { footer.classList.add('hidden'); } else { footer.classList.remove('hidden'); }
+                
+                document.getElementById('modal-detalhes').classList.remove('hidden');
+            }
+        };
+
+        window.salvarEdicaoModal = async () => {
+            const btn = document.querySelector('#modal-footer .btn-main');
+            btn.innerText = "⏳ Salvando...";
+
+            // Recalcula todas as estatísticas da turma antes de injetar no banco
+            const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
+            const cont = {}; NIVEIS.forEach(n => cont[n] = 0); 
+            let aval = 0, aus = 0;
+            
+            ativos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
+
+            turmaAtualEdicao.total_alunos = ativos.length;
+            turmaAtualEdicao.total_avaliados = aval;
+            turmaAtualEdicao.total_ausentes = aus;
+            turmaAtualEdicao.resultados = cont;
+
+            try {
+                // Usa 'set' para sobrescrever o registro exato sem mudar o ID
+                await set(ref(db, 'avaliacoes/' + turmaAtualEdicao.id), turmaAtualEdicao);
+                alert("✅ Alterações salvas com sucesso!");
+                fecharModal();
+                carregarHistoricoProf(); // Recarrega a tela de fundo
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao salvar: " + e.message);
+            } finally {
+                btn.innerText = "💾 SALVAR ALTERAÇÕES";
+            }
+        };
 
         // --- DASHBOARD PROFESSOR ---
         window.carregarHistoricoProf = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
             meusEnviosCache = [];
-
             if (snapshot.exists()) {
                 const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
                 meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
@@ -515,53 +628,13 @@
                 escolasProf.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
 
                 aplicarFiltrosProf();
-            } else {
-                aplicarFiltrosProf();
-            }
+            } else { aplicarFiltrosProf(); }
         };
 
         window.excluirAvaliacao = async (id) => {
-            if(confirm("Tem certeza que deseja EXCLUIR essa avaliação? Não poderá desfazer.")) {
-                try {
-                    await remove(ref(db, 'avaliacoes/' + id));
-                    alert("Excluído!");
-                    carregarHistoricoProf();
-                } catch(e) { alert("Erro ao excluir: " + e.message); }
-            }
-        };
-
-        window.editarAvaliacao = async (id) => {
-            if(confirm("Ao editar, a versão anterior será APAGADA e os dados carregados para você salvar novamente. Confirmar?")) {
-                const item = meusEnviosCache.find(d => d.id === id);
-                if(item) {
-                    dadosTurma = {
-                        escola: item.escola,
-                        serie: item.serie,
-                        turma: item.turma || "A",
-                        data: item.data_avaliacao,
-                        alunos: item.detalhes || []
-                    };
-                    
-                    document.getElementById('sel-escola').value = item.escola;
-                    document.getElementById('sel-serie').value = item.serie;
-                    document.getElementById('sel-turma').value = item.turma || "A";
-                    document.getElementById('lista-alunos').value = item.detalhes.map(a => a.nome).join('\n');
-                    
-                    try {
-                        let dia, mes, ano;
-                        if(item.data_avaliacao.includes('/')) {
-                            [dia, mes, ano] = item.data_avaliacao.split('/');
-                        } else {
-                            [ano, mes, dia] = item.data_avaliacao.split('-');
-                        }
-                        document.getElementById('sel-dia').value = parseInt(dia) < 10 ? "0"+parseInt(dia) : dia;
-                        document.getElementById('sel-mes').value = parseInt(mes) < 10 ? "0"+parseInt(mes) : mes;
-                        document.getElementById('sel-ano').value = ano;
-                    } catch(e) { console.log("Data inválida ao editar, ignorando."); }
-
-                    await remove(ref(db, 'avaliacoes/' + id));
-                    mudarAbaProf('nova');
-                }
+            if(confirm("Tem certeza que deseja EXCLUIR essa avaliação inteira? Não poderá desfazer.")) {
+                try { await remove(ref(db, 'avaliacoes/' + id)); alert("Excluído!"); carregarHistoricoProf(); } 
+                catch(e) { alert("Erro ao excluir: " + e.message); }
             }
         };
 
@@ -578,15 +651,11 @@
             meusEnviosCache.forEach(d => {
                 let dia = "01", mes = "01", ano = "2026";
                 try {
-                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) {
-                        [dia, mes, ano] = d.data_avaliacao.split('/');
-                    } else if (d.data_avaliacao && d.data_avaliacao.includes('-')) {
-                        [ano, mes, dia] = d.data_avaliacao.split('-');
-                    }
+                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else if (d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
                     if(mes) mes = mes.padStart(2, '0');
                 } catch(e) {}
 
-                // Filtros
                 let mostrar = true;
                 if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
                 if (fSer !== "TODAS" && d.serie !== fSer) mostrar = false;
@@ -597,35 +666,27 @@
                 if (!mostrar) return;
 
                 tAlunos += d.total_alunos || 0; tAval += d.total_avaliados || 0; tAus += d.total_ausentes || 0;
-                
-                // CONTA LAUDO (IGNORANDO TRANSFERIDOS)
-                if(d.detalhes) {
-                    d.detalhes.forEach(a => { if(a.laudo && !a.transferido) tLaudo++; });
-                }
-
+                if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) tLaudo++; }); }
                 if(d.resultados) {
                     tFlu += (d.resultados["Fluente"] || 0);
                     tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
                 }
 
-                const txtEscola = d.escola || "Escola?";
-                const txtSerie = d.serie || "?";
-                const txtTurma = d.turma || "?";
-                const txtData = d.data_avaliacao || "Data?";
-
+                const txtEscola = d.escola || "Escola?"; const txtSerie = d.serie || "?"; const txtTurma = d.turma || "?"; const txtData = d.data_avaliacao || "Data?";
+                
+                // BOTÃO DE LUPA PARA ABRIR O MODAL
                 html += `<tr>
                     <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
                     <td>${txtData}</td>
                     <td>
-                        <button class="btn-table btn-edit" title="Editar" onclick="editarAvaliacao('${d.id}')">✏️</button>
-                        <button class="btn-table btn-del" title="Excluir" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
+                        <button class="btn-table" title="Ver e Editar Alunos" onclick="abrirModalTurma('${d.id}', false)">🔍</button>
+                        <button class="btn-table" title="Excluir Turma Inteira" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
                     </td>
                 </tr>`;
             });
 
             document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
             
-            // ATUALIZA KPIs
             const pctFluente = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
             const pctCritico = tAval > 0 ? (tCrit/tAval*100).toFixed(1) : 0;
             const pctAusente = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1) : 0;
@@ -637,6 +698,90 @@
             document.getElementById('prof-laudo').innerText = tLaudo;
         };
 
+        // --- DASHBOARD ADMIN ---
+        window.carregarAdmin = async () => {
+            const dbRef = ref(db, 'avaliacoes');
+            const snapshot = await get(dbRef);
+            if (snapshot.exists()) {
+                // Modificado para capturar o ID (necessário para a lupa)
+                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
+                todosDadosAdm = all.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+                
+                const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
+                const selEscola = document.getElementById('filtro-escola');
+                selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
+                escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
+                aplicarFiltros();
+            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
+        };
+
+        window.aplicarFiltros = () => {
+            const fEscola = document.getElementById('filtro-escola').value;
+            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
+            const fDia = document.getElementById('adm-dia-ini').value;
+            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
+            let htmlTabela = "";
+
+            todosDadosAdm.forEach(d => {
+                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
+                
+                let dia, mes, ano;
+                try {
+                    if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    dia = dia.padStart(2, '0');
+                } catch(e) { return; }
+
+                if(fDia && dia !== fDia) return;
+
+                let contribuiu = false; let tAval = 0, tFlu = 0;
+                if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
+                    if (d.detalhes && Array.isArray(d.detalhes)) {
+                        d.detalhes.forEach(aluno => {
+                            if(aluno.transferido) return;
+                            if (chkSeries.includes(aluno.serieRural)) {
+                                gAlunos++;
+                                if (aluno.nivel === 'Ausente') { gAus++; }
+                                else if (aluno.nivel) {
+                                    gAval++; tAval++;
+                                    if (aluno.nivel === 'Fluente') { gFlu++; tFlu++; }
+                                    if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(aluno.nivel)) gCrit++;
+                                }
+                                if(aluno.laudo) gLaudo++;
+                                contribuiu = true;
+                            }
+                        });
+                    }
+                } else {
+                    if (chkSeries.includes(d.serie)) {
+                        gAlunos += d.total_alunos; gAus += d.total_ausentes; gAval += d.total_avaliados;
+                        if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; }); }
+                        if(d.resultados) {
+                            const flu = (d.resultados["Fluente"] || 0);
+                            gFlu += flu; tFlu += flu; tAval += d.total_avaliados;
+                            gCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
+                        }
+                        contribuiu = true;
+                    }
+                }
+                if (contribuiu) {
+                    let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
+                    // LUPA PARA ADM (SOMENTE LEITURA)
+                    htmlTabela += `<tr>
+                        <td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td>${d.professor}</td><td>${pct}</td>
+                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td>
+                    </tr>`;
+                }
+            });
+            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='6'>Sem dados.</td></tr>";
+            document.getElementById('adm-total').innerText = gAval;
+            document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-laudo').innerText = gLaudo;
+        };
+
+        // EVOLUÇÃO
         window.prepararComparativo = () => {
             const select = document.getElementById('filtro-evo-turma');
             select.innerHTML = '<option value="">Selecione...</option>';
@@ -677,93 +822,6 @@
             }
             document.getElementById('tabela-evo').innerHTML = html;
             document.getElementById('resultado-evo').classList.remove('hidden');
-        };
-
-        window.carregarAdmin = async () => {
-            const dbRef = ref(db, 'avaliacoes');
-            const snapshot = await get(dbRef);
-            if (snapshot.exists()) {
-                todosDadosAdm = Object.values(snapshot.val());
-                todosDadosAdm.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
-                const selEscola = document.getElementById('filtro-escola');
-                selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-                escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
-                aplicarFiltros();
-            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='5'>Nenhum dado.</td></tr>"; }
-        };
-
-        window.aplicarFiltros = () => {
-            const fEscola = document.getElementById('filtro-escola').value;
-            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-            const fDia = document.getElementById('adm-dia-ini').value;
-
-            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
-            let htmlTabela = "";
-
-            todosDadosAdm.forEach(d => {
-                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
-                
-                let dia, mes, ano;
-                try {
-                    if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
-                    dia = dia.padStart(2, '0');
-                } catch(e) { return; }
-
-                if(fDia && dia !== fDia) return;
-
-                let contribuiu = false;
-                let tAval = 0, tFlu = 0;
-
-                if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
-                    if (d.detalhes && Array.isArray(d.detalhes)) {
-                        d.detalhes.forEach(aluno => {
-                            if(aluno.transferido) return; // PULA TRANSFERIDO (RURAL)
-
-                            if (chkSeries.includes(aluno.serieRural)) {
-                                gAlunos++;
-                                if (aluno.nivel === 'Ausente') { gAus++; }
-                                else if (aluno.nivel) {
-                                    gAval++; tAval++;
-                                    if (aluno.nivel === 'Fluente') { gFlu++; tFlu++; }
-                                    if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(aluno.nivel)) gCrit++;
-                                }
-                                if(aluno.laudo) gLaudo++;
-                                contribuiu = true;
-                            }
-                        });
-                    }
-                } else {
-                    if (chkSeries.includes(d.serie)) {
-                        gAlunos += d.total_alunos; gAus += d.total_ausentes; gAval += d.total_avaliados;
-                        
-                        // CONTA LAUDO (URBANO) - IGNORA TRANSFERIDO
-                        if(d.detalhes) {
-                            d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; });
-                        }
-
-                        if(d.resultados) {
-                            const flu = (d.resultados["Fluente"] || 0);
-                            gFlu += flu; tFlu += flu; tAval += d.total_avaliados;
-                            gCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
-                        }
-                        contribuiu = true;
-                    }
-                }
-
-                if (contribuiu) {
-                    let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
-                    htmlTabela += `<tr><td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td>${d.professor}</td><td>${pct}</td></tr>`;
-                }
-            });
-
-            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='5'>Sem dados.</td></tr>";
-            document.getElementById('adm-total').innerText = gAval;
-            document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-laudo').innerText = gLaudo;
         };
     </script>
 </body>
