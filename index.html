@@ -7,16 +7,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* TEMA ALTERADO PARA LARANJA INSTITUCIONAL */
+        /* TEMA LARANJA INSTITUCIONAL */
         :root { 
-            --primary: #E65100; /* Laranja Forte Principal */
+            --primary: #E65100; 
             --secondary: #1565C0; 
             --bg-light: #f4f4f9; 
             --text: #333; 
             --red: #d32f2f; 
             --purple: #8e24aa; 
             --gray: #9e9e9e; 
-            --success: #2E7D32; /* Verde mantido apenas para o texto de "Fluente" e "Evoluiu" para manter a lógica visual */
+            --success: #2E7D32; 
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:10px; }
         
@@ -45,7 +45,7 @@
         
         /* Alunos e Tabelas */
         .aluno-row { background: white; padding: 10px; margin-bottom: 5px; border-left: 5px solid #ccc; border-radius: 6px; transition: 0.3s; }
-        .aluno-row.avaliado { border-left-color: var(--primary); background: #FFF3E0; } /* Fundo Laranja Claro */
+        .aluno-row.avaliado { border-left-color: var(--primary); background: #FFF3E0; } 
         .aluno-row.ausente { border-left-color: var(--red); background: #ffebee; }
         .aluno-row.transferido { border-left-color: var(--gray); background: #f0f0f0; opacity: 0.7; }
         .aluno-row.transferido strong { text-decoration: line-through; color: #777; }
@@ -81,7 +81,7 @@
         .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
         .chk-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .chk-label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; background: #eee; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
-        .chk-label:has(input:checked) { background: #FFE0B2; border: 1px solid var(--primary); }
+        .chk-label:has(input:checked) { background: #FFE0B2; border: 1px solid var(--primary); } 
         .date-select-group { display: flex; gap: 3px; align-items: center; }
         .date-select-group select { padding: 6px; font-size: 0.85rem; min-width: 60px; }
 
@@ -245,6 +245,7 @@
                 <select id="filtro-evo-turma" style="width:100%; margin-bottom:10px;"><option value="">Carregando...</option></select>
                 <button class="btn-main" onclick="gerarRelatorioEvolucao()" style="padding:10px;">GERAR COMPARATIVO</button>
             </div>
+
             <div id="resultado-evo" class="hidden">
                 <div class="card">
                     <h4>Resultado Comparativo</h4>
@@ -537,11 +538,32 @@
         window.renderizarTabelaModal = (isProf) => {
             const isRural = turmaAtualEdicao.serie === 'Multisseriada' || turmaAtualEdicao.professor === 'Welma';
             
+            // Pega o filtro ativo na tela que abriu o modal
+            let profFiltroSerie = 'TODAS';
+            let admChkSeries = [];
+            if (isRural) {
+                if (isProf) {
+                    profFiltroSerie = document.getElementById('prof-filtro-serie').value;
+                } else {
+                    admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
+                }
+            }
+
             let html = '<table class="modal-table"><thead><tr><th>Aluno</th>';
             if (isRural) html += '<th>Série</th>';
             html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
             
+            let exibiuAlunos = false;
+
             turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
+                // FILTRO PROFUNDO RURAL (Oculta alunos de outras séries no modal se estiver filtrado)
+                if (isRural) {
+                    if (isProf && profFiltroSerie !== "TODAS" && aluno.serieRural !== profFiltroSerie) return; 
+                    if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return; 
+                }
+
+                exibiuAlunos = true;
+
                 if (isProf) {
                     let options = `<option value="">- Sem Nota -</option><option value="Ausente" ${aluno.nivel==='Ausente'?'selected':''}>Ausente</option>`;
                     NIVEIS.forEach(n => { options += `<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`; });
@@ -576,6 +598,11 @@
                     </tr>`;
                 }
             });
+
+            if (!exibiuAlunos) {
+                html += `<tr><td colspan="${isRural ? 5 : 4}" style="text-align:center; padding: 20px;">Nenhum aluno corresponde ao filtro selecionado.</td></tr>`;
+            }
+
             html += '</tbody></table>';
             document.getElementById('modal-body').innerHTML = html;
         };
@@ -603,6 +630,7 @@
             const btn = document.querySelector('#modal-footer .btn-main');
             btn.innerText = "⏳ Salvando...";
 
+            // Recalcula o total DA TURMA TODA para manter o banco consistente
             const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
             const cont = {}; NIVEIS.forEach(n => cont[n] = 0); 
             let aval = 0, aus = 0;
@@ -669,24 +697,68 @@
                     if(mes) mes = mes.padStart(2, '0');
                 } catch(e) {}
 
+                // Lógica de Filtro Aprimorada (Série Rural)
                 let mostrar = true;
+                let ruralSeriesMatched = false;
+
                 if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
-                if (fSer !== "TODAS" && d.serie !== fSer) mostrar = false;
                 if (fTur !== "TODAS" && d.turma !== fTur) mostrar = false;
                 if (fMes !== "TODOS" && mes !== fMes) mostrar = false;
                 if (fAno !== "TODOS" && ano !== fAno) mostrar = false;
 
-                if (!mostrar) return;
-
-                tAlunos += d.total_alunos || 0; tAval += d.total_avaliados || 0; tAus += d.total_ausentes || 0;
-                if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) tLaudo++; }); }
-                if(d.resultados) {
-                    tFlu += (d.resultados["Fluente"] || 0);
-                    tCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
+                if (fSer !== "TODAS") {
+                    if (d.serie === "Multisseriada" || d.professor === "Welma") {
+                        // Verifica se existe algum aluno na série selecionada
+                        const temAluno = d.detalhes && d.detalhes.some(a => a.serieRural === fSer && !a.transferido);
+                        if (!temAluno) mostrar = false;
+                        else ruralSeriesMatched = true;
+                    } else if (d.serie !== fSer) {
+                        mostrar = false;
+                    }
                 }
 
-                const txtEscola = d.escola || "Escola?"; const txtSerie = d.serie || "?"; const txtTurma = d.turma || "?"; const txtData = d.data_avaliacao || "Data?";
+                if (!mostrar) return;
+
+                // Contagem Parcial para Multisseriada
+                let avalClass = 0, ausClass = 0, fluClass = 0, critClass = 0, laudoClass = 0, alunosClass = 0;
                 
+                if (d.detalhes) {
+                    d.detalhes.forEach(a => {
+                        if (a.transferido) return;
+                        
+                        // Se for rural e tiver filtro de série, conta só os alunos daquela série
+                        if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && fSer !== "TODAS" && a.serieRural !== fSer) {
+                            return; 
+                        }
+
+                        alunosClass++;
+                        if (a.laudo) laudoClass++;
+                        if (a.nivel === 'Ausente') { ausClass++; } 
+                        else if (a.nivel) {
+                            avalClass++;
+                            if (a.nivel === 'Fluente') fluClass++;
+                            if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(a.nivel)) critClass++;
+                        }
+                    });
+                }
+
+                tAlunos += alunosClass;
+                tAval += avalClass;
+                tAus += ausClass;
+                tLaudo += laudoClass;
+                tFlu += fluClass;
+                tCrit += critClass;
+
+                const txtEscola = d.escola || "Escola?"; 
+                let txtSerie = d.serie || "?"; 
+                const txtTurma = d.turma || "?"; 
+                const txtData = d.data_avaliacao || "Data?";
+                
+                // Mostra na tabela a série filtrada se for rural
+                if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched) {
+                    txtSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${fSer})</small>`;
+                }
+
                 html += `<tr>
                     <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
                     <td>${txtData}</td>
@@ -697,7 +769,7 @@
                 </tr>`;
             });
 
-            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>";
+            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
             
             const pctFluente = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
             const pctCritico = tAval > 0 ? (tCrit/tAval*100).toFixed(1) : 0;
@@ -710,7 +782,7 @@
             document.getElementById('prof-laudo').innerText = tLaudo;
         };
 
-        // --- MANTEVE IGUAL: Evolução e Admin ---
+        // --- EVOLUÇÃO ---
         window.prepararComparativo = () => {
             const select = document.getElementById('filtro-evo-turma');
             select.innerHTML = '<option value="">Selecione...</option>';
@@ -736,7 +808,8 @@
             let html = "";
             if(atual.detalhes) {
                 atual.detalhes.forEach(alunoAtual => {
-                    if(alunoAtual.transferido) return;
+                    if(alunoAtual.transferido) return; 
+
                     const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
                     const nivelAtual = alunoAtual.nivel || "-";
                     const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
@@ -748,9 +821,11 @@
                     html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
                 });
             }
-            document.getElementById('tabela-evo').innerHTML = html; document.getElementById('resultado-evo').classList.remove('hidden');
+            document.getElementById('tabela-evo').innerHTML = html;
+            document.getElementById('resultado-evo').classList.remove('hidden');
         };
 
+        // --- DASHBOARD ADMIN ---
         window.carregarAdmin = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
@@ -772,25 +847,30 @@
             const fDia = document.getElementById('adm-dia-ini').value;
             let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
             let htmlTabela = "";
+            
             todosDadosAdm.forEach(d => {
                 if (fEscola !== "TODAS" && d.escola !== fEscola) return;
+                
                 let dia, mes, ano;
                 try {
                     if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
                     else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
                     dia = dia.padStart(2, '0');
                 } catch(e) { return; }
+
                 if(fDia && dia !== fDia) return;
 
                 let contribuiu = false; 
                 let tAval = 0, tFlu = 0;
-                let ruralSeriesMatched = new Set(); // Guarda quais séries rurais bateram com o filtro
+                let ruralSeriesMatched = new Set(); 
 
                 if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
                     if (d.detalhes && Array.isArray(d.detalhes)) {
                         d.detalhes.forEach(aluno => {
                             if(aluno.transferido) return;
-                            if (chkSeries.includes(aluno.serieRural)) {
+                            
+                            // SE TIVER ALGUMA CAIXINHA MARCADA E FOR A SÉRIE DO ALUNO
+                            if (chkSeries.length > 0 && chkSeries.includes(aluno.serieRural)) {
                                 gAlunos++;
                                 if (aluno.nivel === 'Ausente') { gAus++; }
                                 else if (aluno.nivel) {
@@ -800,12 +880,12 @@
                                 }
                                 if(aluno.laudo) gLaudo++;
                                 contribuiu = true;
-                                ruralSeriesMatched.add(aluno.serieRural); // Salva a série que bateu
+                                ruralSeriesMatched.add(aluno.serieRural); 
                             }
                         });
                     }
                 } else {
-                    if (chkSeries.includes(d.serie)) {
+                    if (chkSeries.length > 0 && chkSeries.includes(d.serie)) {
                         gAlunos += d.total_alunos || 0; gAus += d.total_ausentes || 0; gAval += d.total_avaliados || 0;
                         if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; }); }
                         if(d.resultados) {
@@ -821,9 +901,10 @@
                     let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
                     let exibeSerie = d.serie;
                     
-                    // Se for rural, mostra do lado da série quais anos passaram no filtro (ex: "Multisseriada (1º Ano, 2º Ano)")
                     if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
-                        exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${Array.from(ruralSeriesMatched).join(', ')})</small>`;
+                        // Converte para Array, ordena numericamente e junta
+                        let arrS = Array.from(ruralSeriesMatched).sort();
+                        exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${arrS.join(', ')})</small>`;
                     }
 
                     htmlTabela += `<tr>
