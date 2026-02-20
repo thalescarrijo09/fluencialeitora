@@ -143,7 +143,7 @@
 
         <div id="view-nova">
             <div id="area-config" class="card">
-                <h3>Configurar / Editar</h3>
+                <h3>Configurar Avaliação</h3>
                 <label>Data:</label>
                 <div class="date-select-group" style="margin-bottom:10px;">
                     <select id="sel-dia"></select>
@@ -163,9 +163,10 @@
                         </select>
                     </div>
                 </div>
+                
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <label style="margin:0;">Alunos:</label>
-                    <small id="msg-importacao" style="color:var(--primary); font-weight:bold; display:none;">📋 Lista carregada!</small>
+                    <small id="msg-importacao" style="color:var(--primary); font-weight:bold; display:none;"></small>
                 </div>
                 <textarea id="lista-alunos" style="width:100%; height:100px; border-radius:8px; border:1px solid #ccc;"></textarea>
                 <button class="btn-main" onclick="iniciarAvaliacao()">COMEÇAR</button>
@@ -245,7 +246,6 @@
                 <select id="filtro-evo-turma" style="width:100%; margin-bottom:10px;"><option value="">Carregando...</option></select>
                 <button class="btn-main" onclick="gerarRelatorioEvolucao()" style="padding:10px;">GERAR COMPARATIVO</button>
             </div>
-
             <div id="resultado-evo" class="hidden">
                 <div class="card">
                     <h4>Resultado Comparativo</h4>
@@ -405,30 +405,56 @@
             mudarAbaProf('nova');
         }
 
+        // ==========================================
+        // NOVO SISTEMA DE IMPORTAÇÃO AUTOMÁTICA
+        // ==========================================
         window.verificarHistoricoTurma = async () => {
             const esc = document.getElementById('sel-escola').value;
             const ser = document.getElementById('sel-serie').value;
             const tur = document.getElementById('sel-turma').value;
             const msg = document.getElementById('msg-importacao');
+            const txtLista = document.getElementById('lista-alunos');
+
             msg.style.display = 'none';
+            
+            // Regra de Ouro: Mudou a turma? Limpa a lista atual para não misturar.
+            txtLista.value = "";
+            dadosTurma = {}; 
 
             if(esc && ser && tur) {
-                const dbRef = ref(db, 'avaliacoes');
-                const snapshot = await get(dbRef);
-                if (snapshot.exists()) {
-                    const all = Object.values(snapshot.val());
-                    const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
+                msg.innerText = "⏳ Buscando alunos...";
+                msg.style.display = 'block';
+                msg.style.color = "#f57c00"; // Laranja aviso
+
+                try {
+                    const dbRef = ref(db, 'avaliacoes');
+                    const snapshot = await get(dbRef);
                     
-                    if (matches.length > 0) {
-                        matches.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                        const ultima = matches[0];
-                        if (ultima.detalhes && Array.isArray(ultima.detalhes)) {
-                            const nomes = ultima.detalhes.map(a => a.nome).join('\n');
-                            document.getElementById('lista-alunos').value = nomes;
-                            msg.innerText = `📋 Lista importada de ${ultima.data_avaliacao}`;
-                            msg.style.display = 'block';
+                    if (snapshot.exists()) {
+                        const all = Object.values(snapshot.val());
+                        const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
+                        
+                        if (matches.length > 0) {
+                            // Pega a lista mais recente que foi enviada para essa turma específica
+                            matches.sort((a, b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
+                            const ultima = matches[0];
+                            
+                            if (ultima.detalhes && Array.isArray(ultima.detalhes)) {
+                                const nomes = ultima.detalhes.map(a => a.nome).join('\n');
+                                txtLista.value = nomes;
+                                msg.innerText = `📋 Lista importada de ${ultima.data_avaliacao}`;
+                                msg.style.color = "var(--primary)"; // Laranja sucesso
+                            }
+                        } else {
+                            msg.innerText = "✨ Turma nova (Digite os nomes abaixo)";
+                            msg.style.color = "#666"; // Cinza
                         }
+                    } else {
+                        msg.style.display = 'none';
                     }
+                } catch (error) {
+                    console.error("Erro ao buscar histórico: ", error);
+                    msg.style.display = 'none';
                 }
             }
         };
@@ -442,14 +468,8 @@
             if(!d) return alert("Selecione o Dia!");
             if (!escola || lista.length === 0) return alert("Preencha dados!");
 
-            if(!dadosTurma.alunos || dadosTurma.alunos.length === 0) {
-                 dadosTurma.alunos = lista.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
-            } else {
-                const nomesAtuais = lista;
-                if(nomesAtuais.length !== dadosTurma.alunos.length) {
-                     dadosTurma.alunos = nomesAtuais.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
-                }
-            }
+            // Sempre recria a lista baseada no texto atual da caixa para garantir precisão
+            dadosTurma.alunos = lista.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
 
             dadosTurma.escola = escola;
             dadosTurma.serie = document.getElementById('sel-serie').value;
@@ -538,7 +558,6 @@
         window.renderizarTabelaModal = (isProf) => {
             const isRural = turmaAtualEdicao.serie === 'Multisseriada' || turmaAtualEdicao.professor === 'Welma';
             
-            // Pega o filtro ativo na tela que abriu o modal
             let profFiltroSerie = 'TODAS';
             let admChkSeries = [];
             if (isRural) {
@@ -556,7 +575,7 @@
             let exibiuAlunos = false;
 
             turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
-                // FILTRO PROFUNDO RURAL (Oculta alunos de outras séries no modal se estiver filtrado)
+                // FILTRO PROFUNDO RURAL NO MODAL
                 if (isRural) {
                     if (isProf && profFiltroSerie !== "TODAS" && aluno.serieRural !== profFiltroSerie) return; 
                     if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return; 
@@ -630,7 +649,6 @@
             const btn = document.querySelector('#modal-footer .btn-main');
             btn.innerText = "⏳ Salvando...";
 
-            // Recalcula o total DA TURMA TODA para manter o banco consistente
             const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
             const cont = {}; NIVEIS.forEach(n => cont[n] = 0); 
             let aval = 0, aus = 0;
@@ -697,7 +715,6 @@
                     if(mes) mes = mes.padStart(2, '0');
                 } catch(e) {}
 
-                // Lógica de Filtro Aprimorada (Série Rural)
                 let mostrar = true;
                 let ruralSeriesMatched = false;
 
@@ -708,7 +725,6 @@
 
                 if (fSer !== "TODAS") {
                     if (d.serie === "Multisseriada" || d.professor === "Welma") {
-                        // Verifica se existe algum aluno na série selecionada
                         const temAluno = d.detalhes && d.detalhes.some(a => a.serieRural === fSer && !a.transferido);
                         if (!temAluno) mostrar = false;
                         else ruralSeriesMatched = true;
@@ -719,18 +735,14 @@
 
                 if (!mostrar) return;
 
-                // Contagem Parcial para Multisseriada
                 let avalClass = 0, ausClass = 0, fluClass = 0, critClass = 0, laudoClass = 0, alunosClass = 0;
                 
                 if (d.detalhes) {
                     d.detalhes.forEach(a => {
                         if (a.transferido) return;
-                        
-                        // Se for rural e tiver filtro de série, conta só os alunos daquela série
                         if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && fSer !== "TODAS" && a.serieRural !== fSer) {
                             return; 
                         }
-
                         alunosClass++;
                         if (a.laudo) laudoClass++;
                         if (a.nivel === 'Ausente') { ausClass++; } 
@@ -754,7 +766,6 @@
                 const txtTurma = d.turma || "?"; 
                 const txtData = d.data_avaliacao || "Data?";
                 
-                // Mostra na tabela a série filtrada se for rural
                 if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched) {
                     txtSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${fSer})</small>`;
                 }
@@ -869,7 +880,6 @@
                         d.detalhes.forEach(aluno => {
                             if(aluno.transferido) return;
                             
-                            // SE TIVER ALGUMA CAIXINHA MARCADA E FOR A SÉRIE DO ALUNO
                             if (chkSeries.length > 0 && chkSeries.includes(aluno.serieRural)) {
                                 gAlunos++;
                                 if (aluno.nivel === 'Ausente') { gAus++; }
@@ -902,7 +912,6 @@
                     let exibeSerie = d.serie;
                     
                     if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
-                        // Converte para Array, ordena numericamente e junta
                         let arrS = Array.from(ruralSeriesMatched).sort();
                         exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${arrS.join(', ')})</small>`;
                     }
