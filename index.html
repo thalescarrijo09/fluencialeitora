@@ -7,7 +7,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        :root { --primary: #2E7D32; --secondary: #1565C0; --bg-light: #f4f4f9; --text: #333; --red: #d32f2f; --orange: #f57c00; --purple: #8e24aa; --gray: #9e9e9e; }
+        /* TEMA ALTERADO PARA LARANJA INSTITUCIONAL */
+        :root { 
+            --primary: #E65100; /* Laranja Forte Principal */
+            --secondary: #1565C0; 
+            --bg-light: #f4f4f9; 
+            --text: #333; 
+            --red: #d32f2f; 
+            --purple: #8e24aa; 
+            --gray: #9e9e9e; 
+            --success: #2E7D32; /* Verde mantido apenas para o texto de "Fluente" e "Evoluiu" para manter a lógica visual */
+        }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:10px; }
         
         .screen { display: none; max-width: 950px; margin: 0 auto; }
@@ -35,7 +45,7 @@
         
         /* Alunos e Tabelas */
         .aluno-row { background: white; padding: 10px; margin-bottom: 5px; border-left: 5px solid #ccc; border-radius: 6px; transition: 0.3s; }
-        .aluno-row.avaliado { border-left-color: var(--primary); background: #e8f5e9; }
+        .aluno-row.avaliado { border-left-color: var(--primary); background: #FFF3E0; } /* Fundo Laranja Claro */
         .aluno-row.ausente { border-left-color: var(--red); background: #ffebee; }
         .aluno-row.transferido { border-left-color: var(--gray); background: #f0f0f0; opacity: 0.7; }
         .aluno-row.transferido strong { text-decoration: line-through; color: #777; }
@@ -49,7 +59,7 @@
         .comp-table th { background: #f0f0f0; padding: 8px; text-align: left; color: #555; }
         .comp-table td { padding: 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
-        .badge-up { background: #e8f5e9; color: var(--primary); }
+        .badge-up { background: #e8f5e9; color: var(--success); }
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
@@ -71,8 +81,7 @@
         .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
         .chk-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .chk-label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; background: #eee; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
-        .chk-label input { width: auto; margin: 0; }
-        .chk-label:has(input:checked) { background: #c8e6c9; border: 1px solid var(--primary); }
+        .chk-label:has(input:checked) { background: #FFE0B2; border: 1px solid var(--primary); }
         .date-select-group { display: flex; gap: 3px; align-items: center; }
         .date-select-group select { padding: 6px; font-size: 0.85rem; min-width: 60px; }
 
@@ -83,9 +92,9 @@
         .action-bar { display: flex; gap: 5px; margin-bottom: 15px; }
         .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
 
-        /* ESTILOS DO MODAL (NOVO) */
+        /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
-        .modal-content { background: white; width: 100%; max-width: 650px; border-radius: 10px; display: flex; flex-direction: column; max-height: 90vh; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-content { background: white; width: 100%; max-width: 700px; border-radius: 10px; display: flex; flex-direction: column; max-height: 90vh; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; border-radius: 10px 10px 0 0; }
         .modal-header h3 { margin: 0; font-size: 1.1rem; }
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
@@ -134,7 +143,7 @@
 
         <div id="view-nova">
             <div id="area-config" class="card">
-                <h3>Criar Nova Avaliação</h3>
+                <h3>Configurar / Editar</h3>
                 <label>Data:</label>
                 <div class="date-select-group" style="margin-bottom:10px;">
                     <select id="sel-dia"></select>
@@ -166,7 +175,7 @@
                 <div class="action-bar no-print">
                     <button class="btn-tool" style="background:#1565C0;" onclick="salvarNaNuvem()">☁️ SALVAR NO BANCO</button>
                     <button class="btn-tool" style="background:#D32F2F;" onclick="gerarPDF()">📄 GERAR PDF</button>
-                    <button class="btn-tool" style="background:#2E7D32;" onclick="compartilharZap()">📱 COMPARTILHAR ZAP</button>
+                    <button class="btn-tool" style="background:var(--success);" onclick="compartilharZap()">📱 COMPARTILHAR ZAP</button>
                 </div>
                 <div class="card" style="border-left:5px solid var(--secondary);">
                     <h3 id="resumo-titulo" style="margin:0;">Escola</h3>
@@ -186,9 +195,7 @@
             <div class="filter-container">
                 <div style="margin-bottom:5px; font-weight:bold; color:#555; font-size:0.9rem;">Filtrar meus dados:</div>
                 <div class="filter-row">
-                    <select id="prof-filtro-escola" onchange="aplicarFiltrosProf()">
-                        <option value="TODAS">Todas as Escolas</option>
-                    </select>
+                    <select id="prof-filtro-escola" onchange="aplicarFiltrosProf()"><option value="TODAS">Todas as Escolas</option></select>
                     <select id="prof-filtro-serie" onchange="aplicarFiltrosProf()">
                         <option value="TODAS">Todas as Séries</option>
                         <option value="1º Ano">1º Ano</option><option value="2º Ano">2º Ano</option><option value="3º Ano">3º Ano</option><option value="4º Ano">4º Ano</option><option value="5º Ano">5º Ano</option><option value="Multisseriada">Multisseriada</option>
@@ -215,7 +222,7 @@
 
             <div class="dash-grid">
                 <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div class="kpi-label">Avaliados</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:var(--primary);">0%</div><div class="kpi-label">Fluentes</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:var(--success);">0%</div><div class="kpi-label">Fluentes</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:var(--red);">0%</div><div class="kpi-label">Níveis Iniciais</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:var(--orange);">0%</div><div class="kpi-label">Ausência</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Com Laudo</div></div>
@@ -235,16 +242,13 @@
             <div class="card">
                 <h3>🔍 Comparar Turma</h3>
                 <label>Selecione a Turma:</label>
-                <select id="filtro-evo-turma" style="width:100%; margin-bottom:10px;">
-                    <option value="">Carregando...</option>
-                </select>
+                <select id="filtro-evo-turma" style="width:100%; margin-bottom:10px;"><option value="">Carregando...</option></select>
                 <button class="btn-main" onclick="gerarRelatorioEvolucao()" style="padding:10px;">GERAR COMPARATIVO</button>
             </div>
-
             <div id="resultado-evo" class="hidden">
                 <div class="card">
                     <h4>Resultado Comparativo</h4>
-                    <p id="evo-info" style="font-size:0.9rem; color:#666;">Comparando última avaliação com a anterior.</p>
+                    <p id="evo-info" style="font-size:0.9rem; color:#666;"></p>
                     <table class="comp-table">
                         <thead><tr><th>Aluno</th><th>Antes</th><th>Agora</th><th>Evolução</th></tr></thead>
                         <tbody id="tabela-evo"></tbody>
@@ -263,9 +267,7 @@
         <div class="filter-container">
             <div style="margin-bottom:10px; font-weight:bold; color:#555;">Filtros:</div>
             <div class="filter-row">
-                <select id="filtro-escola" onchange="aplicarFiltros()" style="max-width:200px;">
-                    <option value="TODAS">Todas as Escolas</option>
-                </select>
+                <select id="filtro-escola" onchange="aplicarFiltros()" style="max-width:200px;"><option value="TODAS">Todas as Escolas</option></select>
                 <div class="date-select-group">
                     <select id="adm-dia-ini"><option value="">Dia</option></select>
                     <select id="adm-mes-ini"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
@@ -286,7 +288,7 @@
 
         <div class="dash-grid">
             <div class="kpi-card"><div class="kpi-num" id="adm-total">0</div><div class="kpi-label">Avaliados</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-fluente" style="color:var(--primary);">0%</div><div class="kpi-label">Fluentes</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-fluente" style="color:var(--success);">0%</div><div class="kpi-label">Fluentes</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-critico" style="color:var(--red);">0%</div><div class="kpi-label">Níveis Iniciais</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:var(--orange);">0%</div><div class="kpi-label">Ausência</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Com Laudo</div></div>
@@ -316,7 +318,6 @@
     </div>
 
     <script type="module">
-        // ATUALIZADO: Importando a função 'set' do Firebase para edição de registros
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, get, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -350,7 +351,7 @@
         let dadosTurma = {};
         let meusEnviosCache = [];
         let todosDadosAdm = []; 
-        let turmaAtualEdicao = null; // Variável global para gerenciar a edição no Modal
+        let turmaAtualEdicao = null; 
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
@@ -416,6 +417,7 @@
                 if (snapshot.exists()) {
                     const all = Object.values(snapshot.val());
                     const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
+                    
                     if (matches.length > 0) {
                         matches.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
                         const ultima = matches[0];
@@ -447,10 +449,12 @@
                      dadosTurma.alunos = nomesAtuais.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
                 }
             }
+
             dadosTurma.escola = escola;
             dadosTurma.serie = document.getElementById('sel-serie').value;
             dadosTurma.turma = document.getElementById('sel-turma').value;
             dadosTurma.data = `${d}/${m}/${a}`;
+
             renderizarAvaliacao();
             document.getElementById('area-config').classList.add('hidden');
             document.getElementById('area-avaliacao').classList.remove('hidden');
@@ -463,22 +467,24 @@
             const container = document.getElementById('container-alunos'); container.innerHTML = '';
             
             if(!dadosTurma.alunos) dadosTurma.alunos = [];
+
             dadosTurma.alunos.forEach((aluno, idx) => {
                 const div = document.createElement('div'); div.className = 'aluno-row'; div.id = `row-${idx}`;
                 let htmlSerie = '';
                 if (usuarioAtual.modo === 'rural') {
-                    htmlSerie = `<select class="sel-serie-rural" onchange="window.updateLocal(${idx}, this.value)" ${aluno.transferido?'disabled':''}><option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select>`;
+                    htmlSerie = `<select class="sel-serie-rural" onchange="window.updateLocal(${idx}, this.value)" ${aluno.transferido?'disabled':''}><option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select>`;
                 }
+                
                 if(aluno.transferido) div.classList.add('transferido');
 
                 div.innerHTML = `
                     <div style="display:flex; justify-content:space-between;"><strong>${aluno.nome} <span class="tag-laudo">(LAUDO)</span></strong></div>
                     <div class="controls">
                         <label class="laudo-chk"><input type="checkbox" onchange="window.toggleLaudo(${idx})" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}> Laudo</label>
-                        <label class="laudo-chk" style="color:var(--red);"><input type="checkbox" onchange="window.toggleTransferido(${idx})" ${aluno.transferido?'checked':''}> Transferido</label>
+                        <label class="laudo-chk" style="color:var(--red);"><input type="checkbox" onchange="window.toggleTransferido(${idx})" ${aluno.transferido?'checked':''}> Transf.</label>
                         ${htmlSerie}
                         <select onchange="window.updateNivel(${idx}, this.value)" ${aluno.transferido?'disabled':''}>
-                            <option value="">Avaliar...</option><option value="Ausente">⚠️ Ausente</option>${NIVEIS.map(n=>`<option ${aluno.nivel===n?'selected':''}>${n}</option>`).join('')}
+                            <option value="">Avaliar...</option><option value="Ausente">⚠️ Ausente</option>${NIVEIS.map(n=>`<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`).join('')}
                         </select>
                     </div>`;
                 container.appendChild(div);
@@ -529,28 +535,41 @@
         };
 
         window.renderizarTabelaModal = (isProf) => {
-            let html = '<table class="modal-table"><thead><tr><th>Aluno</th><th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
+            const isRural = turmaAtualEdicao.serie === 'Multisseriada' || turmaAtualEdicao.professor === 'Welma';
+            
+            let html = '<table class="modal-table"><thead><tr><th>Aluno</th>';
+            if (isRural) html += '<th>Série</th>';
+            html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
             
             turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
                 if (isProf) {
-                    // MODO PROFESSOR: Edição Rápida
                     let options = `<option value="">- Sem Nota -</option><option value="Ausente" ${aluno.nivel==='Ausente'?'selected':''}>Ausente</option>`;
                     NIVEIS.forEach(n => { options += `<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`; });
                     
+                    let ruralTd = '';
+                    if (isRural) {
+                        ruralTd = `<td><select onchange="turmaAtualEdicao.detalhes[${idx}].serieRural = this.value" ${aluno.transferido?'disabled':''} style="padding:4px; border-radius:4px; border:1px solid #ccc; max-width:85px;">
+                            <option value="">Série...</option>
+                            ${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}
+                        </select></td>`;
+                    }
+
                     html += `<tr class="${aluno.transferido ? 'transferido' : ''}">
                         <td><strong>${aluno.nome}</strong></td>
+                        ${ruralTd}
                         <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].laudo = this.checked" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}></td>
                         <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].transferido = this.checked; if(this.checked){turmaAtualEdicao.detalhes[${idx}].nivel=''} renderizarTabelaModal(true)" ${aluno.transferido?'checked':''}></td>
                         <td><select onchange="turmaAtualEdicao.detalhes[${idx}].nivel = this.value" ${aluno.transferido?'disabled':''}>${options}</select></td>
                     </tr>`;
                 } else {
-                    // MODO ADMIN: Apenas Leitura
                     let badgeTransf = aluno.transferido ? '<span style="color:var(--gray)">Sim</span>' : 'Não';
                     let badgeLaudo = aluno.laudo ? '<span style="color:var(--purple)">Sim</span>' : 'Não';
                     let stilo = aluno.transferido ? 'class="transferido"' : '';
+                    let ruralTd = isRural ? `<td>${aluno.serieRural || '-'}</td>` : '';
                     
                     html += `<tr ${stilo}>
                         <td>${aluno.nome}</td>
+                        ${ruralTd}
                         <td>${badgeLaudo}</td>
                         <td>${badgeTransf}</td>
                         <td><strong>${aluno.nivel || '-'}</strong></td>
@@ -566,7 +585,6 @@
             const item = listaBase.find(d => d.id === id);
             
             if(item) {
-                // Faz uma cópia da turma para não bagunçar a tabela principal antes de salvar
                 turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
                 if(!turmaAtualEdicao.detalhes) turmaAtualEdicao.detalhes = [];
                 
@@ -574,7 +592,6 @@
                 
                 renderizarTabelaModal(!isAdmin);
 
-                // Mostra/Esconde botão de salvar
                 const footer = document.getElementById('modal-footer');
                 if (isAdmin) { footer.classList.add('hidden'); } else { footer.classList.remove('hidden'); }
                 
@@ -586,7 +603,6 @@
             const btn = document.querySelector('#modal-footer .btn-main');
             btn.innerText = "⏳ Salvando...";
 
-            // Recalcula todas as estatísticas da turma antes de injetar no banco
             const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
             const cont = {}; NIVEIS.forEach(n => cont[n] = 0); 
             let aval = 0, aus = 0;
@@ -599,11 +615,10 @@
             turmaAtualEdicao.resultados = cont;
 
             try {
-                // Usa 'set' para sobrescrever o registro exato sem mudar o ID
                 await set(ref(db, 'avaliacoes/' + turmaAtualEdicao.id), turmaAtualEdicao);
                 alert("✅ Alterações salvas com sucesso!");
                 fecharModal();
-                carregarHistoricoProf(); // Recarrega a tela de fundo
+                carregarHistoricoProf(); 
             } catch (e) {
                 console.error(e);
                 alert("Erro ao salvar: " + e.message);
@@ -621,12 +636,10 @@
                 const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
                 meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
                 meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-
                 const escolasProf = [...new Set(meusEnviosCache.map(d => d.escola))].sort();
                 const sel = document.getElementById('prof-filtro-escola');
                 sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
                 escolasProf.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
-
                 aplicarFiltrosProf();
             } else { aplicarFiltrosProf(); }
         };
@@ -674,18 +687,17 @@
 
                 const txtEscola = d.escola || "Escola?"; const txtSerie = d.serie || "?"; const txtTurma = d.turma || "?"; const txtData = d.data_avaliacao || "Data?";
                 
-                // BOTÃO DE LUPA PARA ABRIR O MODAL
                 html += `<tr>
                     <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
                     <td>${txtData}</td>
                     <td>
-                        <button class="btn-table" title="Ver e Editar Alunos" onclick="abrirModalTurma('${d.id}', false)">🔍</button>
+                        <button class="btn-table" title="Inspecionar e Editar" onclick="abrirModalTurma('${d.id}', false)">🔍</button>
                         <button class="btn-table" title="Excluir Turma Inteira" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
                     </td>
                 </tr>`;
             });
 
-            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
+            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>";
             
             const pctFluente = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
             const pctCritico = tAval > 0 ? (tCrit/tAval*100).toFixed(1) : 0;
@@ -698,90 +710,7 @@
             document.getElementById('prof-laudo').innerText = tLaudo;
         };
 
-        // --- DASHBOARD ADMIN ---
-        window.carregarAdmin = async () => {
-            const dbRef = ref(db, 'avaliacoes');
-            const snapshot = await get(dbRef);
-            if (snapshot.exists()) {
-                // Modificado para capturar o ID (necessário para a lupa)
-                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                todosDadosAdm = all.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                
-                const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
-                const selEscola = document.getElementById('filtro-escola');
-                selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-                escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
-                aplicarFiltros();
-            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
-        };
-
-        window.aplicarFiltros = () => {
-            const fEscola = document.getElementById('filtro-escola').value;
-            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-            const fDia = document.getElementById('adm-dia-ini').value;
-            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
-            let htmlTabela = "";
-
-            todosDadosAdm.forEach(d => {
-                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
-                
-                let dia, mes, ano;
-                try {
-                    if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
-                    dia = dia.padStart(2, '0');
-                } catch(e) { return; }
-
-                if(fDia && dia !== fDia) return;
-
-                let contribuiu = false; let tAval = 0, tFlu = 0;
-                if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
-                    if (d.detalhes && Array.isArray(d.detalhes)) {
-                        d.detalhes.forEach(aluno => {
-                            if(aluno.transferido) return;
-                            if (chkSeries.includes(aluno.serieRural)) {
-                                gAlunos++;
-                                if (aluno.nivel === 'Ausente') { gAus++; }
-                                else if (aluno.nivel) {
-                                    gAval++; tAval++;
-                                    if (aluno.nivel === 'Fluente') { gFlu++; tFlu++; }
-                                    if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(aluno.nivel)) gCrit++;
-                                }
-                                if(aluno.laudo) gLaudo++;
-                                contribuiu = true;
-                            }
-                        });
-                    }
-                } else {
-                    if (chkSeries.includes(d.serie)) {
-                        gAlunos += d.total_alunos; gAus += d.total_ausentes; gAval += d.total_avaliados;
-                        if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; }); }
-                        if(d.resultados) {
-                            const flu = (d.resultados["Fluente"] || 0);
-                            gFlu += flu; tFlu += flu; tAval += d.total_avaliados;
-                            gCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
-                        }
-                        contribuiu = true;
-                    }
-                }
-                if (contribuiu) {
-                    let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
-                    // LUPA PARA ADM (SOMENTE LEITURA)
-                    htmlTabela += `<tr>
-                        <td>${d.escola}</td><td>${d.serie} ${d.turma}</td><td>${d.data_avaliacao}</td><td>${d.professor}</td><td>${pct}</td>
-                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td>
-                    </tr>`;
-                }
-            });
-            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='6'>Sem dados.</td></tr>";
-            document.getElementById('adm-total').innerText = gAval;
-            document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-laudo').innerText = gLaudo;
-        };
-
-        // EVOLUÇÃO
+        // --- MANTEVE IGUAL: Evolução e Admin ---
         window.prepararComparativo = () => {
             const select = document.getElementById('filtro-evo-turma');
             select.innerHTML = '<option value="">Selecione...</option>';
@@ -807,8 +736,7 @@
             let html = "";
             if(atual.detalhes) {
                 atual.detalhes.forEach(alunoAtual => {
-                    if(alunoAtual.transferido) return; // PULA TRANSFERIDO NA EVOLUÇÃO
-
+                    if(alunoAtual.transferido) return;
                     const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
                     const nivelAtual = alunoAtual.nivel || "-";
                     const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
@@ -820,8 +748,96 @@
                     html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
                 });
             }
-            document.getElementById('tabela-evo').innerHTML = html;
-            document.getElementById('resultado-evo').classList.remove('hidden');
+            document.getElementById('tabela-evo').innerHTML = html; document.getElementById('resultado-evo').classList.remove('hidden');
+        };
+
+        window.carregarAdmin = async () => {
+            const dbRef = ref(db, 'avaliacoes');
+            const snapshot = await get(dbRef);
+            if (snapshot.exists()) {
+                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
+                todosDadosAdm = all.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+                
+                const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
+                const selEscola = document.getElementById('filtro-escola');
+                selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
+                escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
+                aplicarFiltros();
+            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
+        };
+
+        window.aplicarFiltros = () => {
+            const fEscola = document.getElementById('filtro-escola').value;
+            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
+            const fDia = document.getElementById('adm-dia-ini').value;
+            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
+            let htmlTabela = "";
+            todosDadosAdm.forEach(d => {
+                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
+                let dia, mes, ano;
+                try {
+                    if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    dia = dia.padStart(2, '0');
+                } catch(e) { return; }
+                if(fDia && dia !== fDia) return;
+
+                let contribuiu = false; 
+                let tAval = 0, tFlu = 0;
+                let ruralSeriesMatched = new Set(); // Guarda quais séries rurais bateram com o filtro
+
+                if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
+                    if (d.detalhes && Array.isArray(d.detalhes)) {
+                        d.detalhes.forEach(aluno => {
+                            if(aluno.transferido) return;
+                            if (chkSeries.includes(aluno.serieRural)) {
+                                gAlunos++;
+                                if (aluno.nivel === 'Ausente') { gAus++; }
+                                else if (aluno.nivel) {
+                                    gAval++; tAval++;
+                                    if (aluno.nivel === 'Fluente') { gFlu++; tFlu++; }
+                                    if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(aluno.nivel)) gCrit++;
+                                }
+                                if(aluno.laudo) gLaudo++;
+                                contribuiu = true;
+                                ruralSeriesMatched.add(aluno.serieRural); // Salva a série que bateu
+                            }
+                        });
+                    }
+                } else {
+                    if (chkSeries.includes(d.serie)) {
+                        gAlunos += d.total_alunos || 0; gAus += d.total_ausentes || 0; gAval += d.total_avaliados || 0;
+                        if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; }); }
+                        if(d.resultados) {
+                            const flu = (d.resultados["Fluente"] || 0);
+                            gFlu += flu; tFlu += flu; tAval += d.total_avaliados || 0;
+                            gCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
+                        }
+                        contribuiu = true;
+                    }
+                }
+                
+                if (contribuiu) {
+                    let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
+                    let exibeSerie = d.serie;
+                    
+                    // Se for rural, mostra do lado da série quais anos passaram no filtro (ex: "Multisseriada (1º Ano, 2º Ano)")
+                    if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
+                        exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${Array.from(ruralSeriesMatched).join(', ')})</small>`;
+                    }
+
+                    htmlTabela += `<tr>
+                        <td>${d.escola}</td><td>${exibeSerie} ${d.turma}</td><td>${d.data_avaliacao}</td><td>${d.professor}</td><td>${pct}</td>
+                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td>
+                    </tr>`;
+                }
+            });
+            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='6'>Sem dados.</td></tr>";
+            document.getElementById('adm-total').innerText = gAval;
+            document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
+            document.getElementById('adm-laudo').innerText = gLaudo;
         };
     </script>
 </body>
