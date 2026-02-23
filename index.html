@@ -63,11 +63,11 @@
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
-        /* Dashboard KPI */
-        .dash-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
-        .kpi-card { background: white; padding: 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); }
-        .kpi-label { font-size: 0.75rem; color: #666; margin-top: 2px; }
+        /* Dashboard KPI (Atualizado para Múltiplos Cards) */
+        .dash-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; justify-content: center; }
+        .kpi-card { flex: 1 1 90px; background: white; padding: 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .kpi-num { font-size: 1.3rem; font-weight: bold; color: var(--secondary); }
+        .kpi-label { font-size: 0.7rem; color: #666; margin-top: 2px; font-weight: bold; }
         
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
@@ -107,7 +107,6 @@
         
         @media print { .no-print { display: none !important; } }
         @media (max-width: 700px) { 
-            .dash-grid { grid-template-columns: 1fr 1fr; } 
             .tabs { flex-wrap: wrap; } 
             .filter-row { flex-direction: column; align-items: stretch; }
         }
@@ -222,11 +221,15 @@
             </div>
 
             <div class="dash-grid">
-                <div class="kpi-card"><div class="kpi-num" id="prof-total">0</div><div class="kpi-label">Avaliados</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-fluente" style="color:var(--success);">0%</div><div class="kpi-label">Fluentes</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-critico" style="color:var(--red);">0%</div><div class="kpi-label">Níveis Iniciais</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:var(--orange);">0%</div><div class="kpi-label">Ausência</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Com Laudo</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-total" style="color:var(--secondary);">0</div><div class="kpi-label">Avaliados</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:var(--orange);">0</div><div class="kpi-label">Ausentes</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Laudos</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
+                <div class="kpi-card"><div class="kpi-num" id="prof-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
             </div>
 
             <div class="card">
@@ -288,11 +291,15 @@
         </div>
 
         <div class="dash-grid">
-            <div class="kpi-card"><div class="kpi-num" id="adm-total">0</div><div class="kpi-label">Avaliados</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-fluente" style="color:var(--success);">0%</div><div class="kpi-label">Fluentes</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-critico" style="color:var(--red);">0%</div><div class="kpi-label">Níveis Iniciais</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:var(--orange);">0%</div><div class="kpi-label">Ausência</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Com Laudo</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-total" style="color:var(--secondary);">0</div><div class="kpi-label">Avaliados</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:var(--orange);">0</div><div class="kpi-label">Ausentes</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Laudos</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
+            <div class="kpi-card"><div class="kpi-num" id="adm-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
         </div>
 
         <div class="card">
@@ -405,9 +412,6 @@
             mudarAbaProf('nova');
         }
 
-        // ==========================================
-        // NOVO SISTEMA DE IMPORTAÇÃO AUTOMÁTICA
-        // ==========================================
         window.verificarHistoricoTurma = async () => {
             const esc = document.getElementById('sel-escola').value;
             const ser = document.getElementById('sel-serie').value;
@@ -416,8 +420,6 @@
             const txtLista = document.getElementById('lista-alunos');
 
             msg.style.display = 'none';
-            
-            // Regra de Ouro: Mudou a turma? Limpa a lista atual para não misturar.
             txtLista.value = "";
             dadosTurma = {}; 
 
@@ -452,7 +454,6 @@
                         msg.style.display = 'none';
                     }
                 } catch (error) {
-                    console.error("Erro ao buscar histórico: ", error);
                     msg.style.display = 'none';
                 }
             }
@@ -676,7 +677,6 @@
             const snapshot = await get(dbRef);
             meusEnviosCache = [];
             
-            // CORREÇÃO: O filtro passa a exibir a lista fixa de escolas da professora
             const sel = document.getElementById('prof-filtro-escola');
             sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
             const escolasFixas = [...usuarioAtual.escolas].sort();
@@ -706,7 +706,8 @@
             const fMes = document.getElementById('prof-mes-filtro').value;
             const fAno = document.getElementById('prof-ano-filtro').value;
 
-            let tAlunos=0, tFlu=0, tCrit=0, tAus=0, tAval=0, tLaudo=0;
+            let tAlunos=0, tAus=0, tAval=0, tLaudo=0;
+            let tN1=0, tN2=0, tN3=0, tN4=0, tIni=0, tFlu=0;
             let html = "";
 
             meusEnviosCache.forEach(d => {
@@ -737,7 +738,8 @@
 
                 if (!mostrar) return;
 
-                let avalClass = 0, ausClass = 0, fluClass = 0, critClass = 0, laudoClass = 0, alunosClass = 0;
+                let avalClass = 0, ausClass = 0, alunosClass = 0, laudoClass = 0;
+                let n1Class=0, n2Class=0, n3Class=0, n4Class=0, iniClass=0, fluClass=0;
                 
                 if (d.detalhes) {
                     d.detalhes.forEach(a => {
@@ -750,8 +752,12 @@
                         if (a.nivel === 'Ausente') { ausClass++; } 
                         else if (a.nivel) {
                             avalClass++;
+                            if (a.nivel === 'Nível 1') n1Class++;
+                            if (a.nivel === 'Nível 2') n2Class++;
+                            if (a.nivel === 'Nível 3') n3Class++;
+                            if (a.nivel === 'Nível 4') n4Class++;
+                            if (a.nivel === 'Iniciante') iniClass++;
                             if (a.nivel === 'Fluente') fluClass++;
-                            if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(a.nivel)) critClass++;
                         }
                     });
                 }
@@ -760,8 +766,7 @@
                 tAval += avalClass;
                 tAus += ausClass;
                 tLaudo += laudoClass;
-                tFlu += fluClass;
-                tCrit += critClass;
+                tN1 += n1Class; tN2 += n2Class; tN3 += n3Class; tN4 += n4Class; tIni += iniClass; tFlu += fluClass;
 
                 const txtEscola = d.escola || "Escola?"; 
                 let txtSerie = d.serie || "?"; 
@@ -784,15 +789,24 @@
 
             document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
             
-            const pctFluente = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
-            const pctCritico = tAval > 0 ? (tCrit/tAval*100).toFixed(1) : 0;
-            const pctAusente = tAlunos > 0 ? (tAus/tAlunos*100).toFixed(1) : 0;
+            // Calculo individual das porcentagens
+            const pctN1 = tAval > 0 ? (tN1/tAval*100).toFixed(1) : 0;
+            const pctN2 = tAval > 0 ? (tN2/tAval*100).toFixed(1) : 0;
+            const pctN3 = tAval > 0 ? (tN3/tAval*100).toFixed(1) : 0;
+            const pctN4 = tAval > 0 ? (tN4/tAval*100).toFixed(1) : 0;
+            const pctIni = tAval > 0 ? (tIni/tAval*100).toFixed(1) : 0;
+            const pctFlu = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
 
             document.getElementById('prof-total').innerText = tAval;
-            document.getElementById('prof-fluente').innerText = pctFluente + "%";
-            document.getElementById('prof-critico').innerText = pctCritico + "%";
-            document.getElementById('prof-ausente').innerText = pctAusente + "%";
-            document.getElementById('prof-laudo').innerText = tLaudo;
+            document.getElementById('prof-ausente').innerText = tAus; // Número absoluto
+            document.getElementById('prof-laudo').innerText = tLaudo; // Número absoluto
+            
+            document.getElementById('prof-n1').innerText = pctN1 + "%";
+            document.getElementById('prof-n2').innerText = pctN2 + "%";
+            document.getElementById('prof-n3').innerText = pctN3 + "%";
+            document.getElementById('prof-n4').innerText = pctN4 + "%";
+            document.getElementById('prof-ini').innerText = pctIni + "%";
+            document.getElementById('prof-flu').innerText = pctFlu + "%";
         };
 
         // --- EVOLUÇÃO ---
@@ -858,7 +872,9 @@
             const fEscola = document.getElementById('filtro-escola').value;
             const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
             const fDia = document.getElementById('adm-dia-ini').value;
-            let gAlunos=0, gFlu=0, gCrit=0, gAus=0, gAval=0, gLaudo=0;
+            
+            let gAlunos=0, gAus=0, gAval=0, gLaudo=0;
+            let gN1=0, gN2=0, gN3=0, gN4=0, gIni=0, gFlu=0;
             let htmlTabela = "";
             
             todosDadosAdm.forEach(d => {
@@ -874,7 +890,7 @@
                 if(fDia && dia !== fDia) return;
 
                 let contribuiu = false; 
-                let tAval = 0, tFlu = 0;
+                let tAvalLocal = 0, tFluLocal = 0;
                 let ruralSeriesMatched = new Set(); 
 
                 if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
@@ -886,9 +902,13 @@
                                 gAlunos++;
                                 if (aluno.nivel === 'Ausente') { gAus++; }
                                 else if (aluno.nivel) {
-                                    gAval++; tAval++;
-                                    if (aluno.nivel === 'Fluente') { gFlu++; tFlu++; }
-                                    if (["Nível 1","Nível 2","Nível 3","Nível 4"].includes(aluno.nivel)) gCrit++;
+                                    gAval++; tAvalLocal++;
+                                    if (aluno.nivel === 'Nível 1') gN1++;
+                                    if (aluno.nivel === 'Nível 2') gN2++;
+                                    if (aluno.nivel === 'Nível 3') gN3++;
+                                    if (aluno.nivel === 'Nível 4') gN4++;
+                                    if (aluno.nivel === 'Iniciante') gIni++;
+                                    if (aluno.nivel === 'Fluente') { gFlu++; tFluLocal++; }
                                 }
                                 if(aluno.laudo) gLaudo++;
                                 contribuiu = true;
@@ -898,19 +918,29 @@
                     }
                 } else {
                     if (chkSeries.length > 0 && chkSeries.includes(d.serie)) {
-                        gAlunos += d.total_alunos || 0; gAus += d.total_ausentes || 0; gAval += d.total_avaliados || 0;
-                        if(d.detalhes) { d.detalhes.forEach(a => { if(a.laudo && !a.transferido) gLaudo++; }); }
-                        if(d.resultados) {
-                            const flu = (d.resultados["Fluente"] || 0);
-                            gFlu += flu; tFlu += flu; tAval += d.total_avaliados || 0;
-                            gCrit += ((d.resultados["Nível 1"]||0) + (d.resultados["Nível 2"]||0) + (d.resultados["Nível 3"]||0) + (d.resultados["Nível 4"]||0));
+                        if(d.detalhes) {
+                            d.detalhes.forEach(a => { 
+                                if(a.transferido) return;
+                                gAlunos++;
+                                if (a.nivel === 'Ausente') { gAus++; }
+                                else if (a.nivel) {
+                                    gAval++; tAvalLocal++;
+                                    if (a.nivel === 'Nível 1') gN1++;
+                                    if (a.nivel === 'Nível 2') gN2++;
+                                    if (a.nivel === 'Nível 3') gN3++;
+                                    if (a.nivel === 'Nível 4') gN4++;
+                                    if (a.nivel === 'Iniciante') gIni++;
+                                    if (a.nivel === 'Fluente') { gFlu++; tFluLocal++; }
+                                }
+                                if (a.laudo) gLaudo++; 
+                            });
                         }
                         contribuiu = true;
                     }
                 }
                 
                 if (contribuiu) {
-                    let pct = tAval > 0 ? (tFlu/tAval*100).toFixed(0)+"%" : "-";
+                    let pct = tAvalLocal > 0 ? (tFluLocal/tAvalLocal*100).toFixed(0)+"%" : "-";
                     let exibeSerie = d.serie;
                     
                     if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
@@ -924,12 +954,26 @@
                     </tr>`;
                 }
             });
+
             document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='6'>Sem dados.</td></tr>";
+            
+            const pctN1 = gAval > 0 ? (gN1/gAval*100).toFixed(1) : 0;
+            const pctN2 = gAval > 0 ? (gN2/gAval*100).toFixed(1) : 0;
+            const pctN3 = gAval > 0 ? (gN3/gAval*100).toFixed(1) : 0;
+            const pctN4 = gAval > 0 ? (gN4/gAval*100).toFixed(1) : 0;
+            const pctIni = gAval > 0 ? (gIni/gAval*100).toFixed(1) : 0;
+            const pctFlu = gAval > 0 ? (gFlu/gAval*100).toFixed(1) : 0;
+
             document.getElementById('adm-total').innerText = gAval;
-            document.getElementById('adm-fluente').innerText = gAval > 0 ? (gFlu/gAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-critico').innerText = gAval > 0 ? (gCrit/gAval*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-ausente').innerText = gAlunos > 0 ? (gAus/gAlunos*100).toFixed(1)+"%" : "0%";
-            document.getElementById('adm-laudo').innerText = gLaudo;
+            document.getElementById('adm-ausente').innerText = gAus; // Absoluto
+            document.getElementById('adm-laudo').innerText = gLaudo; // Absoluto
+            
+            document.getElementById('adm-n1').innerText = pctN1 + "%";
+            document.getElementById('adm-n2').innerText = pctN2 + "%";
+            document.getElementById('adm-n3').innerText = pctN3 + "%";
+            document.getElementById('adm-n4').innerText = pctN4 + "%";
+            document.getElementById('adm-ini').innerText = pctIni + "%";
+            document.getElementById('adm-flu').innerText = pctFlu + "%";
         };
     </script>
 </body>
