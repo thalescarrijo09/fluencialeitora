@@ -64,12 +64,16 @@
         .badge-same { background: #f5f5f5; color: #777; }
         
         /* Dashboard KPI */
-        .dash-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
+        .dash-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; justify-content: center; }
         .kpi-card { background: white; padding: 15px 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); }
-        .kpi-label { font-size: 0.75rem; color: #666; margin-top: 5px; font-weight: bold; }
+        .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); pointer-events: none; }
+        .kpi-label { font-size: 0.75rem; color: #666; margin-top: 5px; font-weight: bold; pointer-events: none; }
         
-        /* Barra de Resumo (Pílula) */
+        /* Efeito Clicável para os Cards de Nível */
+        .hover-card { cursor: pointer; border: 1px solid transparent; transition: transform 0.2s, box-shadow 0.2s, border 0.2s; }
+        .hover-card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(230, 81, 0, 0.2); border: 1px solid var(--primary); }
+
+        /* Barra de Resumo */
         .stats-bar { display: flex; gap: 15px; font-size: 0.9rem; background: white; padding: 6px 18px; border-radius: 20px; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .stats-bar span { display: flex; align-items: center; gap: 5px; }
 
@@ -80,7 +84,7 @@
         .btn-table { padding: 6px 8px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 1.1rem; margin-right: 5px; transition: background 0.2s; }
         .btn-table:hover { background: #e0e0e0; }
 
-        /* Paginação (NOVO) */
+        /* Paginação */
         .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 15px; flex-wrap: wrap; }
         .page-btn { padding: 6px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; color: var(--text); transition: 0.2s; }
         .page-btn:hover:not(:disabled) { background: #eee; }
@@ -103,7 +107,7 @@
         .action-bar { display: flex; gap: 5px; margin-bottom: 15px; }
         .btn-tool { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
 
-        /* MODAL */
+        /* MODAIS */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
         .modal-content { background: white; width: 100%; max-width: 700px; border-radius: 10px; display: flex; flex-direction: column; max-height: 90vh; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; border-radius: 10px 10px 0 0; }
@@ -243,12 +247,12 @@
             </div>
 
             <div class="dash-grid">
-                <div class="kpi-card"><div class="kpi-num" id="prof-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
+                <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 1', true)" title="Clique para ver os alunos"><div class="kpi-num" id="prof-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
+                <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 2', true)" title="Clique para ver os alunos"><div class="kpi-num" id="prof-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
+                <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 3', true)" title="Clique para ver os alunos"><div class="kpi-num" id="prof-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
+                <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 4', true)" title="Clique para ver os alunos"><div class="kpi-num" id="prof-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
+                <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Iniciante', true)" title="Clique para ver os alunos"><div class="kpi-num" id="prof-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
+                <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Fluente', true)" title="Clique para ver os alunos"><div class="kpi-num" id="prof-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
             </div>
 
             <div class="card">
@@ -324,12 +328,12 @@
         </div>
 
         <div class="dash-grid">
-            <div class="kpi-card"><div class="kpi-num" id="adm-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
+            <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 1', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
+            <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 2', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
+            <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 3', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
+            <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Nível 4', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
+            <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Iniciante', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
+            <div class="kpi-card hover-card" onclick="abrirModalIntervencao('Fluente', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
         </div>
 
         <div class="card">
@@ -352,6 +356,22 @@
                 </div>
             <div class="modal-footer hidden" id="modal-footer">
                 <button class="btn-main" onclick="salvarEdicaoModal()" style="margin:0;">💾 SALVAR ALTERAÇÕES</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-intervencao" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="background: var(--secondary);">
+                <h3 id="modal-interv-titulo">Foco Pedagógico</h3>
+                <button class="close-btn" onclick="document.getElementById('modal-intervencao').classList.add('hidden')">X</button>
+            </div>
+            <div class="modal-body" style="background: white;">
+                <div id="conteudo-pdf-intervencao">
+                    </div>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button class="btn-main" id="modal-interv-btn-print" onclick="imprimirIntervencao()" style="width: auto; padding: 10px 20px; display: inline-block;">🖨️ GERAR PDF DA LISTA</button>
             </div>
         </div>
     </div>
@@ -395,9 +415,12 @@
         // VARIÁVEIS DE PAGINAÇÃO
         const rowsPerPage = 10;
         let currentPageProf = 1;
-        let filteredProfData = []; // Guarda as linhas filtradas antes de renderizar
+        let filteredProfData = []; 
         let currentPageAdm = 1;
         let filteredAdmData = [];
+
+        // VARIAVEL AUXILIAR PARA O NOME DO ARQUIVO PDF DE INTERVENÇÃO
+        let nivelImpressaoAtual = "";
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
@@ -584,7 +607,7 @@
         window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nData: ${dadosTurma.data}\nAv: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente' && !a.transferido).length}\n\n`; dadosTurma.alunos.forEach(a => { if(!a.transferido && a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
 
         // ==========================================
-        // LÓGICA DO MODAL DE INSPEÇÃO E EDIÇÃO
+        // LÓGICA DO MODAL DE INSPEÇÃO E EDIÇÃO (TURMA)
         // ==========================================
         
         window.fecharModal = () => {
@@ -594,21 +617,16 @@
 
         window.renderizarTabelaModal = (isProf) => {
             const isRural = turmaAtualEdicao.serie === 'Multisseriada' || turmaAtualEdicao.professor === 'Welma';
-            
             let profFiltroSerie = 'TODAS';
             let admChkSeries = [];
             if (isRural) {
-                if (isProf) {
-                    profFiltroSerie = document.getElementById('prof-filtro-serie').value;
-                } else {
-                    admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-                }
+                if (isProf) { profFiltroSerie = document.getElementById('prof-filtro-serie').value; } 
+                else { admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value); }
             }
 
             let html = '<table class="modal-table"><thead><tr><th>Aluno</th>';
             if (isRural) html += '<th>Série</th>';
             html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
-            
             let exibiuAlunos = false;
 
             turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
@@ -616,24 +634,18 @@
                     if (isProf && profFiltroSerie !== "TODAS" && aluno.serieRural !== profFiltroSerie) return; 
                     if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return; 
                 }
-
                 exibiuAlunos = true;
 
                 if (isProf) {
                     let options = `<option value="">- Sem Nota -</option><option value="Ausente" ${aluno.nivel==='Ausente'?'selected':''}>Ausente</option>`;
                     NIVEIS.forEach(n => { options += `<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`; });
-                    
                     let ruralTd = '';
                     if (isRural) {
                         ruralTd = `<td><select onchange="turmaAtualEdicao.detalhes[${idx}].serieRural = this.value" ${aluno.transferido?'disabled':''} style="padding:4px; border-radius:4px; border:1px solid #ccc; max-width:85px;">
-                            <option value="">Série...</option>
-                            ${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}
-                        </select></td>`;
+                            <option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select></td>`;
                     }
-
                     html += `<tr class="${aluno.transferido ? 'transferido' : ''}">
-                        <td><strong>${aluno.nome}</strong></td>
-                        ${ruralTd}
+                        <td><strong>${aluno.nome}</strong></td>${ruralTd}
                         <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].laudo = this.checked" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}></td>
                         <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].transferido = this.checked; if(this.checked){turmaAtualEdicao.detalhes[${idx}].nivel=''} renderizarTabelaModal(true)" ${aluno.transferido?'checked':''}></td>
                         <td><select onchange="turmaAtualEdicao.detalhes[${idx}].nivel = this.value" ${aluno.transferido?'disabled':''}>${options}</select></td>
@@ -643,21 +655,11 @@
                     let badgeLaudo = aluno.laudo ? '<span style="color:var(--purple)">Sim</span>' : 'Não';
                     let stilo = aluno.transferido ? 'class="transferido"' : '';
                     let ruralTd = isRural ? `<td>${aluno.serieRural || '-'}</td>` : '';
-                    
-                    html += `<tr ${stilo}>
-                        <td>${aluno.nome}</td>
-                        ${ruralTd}
-                        <td>${badgeLaudo}</td>
-                        <td>${badgeTransf}</td>
-                        <td><strong>${aluno.nivel || '-'}</strong></td>
-                    </tr>`;
+                    html += `<tr ${stilo}><td>${aluno.nome}</td>${ruralTd}<td>${badgeLaudo}</td><td>${badgeTransf}</td><td><strong>${aluno.nivel || '-'}</strong></td></tr>`;
                 }
             });
 
-            if (!exibiuAlunos) {
-                html += `<tr><td colspan="${isRural ? 5 : 4}" style="text-align:center; padding: 20px;">Nenhum aluno corresponde ao filtro selecionado.</td></tr>`;
-            }
-
+            if (!exibiuAlunos) html += `<tr><td colspan="${isRural ? 5 : 4}" style="text-align:center; padding: 20px;">Nenhum aluno corresponde ao filtro selecionado.</td></tr>`;
             html += '</tbody></table>';
             document.getElementById('modal-body').innerHTML = html;
         };
@@ -665,18 +667,13 @@
         window.abrirModalTurma = (id, isAdmin) => {
             const listaBase = isAdmin ? todosDadosAdm : meusEnviosCache;
             const item = listaBase.find(d => d.id === id);
-            
             if(item) {
                 turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
                 if(!turmaAtualEdicao.detalhes) turmaAtualEdicao.detalhes = [];
-                
                 document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma} (${item.data_avaliacao})`;
-                
                 renderizarTabelaModal(!isAdmin);
-
                 const footer = document.getElementById('modal-footer');
                 if (isAdmin) { footer.classList.add('hidden'); } else { footer.classList.remove('hidden'); }
-                
                 document.getElementById('modal-detalhes').classList.remove('hidden');
             }
         };
@@ -684,11 +681,8 @@
         window.salvarEdicaoModal = async () => {
             const btn = document.querySelector('#modal-footer .btn-main');
             btn.innerText = "⏳ Salvando...";
-
             const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
-            const cont = {}; NIVEIS.forEach(n => cont[n] = 0); 
-            let aval = 0, aus = 0;
-            
+            const cont = {}; NIVEIS.forEach(n => cont[n] = 0); let aval = 0, aus = 0;
             ativos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
 
             turmaAtualEdicao.total_alunos = ativos.length;
@@ -704,13 +698,105 @@
             } catch (e) {
                 console.error(e);
                 alert("Erro ao salvar: " + e.message);
-            } finally {
-                btn.innerText = "💾 SALVAR ALTERAÇÕES";
-            }
+            } finally { btn.innerText = "💾 SALVAR ALTERAÇÕES"; }
         };
 
         // ==========================================
-        // DASHBOARD PROFESSOR + PAGINAÇÃO
+        // NOVO: LÓGICA DO MODAL DE INTERVENÇÃO (RELATÓRIO PDF)
+        // ==========================================
+        window.abrirModalIntervencao = (nivel, isProf) => {
+            nivelImpressaoAtual = nivel; // Guarda para o nome do PDF
+            const listaBase = isProf ? filteredProfData : filteredAdmData;
+            let temAlunos = false;
+            
+            // Inicia o HTML interno focado na impressão
+            let html = `<div id="documento-pdf" style="padding: 20px; font-family: 'Segoe UI', sans-serif; color: #333; background: white;">
+                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
+                    <h2 style="color: var(--primary); margin: 0 0 5px 0;">Relatório de Intervenção Pedagógica</h2>
+                    <h3 style="margin: 0; color: #555; font-weight: normal;">Foco de Análise: <strong style="color: black;">${nivel}</strong></h3>
+                </div>`;
+
+            listaBase.forEach(item => {
+                const d = item.originalData;
+                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
+                const fSer = isProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
+                const admChkSeries = isProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
+
+                let alunosNesteNivel = [];
+
+                if (d.detalhes) {
+                    d.detalhes.forEach(aluno => {
+                        if (aluno.transferido) return;
+                        if (aluno.nivel !== nivel) return;
+
+                        if (isRural) {
+                            if (isProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
+                            if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
+                        }
+                        
+                        alunosNesteNivel.push(aluno);
+                    });
+                }
+
+                if (alunosNesteNivel.length > 0) {
+                    temAlunos = true;
+                    // Monta o título da turma. Se for rural usa o txt com a série específica filtrada
+                    let tituloTurma = `${d.escola} | ${d.serie} ${d.turma} - Prof: ${d.professor}`;
+                    if (isRural && item.exibeSerie) {
+                       tituloTurma = `${d.escola} | ${item.exibeSerie.replace(/<[^>]*>?/gm, '')} ${d.turma} - Prof: ${d.professor}`;
+                    }
+
+                    html += `
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; page-break-inside: avoid;">
+                        <div style="background: #f4f4f9; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; font-size: 1rem;">
+                            🏫 ${tituloTurma} <span style="float: right; font-weight: normal; font-size: 0.85rem;">(${alunosNesteNivel.length} aluno${alunosNesteNivel.length>1?'s':''})</span>
+                        </div>
+                        <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
+                    
+                    alunosNesteNivel.forEach(a => {
+                        let infoExtra = "";
+                        if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
+                        if(isRural) infoExtra += ` <span style='color:var(--gray); font-size: 0.85rem;'>- ${a.serieRural}</span>`;
+                        html += `<li style="padding: 4px 0; border-bottom: 1px dashed #eee;">${a.nome}${infoExtra}</li>`;
+                    });
+                    
+                    html += `</ul></div>`;
+                }
+            });
+
+            html += `</div>`;
+
+            if (!temAlunos) {
+                html = `<div style="padding: 30px; text-align: center; color: #666; font-size: 1.1rem;">Nenhum aluno no <b>${nivel}</b> com os filtros atuais.<br><small>Tente mudar o mês ou a escola.</small></div>`;
+                document.getElementById('modal-interv-btn-print').style.display = 'none';
+            } else {
+                document.getElementById('modal-interv-btn-print').style.display = 'inline-block';
+            }
+
+            document.getElementById('conteudo-pdf-intervencao').innerHTML = html;
+            document.getElementById('modal-intervencao').classList.remove('hidden');
+        };
+
+        window.imprimirIntervencao = () => {
+            const btn = document.getElementById('modal-interv-btn-print');
+            btn.innerText = "⏳ GERANDO PDF...";
+            const el = document.getElementById('documento-pdf'); // Pega só o miolo branco limpo
+            
+            const opt = {
+                margin:       10,
+                filename:     `Intervencao_${nivelImpressaoAtual}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(el).save().then(() => {
+                btn.innerText = "🖨️ GERAR PDF DA LISTA";
+            });
+        };
+
+        // ==========================================
+        // DASHBOARD PROFESSOR
         // ==========================================
         window.carregarHistoricoProf = async () => {
             const dbRef = ref(db, 'avaliacoes');
@@ -732,13 +818,6 @@
             }
         };
 
-        window.excluirAvaliacao = async (id) => {
-            if(confirm("Tem certeza que deseja EXCLUIR essa avaliação inteira? Não poderá desfazer.")) {
-                try { await remove(ref(db, 'avaliacoes/' + id)); alert("Excluído!"); carregarHistoricoProf(); } 
-                catch(e) { alert("Erro ao excluir: " + e.message); }
-            }
-        };
-
         window.aplicarFiltrosProf = () => {
             const fEsc = document.getElementById('prof-filtro-escola').value;
             const fSer = document.getElementById('prof-filtro-serie').value;
@@ -749,7 +828,7 @@
             let tAlunos=0, tAus=0, tAval=0, tLaudo=0;
             let tN1=0, tN2=0, tN3=0, tN4=0, tIni=0, tFlu=0;
             
-            filteredProfData = []; // Zera a lista de exibição
+            filteredProfData = []; 
 
             meusEnviosCache.forEach(d => {
                 let dia = "01", mes = "01", ano = "2026";
@@ -814,17 +893,13 @@
                     txtSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${fSer})</small>`;
                 }
 
-                // Salva na lista filtrada para paginar depois
                 filteredProfData.push({
-                    id: d.id,
-                    escola: d.escola || "Escola?",
-                    serie: txtSerie,
-                    turma: d.turma || "?",
-                    data: d.data_avaliacao || "Data?"
+                    originalData: d,
+                    exibeSerie: txtSerie,
+                    id: d.id, escola: d.escola || "Escola?", serie: txtSerie, turma: d.turma || "?", data: d.data_avaliacao || "Data?"
                 });
             });
 
-            // Atualiza KPIs
             const pctN1 = tAval > 0 ? (tN1/tAval*100).toFixed(1) : 0;
             const pctN2 = tAval > 0 ? (tN2/tAval*100).toFixed(1) : 0;
             const pctN3 = tAval > 0 ? (tN3/tAval*100).toFixed(1) : 0;
@@ -843,7 +918,6 @@
             document.getElementById('prof-ini').innerText = pctIni + "%";
             document.getElementById('prof-flu').innerText = pctFlu + "%";
 
-            // Reseta página e desenha tabela
             currentPageProf = 1;
             renderTableProf();
             renderPaginationProf();
@@ -852,70 +926,53 @@
         window.renderTableProf = () => {
             let html = "";
             const start = (currentPageProf - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = filteredProfData.slice(start, end);
-
-            if (pageData.length === 0) {
-                html = "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
-            } else {
+            const pageData = filteredProfData.slice(start, start + rowsPerPage);
+            if (pageData.length === 0) { html = "<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>"; } 
+            else {
                 pageData.forEach(d => {
                     html += `<tr>
-                        <td>${d.escola}<br><small>${d.serie} - ${d.turma}</small></td>
-                        <td>${d.data}</td>
-                        <td>
-                            <button class="btn-table" title="Inspecionar e Editar" onclick="abrirModalTurma('${d.id}', false)">🔍</button>
-                            <button class="btn-table" title="Excluir Turma Inteira" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
-                        </td>
+                        <td>${d.escola}<br><small>${d.serie} - ${d.turma}</small></td><td>${d.data}</td>
+                        <td><button class="btn-table" onclick="abrirModalTurma('${d.id}', false)">🔍</button><button class="btn-table" onclick="excluirAvaliacao('${d.id}')">🗑️</button></td>
                     </tr>`;
                 });
             }
             document.getElementById('tabela-prof').innerHTML = html;
         };
 
-        window.mudarPaginaProf = (page) => {
-            currentPageProf = page;
-            renderTableProf();
-            renderPaginationProf();
-        };
+        window.mudarPaginaProf = (page) => { currentPageProf = page; renderTableProf(); renderPaginationProf(); };
 
         window.renderPaginationProf = () => {
             const totalPages = Math.ceil(filteredProfData.length / rowsPerPage);
             let html = "";
             if (totalPages > 1) {
                 html += `<button class="page-btn" ${currentPageProf === 1 ? 'disabled' : ''} onclick="mudarPaginaProf(${currentPageProf - 1})">« Ant</button>`;
-                for(let i=1; i<=totalPages; i++) {
-                    html += `<button class="page-btn ${currentPageProf === i ? 'active' : ''}" onclick="mudarPaginaProf(${i})">${i}</button>`;
-                }
+                for(let i=1; i<=totalPages; i++) { html += `<button class="page-btn ${currentPageProf === i ? 'active' : ''}" onclick="mudarPaginaProf(${i})">${i}</button>`; }
                 html += `<button class="page-btn" ${currentPageProf === totalPages ? 'disabled' : ''} onclick="mudarPaginaProf(${currentPageProf + 1})">Próx »</button>`;
             }
             document.getElementById('paginacao-prof').innerHTML = html;
         };
 
-
-        // ==========================================
-        // DASHBOARD ADMIN + PAGINAÇÃO
-        // ==========================================
+        // --- DASHBOARD ADMIN ---
         window.carregarAdmin = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
             if (snapshot.exists()) {
                 const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
                 todosDadosAdm = all.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                
                 const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
                 const selEscola = document.getElementById('filtro-escola');
                 selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
                 escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
                 aplicarFiltros();
-            } else { 
-                document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; 
-            }
+            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
         };
 
         window.aplicarFiltros = () => {
             const fEscola = document.getElementById('filtro-escola').value;
             const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
             const fDia = document.getElementById('adm-dia-ini').value;
+            const fMes = document.getElementById('adm-mes-ini').value;
+            const fAno = document.getElementById('adm-ano-ini').value;
             
             let gAlunos=0, gAus=0, gAval=0, gLaudo=0;
             let gN1=0, gN2=0, gN3=0, gN4=0, gIni=0, gFlu=0;
@@ -933,6 +990,8 @@
                 } catch(e) { return; }
 
                 if(fDia && dia !== fDia) return;
+                if(fMes !== "TODOS" && mes !== fMes) return;
+                if(fAno !== "TODOS" && ano !== fAno) return;
 
                 let contribuiu = false; 
                 let tAvalLocal = 0, tFluLocal = 0;
@@ -942,7 +1001,6 @@
                     if (d.detalhes && Array.isArray(d.detalhes)) {
                         d.detalhes.forEach(aluno => {
                             if(aluno.transferido) return;
-                            
                             if (chkSeries.length > 0 && chkSeries.includes(aluno.serieRural)) {
                                 gAlunos++;
                                 if (aluno.nivel === 'Ausente') { gAus++; }
@@ -987,24 +1045,18 @@
                 if (contribuiu) {
                     let pct = tAvalLocal > 0 ? (tFluLocal/tAvalLocal*100).toFixed(0)+"%" : "-";
                     let exibeSerie = d.serie;
-                    
                     if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
                         let arrS = Array.from(ruralSeriesMatched).sort();
                         exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${arrS.join(', ')})</small>`;
                     }
 
                     filteredAdmData.push({
-                        id: d.id,
-                        escola: d.escola,
-                        serieTurma: `${exibeSerie} ${d.turma}`,
-                        data: d.data_avaliacao,
-                        prof: d.professor,
-                        pct: pct
+                        originalData: d, exibeSerie: exibeSerie, id: d.id, escola: d.escola,
+                        serieTurma: `${exibeSerie} ${d.turma}`, data: d.data_avaliacao, prof: d.professor, pct: pct
                     });
                 }
             });
 
-            // Atualiza KPIs
             const pctN1 = gAval > 0 ? (gN1/gAval*100).toFixed(1) : 0;
             const pctN2 = gAval > 0 ? (gN2/gAval*100).toFixed(1) : 0;
             const pctN3 = gAval > 0 ? (gN3/gAval*100).toFixed(1) : 0;
@@ -1023,7 +1075,6 @@
             document.getElementById('adm-ini').innerText = pctIni + "%";
             document.getElementById('adm-flu').innerText = pctFlu + "%";
 
-            // Reseta página e desenha tabela
             currentPageAdm = 1;
             renderTableAdm();
             renderPaginationAdm();
@@ -1032,93 +1083,34 @@
         window.renderTableAdm = () => {
             let html = "";
             const start = (currentPageAdm - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = filteredAdmData.slice(start, end);
-
-            if (pageData.length === 0) {
-                html = "<tr><td colspan='6'>Sem dados.</td></tr>";
-            } else {
+            const pageData = filteredAdmData.slice(start, start + rowsPerPage);
+            if (pageData.length === 0) { html = "<tr><td colspan='6'>Sem dados.</td></tr>"; } 
+            else {
                 pageData.forEach(d => {
-                    html += `<tr>
-                        <td>${d.escola}</td><td>${d.serieTurma}</td><td>${d.data}</td><td>${d.prof}</td><td>${d.pct}</td>
-                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td>
-                    </tr>`;
+                    html += `<tr><td>${d.escola}</td><td>${d.serieTurma}</td><td>${d.data}</td><td>${d.prof}</td><td>${d.pct}</td>
+                        <td><button class="btn-table" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td></tr>`;
                 });
             }
             document.getElementById('tabela-envios').innerHTML = html;
         };
 
-        window.mudarPaginaAdm = (page) => {
-            currentPageAdm = page;
-            renderTableAdm();
-            renderPaginationAdm();
-        };
+        window.mudarPaginaAdm = (page) => { currentPageAdm = page; renderTableAdm(); renderPaginationAdm(); };
 
         window.renderPaginationAdm = () => {
             const totalPages = Math.ceil(filteredAdmData.length / rowsPerPage);
             let html = "";
             if (totalPages > 1) {
                 html += `<button class="page-btn" ${currentPageAdm === 1 ? 'disabled' : ''} onclick="mudarPaginaAdm(${currentPageAdm - 1})">« Ant</button>`;
-                
-                // Mostra no máximo 5 botões de número para não quebrar o layout se houver muitas páginas
                 let startPage = Math.max(1, currentPageAdm - 2);
                 let endPage = Math.min(totalPages, currentPageAdm + 2);
-                
                 if (startPage > 1) html += `<span style="padding: 5px;">...</span>`;
-                
-                for(let i = startPage; i <= endPage; i++) {
-                    html += `<button class="page-btn ${currentPageAdm === i ? 'active' : ''}" onclick="mudarPaginaAdm(${i})">${i}</button>`;
-                }
-                
+                for(let i = startPage; i <= endPage; i++) { html += `<button class="page-btn ${currentPageAdm === i ? 'active' : ''}" onclick="mudarPaginaAdm(${i})">${i}</button>`; }
                 if (endPage < totalPages) html += `<span style="padding: 5px;">...</span>`;
-                
                 html += `<button class="page-btn" ${currentPageAdm === totalPages ? 'disabled' : ''} onclick="mudarPaginaAdm(${currentPageAdm + 1})">Próx »</button>`;
             }
             document.getElementById('paginacao-adm').innerHTML = html;
         };
 
-        // --- EVOLUÇÃO ---
-        window.prepararComparativo = () => {
-            const select = document.getElementById('filtro-evo-turma');
-            select.innerHTML = '<option value="">Selecione...</option>';
-            const chavesUnicas = new Set();
-            meusEnviosCache.forEach(d => { chavesUnicas.add(`${d.escola}|${d.serie}|${d.turma}`); });
-            chavesUnicas.forEach(key => { const [esc, ser, tur] = key.split('|'); const opt = document.createElement('option'); opt.value = key; opt.innerText = `${esc} - ${ser} ${tur}`; select.appendChild(opt); });
-        };
-
-        window.gerarRelatorioEvolucao = () => {
-            const key = document.getElementById('filtro-evo-turma').value;
-            if(!key) return alert("Selecione uma turma.");
-            const [esc, ser, tur] = key.split('|');
-            const avaliacoesTurma = meusEnviosCache.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
-            avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-
-            if(avaliacoesTurma.length < 2) {
-                document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações.</td></tr>";
-                document.getElementById('resultado-evo').classList.remove('hidden'); return;
-            }
-            const atual = avaliacoesTurma[0]; const anterior = avaliacoesTurma[1];
-            document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} vs ${anterior.data_avaliacao}`;
-
-            let html = "";
-            if(atual.detalhes) {
-                atual.detalhes.forEach(alunoAtual => {
-                    if(alunoAtual.transferido) return; 
-
-                    const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
-                    const nivelAtual = alunoAtual.nivel || "-";
-                    const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
-                    let badge = '<span class="badge badge-same">➖ Manteve</span>';
-                    if (alunoAnt && PESO_NIVEL[nivelAtual] !== undefined && PESO_NIVEL[nivelAnt] !== undefined) {
-                        if (PESO_NIVEL[nivelAtual] > PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-up">⬆️ Evoluiu</span>';
-                        else if (PESO_NIVEL[nivelAtual] < PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-down">⬇️ Regrediu</span>';
-                    } else if (nivelAnt === "Novo") { badge = '<span class="badge" style="background:#e3f2fd; color:#1565C0;">🆕 Novo</span>'; }
-                    html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
-                });
-            }
-            document.getElementById('tabela-evo').innerHTML = html;
-            document.getElementById('resultado-evo').classList.remove('hidden');
-        };
     </script>
 </body>
 </html>
