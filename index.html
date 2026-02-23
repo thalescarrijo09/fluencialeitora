@@ -63,12 +63,16 @@
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
-        /* Dashboard KPI (Atualizado para Múltiplos Cards) */
-        .dash-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; justify-content: center; }
-        .kpi-card { flex: 1 1 90px; background: white; padding: 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .kpi-num { font-size: 1.3rem; font-weight: bold; color: var(--secondary); }
-        .kpi-label { font-size: 0.7rem; color: #666; margin-top: 2px; font-weight: bold; }
+        /* Dashboard KPI - Agora com 6 colunas simétricas */
+        .dash-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
+        .kpi-card { background: white; padding: 15px 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); }
+        .kpi-label { font-size: 0.75rem; color: #666; margin-top: 5px; font-weight: bold; }
         
+        /* Barra de Resumo (Pílula) */
+        .stats-bar { display: flex; gap: 15px; font-size: 0.9rem; background: white; padding: 6px 18px; border-radius: 20px; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap; }
+        .stats-bar span { display: flex; align-items: center; gap: 5px; }
+
         .adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .adm-table th, .adm-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         
@@ -107,8 +111,10 @@
         
         @media print { .no-print { display: none !important; } }
         @media (max-width: 700px) { 
+            .dash-grid { grid-template-columns: repeat(3, 1fr); } 
             .tabs { flex-wrap: wrap; } 
             .filter-row { flex-direction: column; align-items: stretch; }
+            .stats-bar { justify-content: center; width: 100%; }
         }
     </style>
 </head>
@@ -205,25 +211,31 @@
                         <option value="A">Turma A</option><option value="B">Turma B</option><option value="C">Turma C</option><option value="D">Turma D</option><option value="E">Turma E</option><option value="F">Turma F</option><option value="G">Turma G</option><option value="H">Turma H</option><option value="I">Turma I</option><option value="J">Turma J</option><option value="K">Turma K</option><option value="Unica">Única</option>
                     </select>
                 </div>
-                <div class="filter-row" style="background:#eee; padding:5px; border-radius:6px;">
-                    <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
-                    <div class="date-select-group">
-                        <select id="prof-mes-filtro" onchange="aplicarFiltrosProf()">
-                            <option value="TODOS">Mês (Todos)</option>
-                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-                        </select>
-                        <select id="prof-ano-filtro" onchange="aplicarFiltrosProf()">
-                            <option value="TODOS">Todos os Anos</option>
-                            <option value="2026">2026</option><option value="2025">2025</option>
-                        </select>
+                
+                <div class="filter-row" style="background:#eee; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
+                        <div class="date-select-group">
+                            <select id="prof-mes-filtro" onchange="aplicarFiltrosProf()">
+                                <option value="TODOS">Mês (Todos)</option>
+                                <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                            </select>
+                            <select id="prof-ano-filtro" onchange="aplicarFiltrosProf()">
+                                <option value="TODOS">Todos os Anos</option>
+                                <option value="2026">2026</option><option value="2025">2025</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-bar">
+                        <span style="color:var(--secondary)"><strong>Avaliados:</strong> <span id="prof-total">0</span></span>
+                        <span style="color:var(--orange)"><strong>Ausentes:</strong> <span id="prof-ausente">0</span></span>
+                        <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="prof-laudo">0</span></span>
                     </div>
                 </div>
             </div>
 
             <div class="dash-grid">
-                <div class="kpi-card"><div class="kpi-num" id="prof-total" style="color:var(--secondary);">0</div><div class="kpi-label">Avaliados</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-ausente" style="color:var(--orange);">0</div><div class="kpi-label">Ausentes</div></div>
-                <div class="kpi-card"><div class="kpi-num" id="prof-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Laudos</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
                 <div class="kpi-card"><div class="kpi-num" id="prof-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
@@ -272,13 +284,9 @@
             <div style="margin-bottom:10px; font-weight:bold; color:#555;">Filtros:</div>
             <div class="filter-row">
                 <select id="filtro-escola" onchange="aplicarFiltros()" style="max-width:200px;"><option value="TODAS">Todas as Escolas</option></select>
-                <div class="date-select-group">
-                    <select id="adm-dia-ini"><option value="">Dia</option></select>
-                    <select id="adm-mes-ini"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
-                    <select id="adm-ano-ini"><option value="2026">2026</option></select>
-                </div>
             </div>
-            <div class="filter-row">
+            
+            <div class="filter-row" style="margin-bottom: 15px;">
                 <div class="chk-group" id="chk-series">
                     <label class="chk-label"><input type="checkbox" value="1º Ano" checked onchange="aplicarFiltros()"> 1º</label>
                     <label class="chk-label"><input type="checkbox" value="2º Ano" checked onchange="aplicarFiltros()"> 2º</label>
@@ -288,12 +296,26 @@
                 </div>
                 <button onclick="carregarAdmin()" style="background:var(--primary); color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-left:auto;">🔄 Atualizar</button>
             </div>
+
+            <div class="filter-row" style="background:#eee; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
+                    <div class="date-select-group">
+                        <select id="adm-dia-ini"><option value="">Dia (Todos)</option></select>
+                        <select id="adm-mes-ini"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
+                        <select id="adm-ano-ini"><option value="2026">2026</option></select>
+                    </div>
+                </div>
+                
+                <div class="stats-bar">
+                    <span style="color:var(--secondary)"><strong>Avaliados:</strong> <span id="adm-total">0</span></span>
+                    <span style="color:var(--orange)"><strong>Ausentes:</strong> <span id="adm-ausente">0</span></span>
+                    <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="adm-laudo">0</span></span>
+                </div>
+            </div>
         </div>
 
         <div class="dash-grid">
-            <div class="kpi-card"><div class="kpi-num" id="adm-total" style="color:var(--secondary);">0</div><div class="kpi-label">Avaliados</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-ausente" style="color:var(--orange);">0</div><div class="kpi-label">Ausentes</div></div>
-            <div class="kpi-card"><div class="kpi-num" id="adm-laudo" style="color:var(--purple);">0</div><div class="kpi-label">Laudos</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
             <div class="kpi-card"><div class="kpi-num" id="adm-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
@@ -789,7 +811,6 @@
 
             document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
             
-            // Calculo individual das porcentagens
             const pctN1 = tAval > 0 ? (tN1/tAval*100).toFixed(1) : 0;
             const pctN2 = tAval > 0 ? (tN2/tAval*100).toFixed(1) : 0;
             const pctN3 = tAval > 0 ? (tN3/tAval*100).toFixed(1) : 0;
@@ -798,8 +819,8 @@
             const pctFlu = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
 
             document.getElementById('prof-total').innerText = tAval;
-            document.getElementById('prof-ausente').innerText = tAus; // Número absoluto
-            document.getElementById('prof-laudo').innerText = tLaudo; // Número absoluto
+            document.getElementById('prof-ausente').innerText = tAus; 
+            document.getElementById('prof-laudo').innerText = tLaudo; 
             
             document.getElementById('prof-n1').innerText = pctN1 + "%";
             document.getElementById('prof-n2').innerText = pctN2 + "%";
@@ -965,8 +986,8 @@
             const pctFlu = gAval > 0 ? (gFlu/gAval*100).toFixed(1) : 0;
 
             document.getElementById('adm-total').innerText = gAval;
-            document.getElementById('adm-ausente').innerText = gAus; // Absoluto
-            document.getElementById('adm-laudo').innerText = gLaudo; // Absoluto
+            document.getElementById('adm-ausente').innerText = gAus;
+            document.getElementById('adm-laudo').innerText = gLaudo;
             
             document.getElementById('adm-n1').innerText = pctN1 + "%";
             document.getElementById('adm-n2').innerText = pctN2 + "%";
