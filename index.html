@@ -313,9 +313,15 @@
                 <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
                     <div class="date-select-group">
-                        <select id="adm-dia-ini" onchange="window.aplicarFiltros()"><option value="">Dia (Todos)</option></select>
-                        <select id="adm-mes-ini" onchange="window.aplicarFiltros()"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
-                        <select id="adm-ano-ini" onchange="window.aplicarFiltros()"><option value="2026">2026</option></select>
+                        <select id="adm-mes-ini" onchange="window.aplicarFiltros()">
+                            <option value="TODOS">Mês (Todos)</option>
+                            <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+                        </select>
+                        <select id="adm-ano-ini" onchange="window.aplicarFiltros()">
+                            <option value="TODOS">Todos os Anos</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -422,9 +428,8 @@
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
-            const sAdm = document.getElementById('adm-dia-ini');
             for(let i=1; i<=31; i++){ 
-                let o = document.createElement('option'); o.value = i < 10 ? "0"+i : i; o.innerText = i; s.appendChild(o.cloneNode(true)); sAdm.appendChild(o);
+                let o = document.createElement('option'); o.value = i < 10 ? "0"+i : i; o.innerText = i; s.appendChild(o.cloneNode(true));
             } 
         })();
 
@@ -811,7 +816,6 @@
             } else { 
                 window.aplicarFiltrosProf(); 
             }
-            window.prepararComparativo();
         };
 
         window.excluirAvaliacao = async (id) => {
@@ -1041,9 +1045,13 @@
         window.aplicarFiltros = () => {
             const fEscola = document.getElementById('filtro-escola').value;
             const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-            const fDia = document.getElementById('adm-dia-ini').value;
-            const fMes = document.getElementById('adm-mes-ini').value;
-            const fAno = document.getElementById('adm-ano-ini').value;
+            
+            let fDia = ""; let fMes = "TODOS"; let fAno = "TODOS";
+            
+            // Tratamento seguro caso os elementos não existam na DOM imediatamente
+            if (document.getElementById('adm-dia-ini')) fDia = document.getElementById('adm-dia-ini').value;
+            if (document.getElementById('adm-mes-ini')) fMes = document.getElementById('adm-mes-ini').value;
+            if (document.getElementById('adm-ano-ini')) fAno = document.getElementById('adm-ano-ini').value;
             
             let gAlunos=0, gAus=0, gAval=0, gLaudo=0;
             let gN1=0, gN2=0, gN3=0, gN4=0, gIni=0, gFlu=0;
@@ -1053,12 +1061,12 @@
             todosDadosAdm.forEach(d => {
                 if (fEscola !== "TODAS" && d.escola !== fEscola) return;
                 
-                let dia, mes, ano;
+                let dia = "", mes = "", ano = "";
                 try {
-                    if(d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else { [ano, mes, dia] = d.data_avaliacao.split('-'); }
-                    dia = dia.padStart(2, '0');
-                } catch(e) { return; }
+                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else if(d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    if(mes) mes = mes.padStart(2, '0');
+                } catch(e) {}
 
                 if(fDia && dia !== fDia) return;
                 if(fMes !== "TODOS" && mes !== fMes) return;
