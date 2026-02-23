@@ -63,7 +63,7 @@
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
-        /* Dashboard KPI - Agora com 6 colunas simétricas */
+        /* Dashboard KPI */
         .dash-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
         .kpi-card { background: white; padding: 15px 10px; text-align: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .kpi-num { font-size: 1.4rem; font-weight: bold; color: var(--secondary); }
@@ -79,6 +79,13 @@
         /* Botões de Ação na Tabela */
         .btn-table { padding: 6px 8px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 1.1rem; margin-right: 5px; transition: background 0.2s; }
         .btn-table:hover { background: #e0e0e0; }
+
+        /* Paginação (NOVO) */
+        .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 15px; flex-wrap: wrap; }
+        .page-btn { padding: 6px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; color: var(--text); transition: 0.2s; }
+        .page-btn:hover:not(:disabled) { background: #eee; }
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Filtros */
         .filter-container { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -251,6 +258,7 @@
                     <thead><tr><th>Turma</th><th>Data</th><th>Ações</th></tr></thead>
                     <tbody id="tabela-prof"></tbody>
                 </table>
+                <div id="paginacao-prof" class="pagination"></div>
             </div>
         </div>
 
@@ -301,9 +309,9 @@
                 <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
                     <div class="date-select-group">
-                        <select id="adm-dia-ini"><option value="">Dia (Todos)</option></select>
-                        <select id="adm-mes-ini"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
-                        <select id="adm-ano-ini"><option value="2026">2026</option></select>
+                        <select id="adm-dia-ini" onchange="aplicarFiltros()"><option value="">Dia (Todos)</option></select>
+                        <select id="adm-mes-ini" onchange="aplicarFiltros()"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
+                        <select id="adm-ano-ini" onchange="aplicarFiltros()"><option value="2026">2026</option></select>
                     </div>
                 </div>
                 
@@ -330,6 +338,7 @@
                 <thead><tr><th>Escola</th><th>Turma</th><th>Data</th><th>Prof.</th><th>Fluência</th><th>Ações</th></tr></thead>
                 <tbody id="tabela-envios"></tbody>
             </table>
+            <div id="paginacao-adm" class="pagination"></div>
         </div>
     </div>
 
@@ -382,6 +391,13 @@
         let meusEnviosCache = [];
         let todosDadosAdm = []; 
         let turmaAtualEdicao = null; 
+
+        // VARIÁVEIS DE PAGINAÇÃO
+        const rowsPerPage = 10;
+        let currentPageProf = 1;
+        let filteredProfData = []; // Guarda as linhas filtradas antes de renderizar
+        let currentPageAdm = 1;
+        let filteredAdmData = [];
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
@@ -693,7 +709,9 @@
             }
         };
 
-        // --- DASHBOARD PROFESSOR ---
+        // ==========================================
+        // DASHBOARD PROFESSOR + PAGINAÇÃO
+        // ==========================================
         window.carregarHistoricoProf = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
@@ -730,7 +748,8 @@
 
             let tAlunos=0, tAus=0, tAval=0, tLaudo=0;
             let tN1=0, tN2=0, tN3=0, tN4=0, tIni=0, tFlu=0;
-            let html = "";
+            
+            filteredProfData = []; // Zera a lista de exibição
 
             meusEnviosCache.forEach(d => {
                 let dia = "01", mes = "01", ano = "2026";
@@ -790,27 +809,22 @@
                 tLaudo += laudoClass;
                 tN1 += n1Class; tN2 += n2Class; tN3 += n3Class; tN4 += n4Class; tIni += iniClass; tFlu += fluClass;
 
-                const txtEscola = d.escola || "Escola?"; 
                 let txtSerie = d.serie || "?"; 
-                const txtTurma = d.turma || "?"; 
-                const txtData = d.data_avaliacao || "Data?";
-                
                 if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched) {
                     txtSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${fSer})</small>`;
                 }
 
-                html += `<tr>
-                    <td>${txtEscola}<br><small>${txtSerie} - ${txtTurma}</small></td>
-                    <td>${txtData}</td>
-                    <td>
-                        <button class="btn-table" title="Inspecionar e Editar" onclick="abrirModalTurma('${d.id}', false)">🔍</button>
-                        <button class="btn-table" title="Excluir Turma Inteira" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
-                    </td>
-                </tr>`;
+                // Salva na lista filtrada para paginar depois
+                filteredProfData.push({
+                    id: d.id,
+                    escola: d.escola || "Escola?",
+                    serie: txtSerie,
+                    turma: d.turma || "?",
+                    data: d.data_avaliacao || "Data?"
+                });
             });
 
-            document.getElementById('tabela-prof').innerHTML = html || "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
-            
+            // Atualiza KPIs
             const pctN1 = tAval > 0 ? (tN1/tAval*100).toFixed(1) : 0;
             const pctN2 = tAval > 0 ? (tN2/tAval*100).toFixed(1) : 0;
             const pctN3 = tAval > 0 ? (tN3/tAval*100).toFixed(1) : 0;
@@ -828,52 +842,59 @@
             document.getElementById('prof-n4').innerText = pctN4 + "%";
             document.getElementById('prof-ini').innerText = pctIni + "%";
             document.getElementById('prof-flu').innerText = pctFlu + "%";
+
+            // Reseta página e desenha tabela
+            currentPageProf = 1;
+            renderTableProf();
+            renderPaginationProf();
         };
 
-        // --- EVOLUÇÃO ---
-        window.prepararComparativo = () => {
-            const select = document.getElementById('filtro-evo-turma');
-            select.innerHTML = '<option value="">Selecione...</option>';
-            const chavesUnicas = new Set();
-            meusEnviosCache.forEach(d => { chavesUnicas.add(`${d.escola}|${d.serie}|${d.turma}`); });
-            chavesUnicas.forEach(key => { const [esc, ser, tur] = key.split('|'); const opt = document.createElement('option'); opt.value = key; opt.innerText = `${esc} - ${ser} ${tur}`; select.appendChild(opt); });
-        };
-
-        window.gerarRelatorioEvolucao = () => {
-            const key = document.getElementById('filtro-evo-turma').value;
-            if(!key) return alert("Selecione uma turma.");
-            const [esc, ser, tur] = key.split('|');
-            const avaliacoesTurma = meusEnviosCache.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
-            avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-
-            if(avaliacoesTurma.length < 2) {
-                document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações.</td></tr>";
-                document.getElementById('resultado-evo').classList.remove('hidden'); return;
-            }
-            const atual = avaliacoesTurma[0]; const anterior = avaliacoesTurma[1];
-            document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} vs ${anterior.data_avaliacao}`;
-
+        window.renderTableProf = () => {
             let html = "";
-            if(atual.detalhes) {
-                atual.detalhes.forEach(alunoAtual => {
-                    if(alunoAtual.transferido) return; 
+            const start = (currentPageProf - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = filteredProfData.slice(start, end);
 
-                    const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
-                    const nivelAtual = alunoAtual.nivel || "-";
-                    const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
-                    let badge = '<span class="badge badge-same">➖ Manteve</span>';
-                    if (alunoAnt && PESO_NIVEL[nivelAtual] !== undefined && PESO_NIVEL[nivelAnt] !== undefined) {
-                        if (PESO_NIVEL[nivelAtual] > PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-up">⬆️ Evoluiu</span>';
-                        else if (PESO_NIVEL[nivelAtual] < PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-down">⬇️ Regrediu</span>';
-                    } else if (nivelAnt === "Novo") { badge = '<span class="badge" style="background:#e3f2fd; color:#1565C0;">🆕 Novo</span>'; }
-                    html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
+            if (pageData.length === 0) {
+                html = "<tr><td colspan='3'>Nenhum dado encontrado com este filtro.</td></tr>";
+            } else {
+                pageData.forEach(d => {
+                    html += `<tr>
+                        <td>${d.escola}<br><small>${d.serie} - ${d.turma}</small></td>
+                        <td>${d.data}</td>
+                        <td>
+                            <button class="btn-table" title="Inspecionar e Editar" onclick="abrirModalTurma('${d.id}', false)">🔍</button>
+                            <button class="btn-table" title="Excluir Turma Inteira" onclick="excluirAvaliacao('${d.id}')">🗑️</button>
+                        </td>
+                    </tr>`;
                 });
             }
-            document.getElementById('tabela-evo').innerHTML = html;
-            document.getElementById('resultado-evo').classList.remove('hidden');
+            document.getElementById('tabela-prof').innerHTML = html;
         };
 
-        // --- DASHBOARD ADMIN ---
+        window.mudarPaginaProf = (page) => {
+            currentPageProf = page;
+            renderTableProf();
+            renderPaginationProf();
+        };
+
+        window.renderPaginationProf = () => {
+            const totalPages = Math.ceil(filteredProfData.length / rowsPerPage);
+            let html = "";
+            if (totalPages > 1) {
+                html += `<button class="page-btn" ${currentPageProf === 1 ? 'disabled' : ''} onclick="mudarPaginaProf(${currentPageProf - 1})">« Ant</button>`;
+                for(let i=1; i<=totalPages; i++) {
+                    html += `<button class="page-btn ${currentPageProf === i ? 'active' : ''}" onclick="mudarPaginaProf(${i})">${i}</button>`;
+                }
+                html += `<button class="page-btn" ${currentPageProf === totalPages ? 'disabled' : ''} onclick="mudarPaginaProf(${currentPageProf + 1})">Próx »</button>`;
+            }
+            document.getElementById('paginacao-prof').innerHTML = html;
+        };
+
+
+        // ==========================================
+        // DASHBOARD ADMIN + PAGINAÇÃO
+        // ==========================================
         window.carregarAdmin = async () => {
             const dbRef = ref(db, 'avaliacoes');
             const snapshot = await get(dbRef);
@@ -886,7 +907,9 @@
                 selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
                 escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
                 aplicarFiltros();
-            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
+            } else { 
+                document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; 
+            }
         };
 
         window.aplicarFiltros = () => {
@@ -896,8 +919,9 @@
             
             let gAlunos=0, gAus=0, gAval=0, gLaudo=0;
             let gN1=0, gN2=0, gN3=0, gN4=0, gIni=0, gFlu=0;
-            let htmlTabela = "";
             
+            filteredAdmData = [];
+
             todosDadosAdm.forEach(d => {
                 if (fEscola !== "TODAS" && d.escola !== fEscola) return;
                 
@@ -969,15 +993,18 @@
                         exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${arrS.join(', ')})</small>`;
                     }
 
-                    htmlTabela += `<tr>
-                        <td>${d.escola}</td><td>${exibeSerie} ${d.turma}</td><td>${d.data_avaliacao}</td><td>${d.professor}</td><td>${pct}</td>
-                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td>
-                    </tr>`;
+                    filteredAdmData.push({
+                        id: d.id,
+                        escola: d.escola,
+                        serieTurma: `${exibeSerie} ${d.turma}`,
+                        data: d.data_avaliacao,
+                        prof: d.professor,
+                        pct: pct
+                    });
                 }
             });
 
-            document.getElementById('tabela-envios').innerHTML = htmlTabela || "<tr><td colspan='6'>Sem dados.</td></tr>";
-            
+            // Atualiza KPIs
             const pctN1 = gAval > 0 ? (gN1/gAval*100).toFixed(1) : 0;
             const pctN2 = gAval > 0 ? (gN2/gAval*100).toFixed(1) : 0;
             const pctN3 = gAval > 0 ? (gN3/gAval*100).toFixed(1) : 0;
@@ -995,6 +1022,102 @@
             document.getElementById('adm-n4').innerText = pctN4 + "%";
             document.getElementById('adm-ini').innerText = pctIni + "%";
             document.getElementById('adm-flu').innerText = pctFlu + "%";
+
+            // Reseta página e desenha tabela
+            currentPageAdm = 1;
+            renderTableAdm();
+            renderPaginationAdm();
+        };
+
+        window.renderTableAdm = () => {
+            let html = "";
+            const start = (currentPageAdm - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = filteredAdmData.slice(start, end);
+
+            if (pageData.length === 0) {
+                html = "<tr><td colspan='6'>Sem dados.</td></tr>";
+            } else {
+                pageData.forEach(d => {
+                    html += `<tr>
+                        <td>${d.escola}</td><td>${d.serieTurma}</td><td>${d.data}</td><td>${d.prof}</td><td>${d.pct}</td>
+                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="abrirModalTurma('${d.id}', true)">🔍</button></td>
+                    </tr>`;
+                });
+            }
+            document.getElementById('tabela-envios').innerHTML = html;
+        };
+
+        window.mudarPaginaAdm = (page) => {
+            currentPageAdm = page;
+            renderTableAdm();
+            renderPaginationAdm();
+        };
+
+        window.renderPaginationAdm = () => {
+            const totalPages = Math.ceil(filteredAdmData.length / rowsPerPage);
+            let html = "";
+            if (totalPages > 1) {
+                html += `<button class="page-btn" ${currentPageAdm === 1 ? 'disabled' : ''} onclick="mudarPaginaAdm(${currentPageAdm - 1})">« Ant</button>`;
+                
+                // Mostra no máximo 5 botões de número para não quebrar o layout se houver muitas páginas
+                let startPage = Math.max(1, currentPageAdm - 2);
+                let endPage = Math.min(totalPages, currentPageAdm + 2);
+                
+                if (startPage > 1) html += `<span style="padding: 5px;">...</span>`;
+                
+                for(let i = startPage; i <= endPage; i++) {
+                    html += `<button class="page-btn ${currentPageAdm === i ? 'active' : ''}" onclick="mudarPaginaAdm(${i})">${i}</button>`;
+                }
+                
+                if (endPage < totalPages) html += `<span style="padding: 5px;">...</span>`;
+                
+                html += `<button class="page-btn" ${currentPageAdm === totalPages ? 'disabled' : ''} onclick="mudarPaginaAdm(${currentPageAdm + 1})">Próx »</button>`;
+            }
+            document.getElementById('paginacao-adm').innerHTML = html;
+        };
+
+        // --- EVOLUÇÃO ---
+        window.prepararComparativo = () => {
+            const select = document.getElementById('filtro-evo-turma');
+            select.innerHTML = '<option value="">Selecione...</option>';
+            const chavesUnicas = new Set();
+            meusEnviosCache.forEach(d => { chavesUnicas.add(`${d.escola}|${d.serie}|${d.turma}`); });
+            chavesUnicas.forEach(key => { const [esc, ser, tur] = key.split('|'); const opt = document.createElement('option'); opt.value = key; opt.innerText = `${esc} - ${ser} ${tur}`; select.appendChild(opt); });
+        };
+
+        window.gerarRelatorioEvolucao = () => {
+            const key = document.getElementById('filtro-evo-turma').value;
+            if(!key) return alert("Selecione uma turma.");
+            const [esc, ser, tur] = key.split('|');
+            const avaliacoesTurma = meusEnviosCache.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
+            avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+
+            if(avaliacoesTurma.length < 2) {
+                document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações.</td></tr>";
+                document.getElementById('resultado-evo').classList.remove('hidden'); return;
+            }
+            const atual = avaliacoesTurma[0]; const anterior = avaliacoesTurma[1];
+            document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} vs ${anterior.data_avaliacao}`;
+
+            let html = "";
+            if(atual.detalhes) {
+                atual.detalhes.forEach(alunoAtual => {
+                    if(alunoAtual.transferido) return; 
+
+                    const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
+                    const nivelAtual = alunoAtual.nivel || "-";
+                    const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
+                    let badge = '<span class="badge badge-same">➖ Manteve</span>';
+                    if (alunoAnt && PESO_NIVEL[nivelAtual] !== undefined && PESO_NIVEL[nivelAnt] !== undefined) {
+                        if (PESO_NIVEL[nivelAtual] > PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-up">⬆️ Evoluiu</span>';
+                        else if (PESO_NIVEL[nivelAtual] < PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-down">⬇️ Regrediu</span>';
+                    } else if (nivelAnt === "Novo") { badge = '<span class="badge" style="background:#e3f2fd; color:#1565C0;">🆕 Novo</span>'; }
+                    html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
+                });
+            }
+            document.getElementById('tabela-evo').innerHTML = html;
+            document.getElementById('resultado-evo').classList.remove('hidden');
         };
     </script>
 </body>
