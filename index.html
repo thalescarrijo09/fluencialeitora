@@ -317,15 +317,9 @@
                 <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <span style="font-size:0.8rem; font-weight:bold;">Filtrar Data:</span>
                     <div class="date-select-group">
-                        <select id="adm-mes-ini" onchange="window.aplicarFiltros()">
-                            <option value="TODOS">Mês (Todos)</option>
-                            <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
-                        </select>
-                        <select id="adm-ano-ini" onchange="window.aplicarFiltros()">
-                            <option value="TODOS">Todos os Anos</option>
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                        </select>
+                        <select id="adm-dia-ini" onchange="window.aplicarFiltros()"><option value="">Dia (Todos)</option></select>
+                        <select id="adm-mes-ini" onchange="window.aplicarFiltros()"><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select>
+                        <select id="adm-ano-ini" onchange="window.aplicarFiltros()"><option value="2026">2026</option></select>
                     </div>
                 </div>
                 
@@ -405,6 +399,7 @@
                     <label class="chk-label"><input type="checkbox" value="Nível 4" class="chk-nivel"> Nível 4</label>
                     <label class="chk-label"><input type="checkbox" value="Iniciante" class="chk-nivel"> Iniciante</label>
                     <label class="chk-label"><input type="checkbox" value="Fluente" class="chk-nivel"> Fluente</label>
+                    <label class="chk-label" style="background: #ffebee; border-color: var(--red);"><input type="checkbox" value="Ausente" class="chk-nivel"> Ausentes</label>
                 </div>
                 <button class="btn-main" onclick="window.gerarVisualizacaoRelatorioAvancado()" style="padding: 10px; margin-top: 0; margin-bottom: 15px;">👁️ VISUALIZAR LISTA</button>
 
@@ -460,7 +455,7 @@
         let filteredAdmData = [];
 
         let nivelImpressaoAtual = "";
-        let modoRelatorioAvancadoIsProf = true; // Controla se o modal 3 foi aberto pela Prof ou pelo Adm
+        let modoRelatorioAvancadoIsProf = true; 
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
@@ -746,7 +741,6 @@
         window.abrirModalRelatorioAvancado = (isProf) => {
             modoRelatorioAvancadoIsProf = isProf;
             
-            // Limpa as caixinhas ao abrir
             document.querySelectorAll('.chk-nivel').forEach(chk => chk.checked = false);
             document.getElementById('conteudo-pdf-avancado').innerHTML = "";
             document.getElementById('btn-print-avancado').style.display = 'none';
@@ -808,11 +802,11 @@
                         <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
                     
                     alunosNesteFiltro.forEach(a => {
-                        // Identifica o nível do aluno visualmente na lista
                         let corNivel = "var(--primary)";
                         if(a.nivel === "Nível 1" || a.nivel === "Nível 2") corNivel = "var(--red)";
                         if(a.nivel === "Nível 3" || a.nivel === "Nível 4") corNivel = "var(--orange)";
                         if(a.nivel === "Fluente") corNivel = "var(--success)";
+                        if(a.nivel === "Ausente") corNivel = "var(--red)"; // Cor vermelha para ausentes para chamar a atenção
 
                         let infoExtra = ` <span style='color:${corNivel}; font-weight:bold; font-size: 0.85rem;'>[${a.nivel}]</span>`;
                         if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
@@ -855,95 +849,6 @@
             });
         };
 
-        // LÓGICA DO MODAL SIMPLES (1 NÍVEL) MANTIDA
-        window.abrirModalIntervencao = (nivel, isProf) => {
-            nivelImpressaoAtual = nivel;
-            const listaBase = isProf ? filteredProfData : filteredAdmData;
-            let temAlunos = false;
-            
-            let html = `<div id="documento-pdf" style="padding: 20px; font-family: 'Segoe UI', sans-serif; color: #333; background: white;">
-                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
-                    <h2 style="color: var(--primary); margin: 0 0 5px 0;">Relatório de Intervenção Pedagógica</h2>
-                    <h3 style="margin: 0; color: #555; font-weight: normal;">Foco de Análise: <strong style="color: black;">${nivel}</strong></h3>
-                </div>`;
-
-            listaBase.forEach(item => {
-                const d = item.originalData;
-                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
-                const fSer = isProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
-                const admChkSeries = isProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-
-                let alunosNesteNivel = [];
-
-                if (d.detalhes) {
-                    d.detalhes.forEach(aluno => {
-                        if (aluno.transferido) return;
-                        if (aluno.nivel !== nivel) return;
-
-                        if (isRural) {
-                            if (isProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
-                            if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
-                        }
-                        alunosNesteNivel.push(aluno);
-                    });
-                }
-
-                if (alunosNesteNivel.length > 0) {
-                    temAlunos = true;
-                    let tituloTurma = `${d.escola} | ${d.serie} ${d.turma}`;
-                    if (isRural && item.exibeSerie) {
-                       tituloTurma = `${d.escola} | ${item.exibeSerie.replace(/<[^>]*>?/gm, '')} ${d.turma}`;
-                    }
-
-                    html += `
-                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; page-break-inside: avoid;">
-                        <div style="background: #f4f4f9; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; font-size: 1rem;">
-                            🏫 ${tituloTurma} <span style="float: right; font-weight: normal; font-size: 0.85rem;">(${alunosNesteNivel.length} aluno${alunosNesteNivel.length>1?'s':''})</span>
-                        </div>
-                        <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
-                    
-                    alunosNesteNivel.forEach(a => {
-                        let infoExtra = "";
-                        if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
-                        if(isRural) infoExtra += ` <span style='color:var(--gray); font-size: 0.85rem;'>- ${a.serieRural}</span>`;
-                        html += `<li style="padding: 4px 0; border-bottom: 1px dashed #eee;">${a.nome}${infoExtra}</li>`;
-                    });
-                    
-                    html += `</ul></div>`;
-                }
-            });
-
-            html += `</div>`;
-
-            if (!temAlunos) {
-                html = `<div style="padding: 30px; text-align: center; color: #666; font-size: 1.1rem;">Nenhum aluno no <b>${nivel}</b> com os filtros atuais.<br><small>Tente mudar o mês ou a escola.</small></div>`;
-                document.getElementById('modal-interv-btn-print').style.display = 'none';
-            } else {
-                document.getElementById('modal-interv-btn-print').style.display = 'inline-block';
-            }
-
-            document.getElementById('conteudo-pdf-intervencao').innerHTML = html;
-            document.getElementById('modal-intervencao').classList.remove('hidden');
-        };
-
-        window.imprimirIntervencao = () => {
-            const btn = document.getElementById('modal-interv-btn-print');
-            btn.innerText = "⏳ GERANDO PDF...";
-            const el = document.getElementById('documento-pdf'); 
-            
-            const opt = {
-                margin:       10,
-                filename:     `Intervencao_${nivelImpressaoAtual}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(el).save().then(() => {
-                btn.innerText = "🖨️ GERAR PDF DA LISTA";
-            });
-        };
-
         // ==========================================
         // DASHBOARD PROFESSOR
         // ==========================================
@@ -964,13 +869,6 @@
                 window.aplicarFiltrosProf();
             } else { 
                 window.aplicarFiltrosProf(); 
-            }
-        };
-
-        window.excluirAvaliacao = async (id) => {
-            if(confirm("Tem certeza que deseja EXCLUIR essa avaliação inteira? Não poderá desfazer.")) {
-                try { await remove(ref(db, 'avaliacoes/' + id)); alert("Excluído!"); window.carregarHistoricoProf(); } 
-                catch(e) { alert("Erro ao excluir: " + e.message); }
             }
         };
 
