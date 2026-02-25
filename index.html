@@ -244,6 +244,10 @@
                         <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="prof-laudo">0</span></span>
                     </div>
                 </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                    <button class="btn-main" style="width: auto; padding: 6px 12px; margin: 0; font-size: 0.85rem; background: var(--secondary);" onclick="window.abrirModalRelatorioAvancado(true)">📄 Relatório Múltiplo</button>
+                </div>
             </div>
 
             <div class="dash-grid">
@@ -331,6 +335,10 @@
                     <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="adm-laudo">0</span></span>
                 </div>
             </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                <button class="btn-main" style="width: auto; padding: 6px 12px; margin: 0; font-size: 0.85rem; background: var(--secondary);" onclick="window.abrirModalRelatorioAvancado(false)">📄 Relatório Múltiplo</button>
+            </div>
         </div>
 
         <div class="dash-grid">
@@ -382,6 +390,33 @@
         </div>
     </div>
 
+    <div id="modal-relatorio-avancado" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header" style="background: var(--secondary);">
+                <h3 style="margin: 0; font-size: 1.1rem; color: white;">📄 Relatório Múltiplo</h3>
+                <button class="close-btn" onclick="document.getElementById('modal-relatorio-avancado').classList.add('hidden')">X</button>
+            </div>
+            <div class="modal-body" style="background: white;">
+                <p style="margin-top: 0;">Selecione os níveis que deseja agrupar no relatório:</p>
+                <div class="chk-group" style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; border-radius: 8px;">
+                    <label class="chk-label"><input type="checkbox" value="Nível 1" class="chk-nivel"> Nível 1</label>
+                    <label class="chk-label"><input type="checkbox" value="Nível 2" class="chk-nivel"> Nível 2</label>
+                    <label class="chk-label"><input type="checkbox" value="Nível 3" class="chk-nivel"> Nível 3</label>
+                    <label class="chk-label"><input type="checkbox" value="Nível 4" class="chk-nivel"> Nível 4</label>
+                    <label class="chk-label"><input type="checkbox" value="Iniciante" class="chk-nivel"> Iniciante</label>
+                    <label class="chk-label"><input type="checkbox" value="Fluente" class="chk-nivel"> Fluente</label>
+                </div>
+                <button class="btn-main" onclick="window.gerarVisualizacaoRelatorioAvancado()" style="padding: 10px; margin-top: 0; margin-bottom: 15px;">👁️ VISUALIZAR LISTA</button>
+
+                <div id="conteudo-pdf-avancado">
+                    </div>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button class="btn-main" id="btn-print-avancado" onclick="window.imprimirRelatorioAvancado()" style="width: auto; padding: 10px 20px; display: none;">🖨️ GERAR PDF DA LISTA</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -425,6 +460,7 @@
         let filteredAdmData = [];
 
         let nivelImpressaoAtual = "";
+        let modoRelatorioAvancadoIsProf = true; // Controla se o modal 3 foi aberto pela Prof ou pelo Adm
 
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
@@ -705,8 +741,121 @@
         };
 
         // ==========================================
-        // LÓGICA DO MODAL DE INTERVENÇÃO (RELATÓRIO PDF)
+        // NOVO: LÓGICA DO RELATÓRIO AVANÇADO (MÚLTIPLOS NÍVEIS)
         // ==========================================
+        window.abrirModalRelatorioAvancado = (isProf) => {
+            modoRelatorioAvancadoIsProf = isProf;
+            
+            // Limpa as caixinhas ao abrir
+            document.querySelectorAll('.chk-nivel').forEach(chk => chk.checked = false);
+            document.getElementById('conteudo-pdf-avancado').innerHTML = "";
+            document.getElementById('btn-print-avancado').style.display = 'none';
+            
+            document.getElementById('modal-relatorio-avancado').classList.remove('hidden');
+        };
+
+        window.gerarVisualizacaoRelatorioAvancado = () => {
+            const checkboxes = document.querySelectorAll('.chk-nivel:checked');
+            const niveisSelecionados = Array.from(checkboxes).map(c => c.value);
+
+            if (niveisSelecionados.length === 0) {
+                alert("Selecione pelo menos um nível para gerar o relatório.");
+                return;
+            }
+
+            const listaBase = modoRelatorioAvancadoIsProf ? filteredProfData : filteredAdmData;
+            let temAlunos = false;
+            
+            let html = `<div id="documento-pdf-avancado" style="padding: 20px; font-family: 'Segoe UI', sans-serif; color: #333; background: white;">
+                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
+                    <h2 style="color: var(--primary); margin: 0 0 5px 0;">Relatório de Intervenção Pedagógica</h2>
+                    <h3 style="margin: 0; color: #555; font-weight: normal;">Níveis: <strong style="color: black;">${niveisSelecionados.join(' | ')}</strong></h3>
+                </div>`;
+
+            listaBase.forEach(item => {
+                const d = item.originalData;
+                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
+                const fSer = modoRelatorioAvancadoIsProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
+                const admChkSeries = modoRelatorioAvancadoIsProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
+
+                let alunosNesteFiltro = [];
+
+                if (d.detalhes) {
+                    d.detalhes.forEach(aluno => {
+                        if (aluno.transferido) return;
+                        if (!niveisSelecionados.includes(aluno.nivel)) return;
+
+                        if (isRural) {
+                            if (modoRelatorioAvancadoIsProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
+                            if (!modoRelatorioAvancadoIsProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
+                        }
+                        alunosNesteFiltro.push(aluno);
+                    });
+                }
+
+                if (alunosNesteFiltro.length > 0) {
+                    temAlunos = true;
+                    let tituloTurma = `${d.escola} | ${d.serie} ${d.turma}`;
+                    if (isRural && item.exibeSerie) {
+                       tituloTurma = `${d.escola} | ${item.exibeSerie.replace(/<[^>]*>?/gm, '')} ${d.turma}`;
+                    }
+
+                    html += `
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; page-break-inside: avoid;">
+                        <div style="background: #f4f4f9; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; font-size: 1rem;">
+                            🏫 ${tituloTurma} <span style="float: right; font-weight: normal; font-size: 0.85rem;">(${alunosNesteFiltro.length} aluno${alunosNesteFiltro.length>1?'s':''})</span>
+                        </div>
+                        <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
+                    
+                    alunosNesteFiltro.forEach(a => {
+                        // Identifica o nível do aluno visualmente na lista
+                        let corNivel = "var(--primary)";
+                        if(a.nivel === "Nível 1" || a.nivel === "Nível 2") corNivel = "var(--red)";
+                        if(a.nivel === "Nível 3" || a.nivel === "Nível 4") corNivel = "var(--orange)";
+                        if(a.nivel === "Fluente") corNivel = "var(--success)";
+
+                        let infoExtra = ` <span style='color:${corNivel}; font-weight:bold; font-size: 0.85rem;'>[${a.nivel}]</span>`;
+                        if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
+                        if(isRural) infoExtra += ` <span style='color:var(--gray); font-size: 0.85rem;'>- ${a.serieRural}</span>`;
+                        
+                        html += `<li style="padding: 4px 0; border-bottom: 1px dashed #eee;">${a.nome}${infoExtra}</li>`;
+                    });
+                    
+                    html += `</ul></div>`;
+                }
+            });
+
+            html += `</div>`;
+
+            if (!temAlunos) {
+                html = `<div style="padding: 30px; text-align: center; color: #666; font-size: 1.1rem;">Nenhum aluno encontrado para os níveis selecionados.<br><small>Verifique os filtros principais de Mês e Escola.</small></div>`;
+                document.getElementById('btn-print-avancado').style.display = 'none';
+            } else {
+                document.getElementById('btn-print-avancado').style.display = 'inline-block';
+            }
+
+            document.getElementById('conteudo-pdf-avancado').innerHTML = html;
+        };
+
+        window.imprimirRelatorioAvancado = () => {
+            const btn = document.getElementById('btn-print-avancado');
+            btn.innerText = "⏳ GERANDO PDF...";
+            const el = document.getElementById('documento-pdf-avancado'); 
+            
+            const opt = {
+                margin:       10,
+                filename:     `Relatorio_Multiplo.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(el).save().then(() => {
+                btn.innerText = "🖨️ GERAR PDF DA LISTA";
+            });
+        };
+
+        // LÓGICA DO MODAL SIMPLES (1 NÍVEL) MANTIDA
         window.abrirModalIntervencao = (nivel, isProf) => {
             nivelImpressaoAtual = nivel;
             const listaBase = isProf ? filteredProfData : filteredAdmData;
@@ -1048,7 +1197,6 @@
             
             let fDia = ""; let fMes = "TODOS"; let fAno = "TODOS";
             
-            // Tratamento seguro caso os elementos não existam na DOM imediatamente
             if (document.getElementById('adm-dia-ini')) fDia = document.getElementById('adm-dia-ini').value;
             if (document.getElementById('adm-mes-ini')) fMes = document.getElementById('adm-mes-ini').value;
             if (document.getElementById('adm-ano-ini')) fAno = document.getElementById('adm-ano-ini').value;
