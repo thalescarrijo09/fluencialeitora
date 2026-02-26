@@ -154,8 +154,20 @@
         .modal-table tr.transferido td:first-child { text-decoration: line-through; color: #777; }
         
         @media print { .no-print { display: none !important; } }
+        
+        /* ========================================= */
+        /* RESPONSIVIDADE PARA CELULARES             */
+        /* ========================================= */
         @media (max-width: 768px) { 
-            .login-right { display: none; } /* Esconde a foto no celular para não atrapalhar o login */
+            /* Transforma o fundo da tela inteira na imagem no celular */
+            #screen-login.active { background: url('bg-login.jpg') center/cover no-repeat; }
+            
+            /* Coloca um efeito de "vidro fosco" atrás da caixa de login */
+            .login-left { background: rgba(244, 244, 249, 0.85); backdrop-filter: blur(4px); }
+            
+            /* Esconde a div da direita que dividia a tela */
+            .login-right { display: none; } 
+            
             .dash-grid { grid-template-columns: repeat(3, 1fr); } 
             .tabs { flex-wrap: wrap; } 
             .filter-row { flex-direction: column; align-items: stretch; }
