@@ -29,15 +29,15 @@
         .app-container { max-width: 950px; margin: 0 auto; padding: 15px; }
 
         /* ========================================= */
-        /* NOVO LOGIN: TELA DIVIDIDA                 */
+        /* NOVO LOGIN: TELA DIVIDIDA COM SUA IMAGEM  */
         /* ========================================= */
         #screen-login.active { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
         .login-left { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-light); padding: 20px; z-index: 2; }
         
-        /* Imagem puxada direto da internet (Unsplash). Pode ser trocada depois! */
+        /* A imagem do Canva vai aparecer aqui! */
         .login-right { 
             flex: 1.2; 
-            background: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop') center/cover no-repeat; 
+            background: url('bg-login.jpg') center/cover no-repeat; 
             position: relative; 
         }
         /* Efeito de transição suave (degradê) entre a cor de fundo e a imagem */
@@ -787,7 +787,7 @@
         };
 
         // ==========================================
-        // LÓGICA DO RELATÓRIO AVANÇADO (MÚLTIPLOS NÍVEIS)
+        // NOVO: LÓGICA DO RELATÓRIO AVANÇADO (MÚLTIPLOS NÍVEIS)
         // ==========================================
         window.abrirModalRelatorioAvancado = (isProf) => {
             modoRelatorioAvancadoIsProf = isProf;
