@@ -19,28 +19,47 @@
             --success: #2E7D32; 
         }
         
-        /* Ajuste no body para o fundo de tela cheia do login funcionar perfeitamente */
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:0; }
+        /* NOVO: FUNDO GERAL DO SISTEMA (A IMAGEM DAS CRIANÇAS LENDO) */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            color: var(--text); 
+            margin:0; 
+            padding:0; 
+            /* A imagem fica fixa, ocupando a tela toda. O sistema rola por cima dela. */
+            background: url('fundo-app.jpg') center/cover fixed no-repeat;
+            min-height: 100vh;
+        }
         
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* Container centralizador para as telas de dentro do sistema */
-        .app-container { max-width: 950px; margin: 0 auto; padding: 15px; }
+        /* ========================================= */
+        /* NOVO: SISTEMA FLUTUANTE (EFEITO VIDRO)    */
+        /* ========================================= */
+        .app-container { 
+            max-width: 950px; 
+            margin: 40px auto; /* Descola do teto e do rodapé */
+            padding: 25px; 
+            /* Fundo branco translúcido com desfoque */
+            background: rgba(244, 244, 249, 0.88); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25); /* Sombra pesada para destacar do fundo */
+            border: 1px solid rgba(255,255,255,0.6); /* Bordinha de vidro */
+        }
 
         /* ========================================= */
-        /* NOVO LOGIN: TELA DIVIDIDA COM SUA IMAGEM  */
+        /* LOGIN: TELA DIVIDIDA COM IMAGEM PRÓPRIA   */
         /* ========================================= */
-        #screen-login.active { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+        #screen-login.active { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-light); z-index: 10; position: relative;}
         .login-left { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-light); padding: 20px; z-index: 2; }
         
-        /* A imagem do Canva vai aparecer aqui! */
         .login-right { 
             flex: 1.2; 
             background: url('bg-login.jpg') center/cover no-repeat; 
             position: relative; 
         }
-        /* Efeito de transição suave (degradê) entre a cor de fundo e a imagem */
         .login-right::after { 
             content: ''; position: absolute; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(to right, rgba(244, 244, 249, 1) 0%, rgba(244, 244, 249, 0) 15%); 
@@ -53,12 +72,12 @@
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
         /* ========================================= */
 
-        /* NOVO HEADER: PATTERN EDUCACIONAL SUTIL */
+        /* HEADER INTERNO */
         .app-header { 
             background-color: var(--primary); 
-            /* Desenho sutil em base64 SVG (estrelinhas e cruzes) */
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            color: white; padding: 20px; border-radius: 0 0 12px 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            color: white; padding: 20px; border-radius: 12px; /* Agora é arredondado em cima também */
+            margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
         }
         .app-header span { font-weight: bold; font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
         .btn-logout { background: rgba(0,0,0,0.2); border: none; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
@@ -66,16 +85,17 @@
 
         /* ABAS */
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #e0e0e0; border-radius: 8px; font-weight: bold; cursor: pointer; color: #555; white-space: nowrap; min-width: 100px; transition: 0.2s; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: rgba(255,255,255,0.7); border-radius: 8px; font-weight: bold; cursor: pointer; color: #555; white-space: nowrap; min-width: 100px; transition: 0.2s; }
+        .tab-btn:hover { background: white; }
         .tab-btn.active { background: var(--secondary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        /* Componentes */
-        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        /* Componentes - Ajustados para ficarem super brancos em cima do vidro fosco */
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .btn-main { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; box-shadow: 0 2px 4px rgba(230,81,0,0.3); }
         .btn-main:hover { background: #CC4800; transform: translateY(-1px); }
         
         /* Alunos e Tabelas */
-        .aluno-row { background: white; padding: 12px; margin-bottom: 8px; border-left: 5px solid #ccc; border-radius: 8px; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+        .aluno-row { background: white; padding: 12px; margin-bottom: 8px; border-left: 5px solid #ccc; border-radius: 8px; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-right: 1px solid #eee; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
         .aluno-row.avaliado { border-left-color: var(--primary); background: #FFF3E0; } 
         .aluno-row.ausente { border-left-color: var(--red); background: #ffebee; }
         .aluno-row.transferido { border-left-color: var(--gray); background: #f0f0f0; opacity: 0.7; }
@@ -96,7 +116,7 @@
         
         /* Dashboard KPI */
         .dash-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; justify-content: center; }
-        .kpi-card { background: white; padding: 15px 10px; text-align: center; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .kpi-card { background: white; padding: 15px 10px; text-align: center; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
         .kpi-num { font-size: 1.5rem; font-weight: bold; color: var(--secondary); pointer-events: none; }
         .kpi-label { font-size: 0.8rem; color: #666; margin-top: 5px; font-weight: bold; pointer-events: none; }
         
@@ -116,13 +136,13 @@
 
         /* Paginação */
         .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 20px; flex-wrap: wrap; }
-        .page-btn { padding: 8px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; color: var(--text); transition: 0.2s; font-weight: bold; }
+        .page-btn { padding: 8px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; color: var(--text); transition: 0.2s; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .page-btn:hover:not(:disabled) { background: #f0f0f0; }
         .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Filtros */
-        .filter-container { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .filter-container { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 15px; }
         .chk-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .chk-label { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; background: #eee; padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
@@ -148,24 +168,21 @@
         .close-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: white; font-weight: bold; line-height: 1; transition: 0.2s; }
         .close-btn:hover { transform: scale(1.1); }
         
-        .modal-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .modal-table th, .modal-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
-        .modal-table tr.transferido { background: #f0f0f0; opacity: 0.7; }
-        .modal-table tr.transferido td:first-child { text-decoration: line-through; color: #777; }
-        
-        @media print { .no-print { display: none !important; } }
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white !important; } /* Tira o fundo na hora de imprimir */
+            .app-container { box-shadow: none; border: none; margin: 0; padding: 0; }
+        }
         
         /* ========================================= */
         /* RESPONSIVIDADE PARA CELULARES             */
         /* ========================================= */
         @media (max-width: 768px) { 
-            /* Transforma o fundo da tela inteira na imagem no celular */
+            /* Sistema central ocupa mais espaço no celular */
+            .app-container { margin: 15px; padding: 15px; border-radius: 15px; }
+            
             #screen-login.active { background: url('bg-login.jpg') center/cover no-repeat; }
-            
-            /* Coloca um efeito de "vidro fosco" atrás da caixa de login */
             .login-left { background: rgba(244, 244, 249, 0.85); backdrop-filter: blur(4px); }
-            
-            /* Esconde a div da direita que dividia a tela */
             .login-right { display: none; } 
             
             .dash-grid { grid-template-columns: repeat(3, 1fr); } 
@@ -192,7 +209,8 @@
                 <p id="msg-login" style="color:var(--red); margin-top:15px; font-weight: bold;"></p>
             </div>
         </div>
-        <div class="login-right"></div> </div>
+        <div class="login-right"></div>
+    </div>
 
     <div id="screen-app" class="screen">
       <div class="app-container">
@@ -311,1113 +329,4 @@
                 <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Nível 3', true)" title="Clique para gerar lista de Nível 3"><div class="kpi-num" id="prof-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
                 <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Nível 4', true)" title="Clique para gerar lista de Nível 4"><div class="kpi-num" id="prof-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
                 <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Iniciante', true)" title="Clique para gerar lista de Iniciantes"><div class="kpi-num" id="prof-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
-                <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Fluente', true)" title="Clique para gerar lista de Fluentes"><div class="kpi-num" id="prof-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
-            </div>
-
-            <div class="card">
-                <h3 style="margin-top: 0; color: var(--secondary); display: inline-block;">Minhas Turmas Avaliadas</h3>
-                <button onclick="window.carregarHistoricoProf()" style="float:right; font-size:0.8rem; padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; background: white;">🔄 Atualizar</button>
-                <table class="adm-table" style="margin-top: 10px;">
-                    <thead><tr><th>Turma</th><th>Data</th><th>Ações</th></tr></thead>
-                    <tbody id="tabela-prof"></tbody>
-                </table>
-                <div id="paginacao-prof" class="pagination"></div>
-            </div>
-        </div>
-
-        <div id="view-evo" class="hidden">
-            <div class="card">
-                <h3 style="margin-top: 0; color: var(--secondary); border-bottom: 2px solid #eee; padding-bottom: 10px;">🔍 Comparar Evolução da Turma</h3>
-                <label style="font-weight: bold; color: #555;">Selecione a Turma:</label>
-                <select id="filtro-evo-turma" style="width:100%; margin-bottom:15px; margin-top: 5px; padding: 10px;"><option value="">Carregando...</option></select>
-                <button class="btn-main" onclick="window.gerarRelatorioEvolucao()" style="padding:12px; font-size: 1.1rem;">GERAR COMPARATIVO</button>
-            </div>
-            <div id="resultado-evo" class="hidden">
-                <div class="card">
-                    <h4 style="margin-top: 0; color: var(--primary);">Resultado Comparativo</h4>
-                    <p id="evo-info" style="font-size:0.95rem; color:#666; background: #fff3e0; padding: 8px; border-radius: 6px;"></p>
-                    <table class="comp-table" style="margin-top: 15px;">
-                        <thead><tr><th>Aluno</th><th>Antes</th><th>Agora</th><th>Evolução</th></tr></thead>
-                        <tbody id="tabela-evo"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-      </div> </div>
-
-    <div id="screen-admin" class="screen">
-      <div class="app-container">
-        <div class="app-header" style="background:#333; background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
-            <span>Painel Gestor | SIAVEL</span>
-            <button class="btn-logout" onclick="window.logout()">Sair do Sistema</button>
-        </div>
-
-        <div class="filter-container">
-            <div style="margin-bottom:10px; font-weight:bold; color:#555; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Filtros da Rede</div>
-            <div class="filter-row">
-                <select id="filtro-escola" onchange="window.aplicarFiltros()" style="max-width:300px; padding: 10px;"><option value="TODAS">Todas as Escolas</option></select>
-            </div>
-            
-            <div class="filter-row" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px;">
-                <div class="chk-group" id="chk-series">
-                    <label class="chk-label"><input type="checkbox" value="1º Ano" checked onchange="window.aplicarFiltros()"> 1º</label>
-                    <label class="chk-label"><input type="checkbox" value="2º Ano" checked onchange="window.aplicarFiltros()"> 2º</label>
-                    <label class="chk-label"><input type="checkbox" value="3º Ano" checked onchange="window.aplicarFiltros()"> 3º</label>
-                    <label class="chk-label"><input type="checkbox" value="4º Ano" checked onchange="window.aplicarFiltros()"> 4º</label>
-                    <label class="chk-label"><input type="checkbox" value="5º Ano" checked onchange="window.aplicarFiltros()"> 5º</label>
-                </div>
-                <button onclick="window.carregarAdmin()" style="background:var(--primary); color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer; margin-left:auto; font-weight: bold; transition: 0.2s;">🔄 Forçar Atualização</button>
-            </div>
-
-            <div class="filter-row" style="background:#eee; padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #ddd;">
-                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <span style="font-size:0.9rem; font-weight:bold; color: #333;">Filtrar Data:</span>
-                    <div class="date-select-group">
-                        <select id="adm-mes-ini" onchange="window.aplicarFiltros()" style="margin:0; padding: 6px 10px;">
-                            <option value="TODOS">Mês (Todos)</option>
-                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-                        </select>
-                        <select id="adm-ano-ini" onchange="window.aplicarFiltros()" style="margin:0; padding: 6px 10px;">
-                            <option value="TODOS">Todos os Anos</option>
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="stats-bar">
-                    <span style="color:var(--secondary)"><strong>Avaliados:</strong> <span id="adm-total" style="font-size: 1.1rem;">0</span></span>
-                    <span style="color:var(--orange)"><strong>Ausentes:</strong> <span id="adm-ausente" style="font-size: 1.1rem;">0</span></span>
-                    <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="adm-laudo" style="font-size: 1.1rem;">0</span></span>
-                </div>
-            </div>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
-                <button class="btn-main" style="width: auto; padding: 8px 15px; margin: 0; font-size: 0.9rem; background: var(--secondary);" onclick="window.abrirModalRelatorioAvancado(false)">📄 Gerar Relatório Múltiplo</button>
-            </div>
-        </div>
-
-        <div class="dash-grid">
-            <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Nível 1', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n1" style="color:var(--red);">0%</div><div class="kpi-label">Nível 1</div></div>
-            <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Nível 2', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n2" style="color:var(--red);">0%</div><div class="kpi-label">Nível 2</div></div>
-            <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Nível 3', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n3" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 3</div></div>
-            <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Nível 4', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-n4" style="color:var(--orange);">0%</div><div class="kpi-label">Nível 4</div></div>
-            <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Iniciante', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-ini" style="color:var(--primary);">0%</div><div class="kpi-label">Iniciante</div></div>
-            <div class="kpi-card hover-card" onclick="window.abrirModalIntervencao('Fluente', false)" title="Clique para ver os alunos"><div class="kpi-num" id="adm-flu" style="color:var(--success);">0%</div><div class="kpi-label">Fluente</div></div>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top: 0; color: #333; display: inline-block;">Registros do Banco de Dados</h3>
-            <table class="adm-table" style="margin-top: 10px;">
-                <thead><tr><th>Escola</th><th>Turma</th><th>Data</th><th>Avaliador(a)</th><th>Fluência</th><th>Ações</th></tr></thead>
-                <tbody id="tabela-envios"></tbody>
-            </table>
-            <div id="paginacao-adm" class="pagination"></div>
-        </div>
-      </div> </div>
-
-    <div id="modal-detalhes" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-titulo">Detalhes da Turma</h3>
-                <button class="close-btn" onclick="window.fecharModal()">×</button>
-            </div>
-            <div class="modal-body" id="modal-body">
-                </div>
-            <div class="modal-footer hidden" id="modal-footer">
-                <button class="btn-main" onclick="window.salvarEdicaoModal()" style="margin:0; font-size: 1.1rem; padding: 12px;">💾 SALVAR ALTERAÇÕES</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-intervencao" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 650px;">
-            <div class="modal-header" style="background: var(--secondary);">
-                <h3 id="modal-interv-titulo" style="font-weight: 500;">Foco Pedagógico</h3>
-                <button class="close-btn" onclick="document.getElementById('modal-intervencao').classList.add('hidden')">×</button>
-            </div>
-            <div class="modal-body" style="background: white;">
-                <div id="conteudo-pdf-intervencao">
-                    </div>
-            </div>
-            <div class="modal-footer" style="text-align: center; background: #eef2f5;">
-                <button class="btn-main" id="modal-interv-btn-print" onclick="window.imprimirIntervencao()" style="width: auto; padding: 12px 25px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ GERAR PDF DA LISTA</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-relatorio-avancado" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 750px;">
-            <div class="modal-header" style="background: var(--secondary);">
-                <h3 style="margin: 0; font-size: 1.1rem; color: white; font-weight: 500;">📄 Relatório Pedagógico Múltiplo</h3>
-                <button class="close-btn" onclick="document.getElementById('modal-relatorio-avancado').classList.add('hidden')">×</button>
-            </div>
-            <div class="modal-body" style="background: white;">
-                <p style="margin-top: 0; font-size: 0.95rem; color: #555; font-weight: bold;">1. Selecione os níveis que deseja agrupar no relatório:</p>
-                <div class="chk-group" style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e0e0e0;">
-                    <label class="chk-label"><input type="checkbox" value="Nível 1" class="chk-nivel"> Nível 1</label>
-                    <label class="chk-label"><input type="checkbox" value="Nível 2" class="chk-nivel"> Nível 2</label>
-                    <label class="chk-label"><input type="checkbox" value="Nível 3" class="chk-nivel"> Nível 3</label>
-                    <label class="chk-label"><input type="checkbox" value="Nível 4" class="chk-nivel"> Nível 4</label>
-                    <label class="chk-label"><input type="checkbox" value="Iniciante" class="chk-nivel"> Iniciante</label>
-                    <label class="chk-label"><input type="checkbox" value="Fluente" class="chk-nivel"> Fluente</label>
-                    <label class="chk-label" style="background: #ffebee; border-color: var(--red);"><input type="checkbox" value="Ausente" class="chk-nivel"> Ausentes</label>
-                </div>
-                <button class="btn-main" onclick="window.gerarVisualizacaoRelatorioAvancado()" style="padding: 12px; margin-top: 0; margin-bottom: 20px; font-size: 1rem;">👁️ VISUALIZAR RESULTADO</button>
-
-                <div id="conteudo-pdf-avancado">
-                    </div>
-            </div>
-            <div class="modal-footer" style="text-align: center; background: #eef2f5;">
-                <button class="btn-main" id="btn-print-avancado" onclick="window.imprimirRelatorioAvancado()" style="width: auto; padding: 12px 25px; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ GERAR PDF DESTA LISTA</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, get, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCYV-OOz55TvJ7cLPfJkDP7idGL25MXxis",
-            authDomain: "leituramineiros.firebaseapp.com",
-            databaseURL: "https://leituramineiros-default-rtdb.firebaseio.com",
-            projectId: "leituramineiros",
-            storageBucket: "leituramineiros.firebasestorage.app",
-            messagingSenderId: "221434879480",
-            appId: "1:221434879480:web:1ca32bfc8ad743b5974a0d"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-
-        const PERFIS = {
-            'jane@siavel.com': { nome: 'Jane', escolas: ['Paniago', 'Otalécio', 'Maria Eduarda', 'Salviano', 'Dom Bosco', 'Santo Antônio', 'Elias Carrijo', 'Tonico', 'Professor Juarez'], series: ['4º Ano', '5º Ano'], modo: 'padrao' },
-            'wellita@siavel.com': { nome: 'Wellita', escolas: ['Paniago', 'Otalécio', 'Maria Eduarda', 'Salviano', 'Dom Bosco', 'Santo Antônio', 'Elias Carrijo', 'Tonico', 'Professor Juarez'], series: ['3º Ano'], modo: 'padrao' },
-            'marcia@siavel.com': { nome: 'Marcia', escolas: ['Reverendo Eudóxio', 'Comecinho de Vida', 'Castelo Branco', 'Maria Eduarda', 'Padre Maximino', 'Dom Bosco', 'Professor Salviano Neves Amorim', 'Santo Antônio', 'Professor Juarez', 'Tonico Corredeira', 'Elias Carrijo de Souza', 'Paniago'], series: ['1º Ano', '2º Ano'], modo: 'padrao' },
-            'welma@siavel.com': { nome: 'Welma', escolas: ['ESCOLA AMÉRICO CAETANO', 'ESCOLA FARROUPILHA', 'ESCOLA FARROUPILHA EXTENSÃO', 'ESCOLA ANTONIO ALVES', 'ESCOLA GUSTAVO ALVES', 'ESCOLA ANTONIO MESSIAS', 'ESCOLA CAINDÃO', 'ESCOLA SALTO', 'ESCOLA MORRO DOIS IRMÃOS', 'ESCOLA PINGUELA'], series: ['Multisseriada'], modo: 'rural' },
-            'adm@siavel.com': { nome: 'Admin', modo: 'admin' }
-        };
-
-        const NIVEIS = ["Nível 1", "Nível 2", "Nível 3", "Nível 4", "Iniciante", "Fluente"];
-        const PESO_NIVEL = { "Ausente": 0, "Nível 1": 1, "Nível 2": 2, "Nível 3": 3, "Nível 4": 4, "Iniciante": 5, "Fluente": 6 };
-        
-        let usuarioAtual = null;
-        let dadosTurma = {};
-        let meusEnviosCache = [];
-        let todosDadosAdm = []; 
-        let turmaAtualEdicao = null; 
-
-        const rowsPerPage = 10;
-        let currentPageProf = 1;
-        let filteredProfData = []; 
-        let currentPageAdm = 1;
-        let filteredAdmData = [];
-
-        let nivelImpressaoAtual = "";
-        let modoRelatorioAvancadoIsProf = true; 
-
-        (function initDias() { 
-            const s = document.getElementById('sel-dia'); 
-            for(let i=1; i<=31; i++){ 
-                let o = document.createElement('option'); o.value = i < 10 ? "0"+i : i; o.innerText = i; s.appendChild(o.cloneNode(true));
-            } 
-        })();
-
-        window.login = () => {
-            const e = document.getElementById('email').value;
-            const s = document.getElementById('senha').value;
-            signInWithEmailAndPassword(auth, e, s).catch(err => document.getElementById('msg-login').innerText = "Erro no Login. Verifique e-mail e senha.");
-        };
-
-        window.logout = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            if (user) {
-                const email = user.email;
-                if (PERFIS[email]) {
-                    usuarioAtual = { ...PERFIS[email], email: email };
-                    if (usuarioAtual.modo === 'admin') {
-                        document.getElementById('screen-admin').classList.add('active');
-                        window.carregarAdmin();
-                    } else {
-                        document.getElementById('screen-app').classList.add('active');
-                        window.configurarInterfaceProfessor();
-                        window.carregarHistoricoProf();
-                    }
-                } else { alert("Usuário não configurado."); window.logout(); }
-            } else { document.getElementById('screen-login').classList.add('active'); }
-        });
-
-        window.mudarAbaProf = (aba) => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            ['view-nova','view-hist','view-evo'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            if(aba === 'nova') { document.getElementById('tab-nova').classList.add('active'); document.getElementById('view-nova').classList.remove('hidden'); }
-            else if(aba === 'hist') { document.getElementById('tab-hist').classList.add('active'); document.getElementById('view-hist').classList.remove('hidden'); window.carregarHistoricoProf(); }
-            else if(aba === 'evo') { document.getElementById('tab-evo').classList.add('active'); document.getElementById('view-evo').classList.remove('hidden'); window.prepararComparativo(); }
-        };
-
-        window.configurarInterfaceProfessor = () => {
-            document.getElementById('header-user').innerText = `Olá, ${usuarioAtual.nome} (Avaliadora)`;
-            const se = document.getElementById('sel-escola'); se.innerHTML = '<option value="">Selecione...</option>';
-            usuarioAtual.escolas.forEach(esc => se.innerHTML += `<option>${esc}</option>`);
-            const ss = document.getElementById('sel-serie'); ss.innerHTML = '';
-            usuarioAtual.series.forEach(ser => ss.innerHTML += `<option>${ser}</option>`);
-            window.mudarAbaProf('nova');
-        };
-
-        window.verificarHistoricoTurma = async () => {
-            const esc = document.getElementById('sel-escola').value;
-            const ser = document.getElementById('sel-serie').value;
-            const tur = document.getElementById('sel-turma').value;
-            const msg = document.getElementById('msg-importacao');
-            const txtLista = document.getElementById('lista-alunos');
-
-            msg.style.display = 'none';
-            txtLista.value = "";
-            dadosTurma = {}; 
-
-            if(esc && ser && tur) {
-                msg.innerText = "⏳ Buscando alunos...";
-                msg.style.display = 'inline-block';
-                msg.style.color = "#f57c00";
-
-                try {
-                    const dbRef = ref(db, 'avaliacoes');
-                    const snapshot = await get(dbRef);
-                    
-                    if (snapshot.exists()) {
-                        const all = Object.values(snapshot.val());
-                        const matches = all.filter(d => d.escola === esc && d.serie === ser && d.turma === tur);
-                        
-                        if (matches.length > 0) {
-                            matches.sort((a, b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
-                            const ultima = matches[0];
-                            
-                            if (ultima.detalhes && Array.isArray(ultima.detalhes)) {
-                                const nomes = ultima.detalhes.map(a => a.nome).join('\n');
-                                txtLista.value = nomes;
-                                msg.innerText = `📋 Lista importada de ${ultima.data_avaliacao}`;
-                                msg.style.color = "var(--primary)";
-                            }
-                        } else {
-                            msg.innerText = "✨ Turma nova (Digite os nomes abaixo)";
-                            msg.style.color = "#666";
-                            msg.style.background = "#eee";
-                        }
-                    } else {
-                        msg.style.display = 'none';
-                    }
-                } catch (error) {
-                    msg.style.display = 'none';
-                }
-            }
-        };
-
-        window.iniciarAvaliacao = () => {
-            const escola = document.getElementById('sel-escola').value;
-            const lista = document.getElementById('lista-alunos').value.split('\n').filter(n=>n.trim()!=='');
-            const d = document.getElementById('sel-dia').value;
-            const m = document.getElementById('sel-mes').value;
-            const a = document.getElementById('sel-ano').value;
-            if(!d) return alert("Selecione o Dia!");
-            if (!escola || lista.length === 0) return alert("Preencha dados da escola e cole os alunos!");
-
-            dadosTurma.alunos = lista.map(nome => ({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }));
-
-            dadosTurma.escola = escola;
-            dadosTurma.serie = document.getElementById('sel-serie').value;
-            dadosTurma.turma = document.getElementById('sel-turma').value;
-            dadosTurma.data = `${d}/${m}/${a}`;
-
-            window.renderizarAvaliacao();
-            document.getElementById('area-config').classList.add('hidden');
-            document.getElementById('area-avaliacao').classList.remove('hidden');
-        };
-
-        window.renderizarAvaliacao = () => {
-            document.getElementById('resumo-titulo').innerText = dadosTurma.escola;
-            document.getElementById('resumo-data').innerText = dadosTurma.data;
-            document.getElementById('resumo-sub').innerText = `${dadosTurma.serie} - Turma ${dadosTurma.turma}`;
-            const container = document.getElementById('container-alunos'); container.innerHTML = '';
-            
-            if(!dadosTurma.alunos) dadosTurma.alunos = [];
-
-            dadosTurma.alunos.forEach((aluno, idx) => {
-                const div = document.createElement('div'); div.className = 'aluno-row'; div.id = `row-${idx}`;
-                let htmlSerie = '';
-                if (usuarioAtual.modo === 'rural') {
-                    htmlSerie = `<select class="sel-serie-rural" onchange="window.updateLocal(${idx}, this.value)" ${aluno.transferido?'disabled':''}><option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select>`;
-                }
-                
-                if(aluno.transferido) div.classList.add('transferido');
-
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between;"><strong>${aluno.nome} <span class="tag-laudo">(LAUDO)</span></strong></div>
-                    <div class="controls">
-                        <label class="laudo-chk"><input type="checkbox" onchange="window.toggleLaudo(${idx})" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}> Laudo</label>
-                        <label class="laudo-chk" style="color:var(--red);"><input type="checkbox" onchange="window.toggleTransferido(${idx})" ${aluno.transferido?'checked':''}> Transf.</label>
-                        ${htmlSerie}
-                        <select onchange="window.updateNivel(${idx}, this.value)" ${aluno.transferido?'disabled':''}>
-                            <option value="">Avaliar...</option><option value="Ausente">⚠️ Ausente</option>${NIVEIS.map(n=>`<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`).join('')}
-                        </select>
-                    </div>`;
-                container.appendChild(div);
-                if(aluno.laudo) div.classList.add('com-laudo');
-            });
-            window.atualizarStats();
-        };
-
-        window.toggleLaudo = (idx) => { dadosTurma.alunos[idx].laudo = !dadosTurma.alunos[idx].laudo; document.getElementById(`row-${idx}`).classList.toggle('com-laudo'); };
-        window.toggleTransferido = (idx) => { dadosTurma.alunos[idx].transferido = !dadosTurma.alunos[idx].transferido; if(dadosTurma.alunos[idx].transferido) { dadosTurma.alunos[idx].nivel = ""; } window.renderizarAvaliacao(); };
-        window.updateNivel = (idx, val) => { dadosTurma.alunos[idx].nivel = val; const row = document.getElementById(`row-${idx}`); row.className = 'aluno-row ' + (dadosTurma.alunos[idx].laudo ? 'com-laudo' : ''); if (val === 'Ausente') row.classList.add('ausente'); else if (val) row.classList.add('avaliado'); window.atualizarStats(); };
-        window.updateLocal = (idx, val) => { dadosTurma.alunos[idx].serieRural = val; };
-        window.addExtra = () => { const nome = document.getElementById('extra-nome').value; if(nome) { dadosTurma.alunos.push({ nome, nivel: '', laudo: false, serieRural: '', transferido: false }); window.renderizarAvaliacao(); document.getElementById('extra-nome').value = ''; } };
-        window.voltarConfig = () => { if(confirm("Tem certeza que deseja voltar? As avaliações não salvas serão perdidas.")) { document.getElementById('area-avaliacao').classList.add('hidden'); document.getElementById('area-config').classList.remove('hidden'); dadosTurma = {}; } };
-        
-        window.atualizarStats = () => { 
-            const ativos = dadosTurma.alunos.filter(a => !a.transferido);
-            const aval = ativos.filter(a => a.nivel && a.nivel !== 'Ausente').length; 
-            const aus = ativos.filter(a => a.nivel === 'Ausente').length; 
-            document.getElementById('stats-rapido').innerText = `Status: ${aval} Avaliados | ${aus} Ausentes`; 
-        };
-
-        window.salvarNaNuvem = async () => {
-            const btn = document.querySelector('button[onclick="window.salvarNaNuvem()"]'); btn.innerText = "⏳ Enviando...";
-            const ativos = dadosTurma.alunos.filter(a => !a.transferido);
-            const cont = {}; NIVEIS.forEach(n => cont[n] = 0); let aval = 0, aus = 0;
-            ativos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
-            
-            const pacote = { 
-                escola: dadosTurma.escola, turma: dadosTurma.turma, serie: dadosTurma.serie, professor: usuarioAtual.nome, 
-                data_avaliacao: dadosTurma.data, data_envio: new Date().toISOString(), 
-                total_alunos: ativos.length, total_avaliados: aval, total_ausentes: aus, 
-                resultados: cont, detalhes: dadosTurma.alunos 
-            };
-            try { await push(ref(db, 'avaliacoes'), pacote); alert("✅ Sucesso! Turma salva no banco de dados."); btn.innerText = "☁️ SALVAR NO BANCO"; document.getElementById('lista-alunos').value = ""; document.getElementById('area-avaliacao').classList.add('hidden'); document.getElementById('area-config').classList.remove('hidden'); dadosTurma = {}; } catch (e) { console.error(e); alert("Erro: " + e.message); btn.innerText = "☁️ Tentar Novamente"; }
-        };
-
-        window.gerarPDF = () => { const el = document.getElementById('area-avaliacao'); document.querySelectorAll('.no-print').forEach(e => e.style.display = 'none'); html2pdf().from(el).save(`${dadosTurma.escola}_${dadosTurma.serie}_${dadosTurma.turma}.pdf`).then(() => { document.querySelectorAll('.no-print').forEach(e => e.style.display = ''); }); };
-        window.compartilharZap = () => { let txt = `*${dadosTurma.escola}*\nSérie: ${dadosTurma.serie} ${dadosTurma.turma}\nData: ${dadosTurma.data}\nAvaliados: ${dadosTurma.alunos.filter(a=>a.nivel&&a.nivel!='Ausente' && !a.transferido).length}\n\n`; dadosTurma.alunos.forEach(a => { if(!a.transferido && a.nivel) txt += `${a.nivel==='Ausente'?'⚠️':'✅'} ${a.nome}: ${a.nivel}\n`; }); window.open("https://wa.me/?text=" + encodeURIComponent(txt)); };
-
-        // ==========================================
-        // LÓGICA DO MODAL DE INSPEÇÃO E EDIÇÃO (TURMA)
-        // ==========================================
-        
-        window.fecharModal = () => {
-            document.getElementById('modal-detalhes').classList.add('hidden');
-            turmaAtualEdicao = null;
-        };
-
-        window.renderizarTabelaModal = (isProf) => {
-            const isRural = turmaAtualEdicao.serie === 'Multisseriada' || turmaAtualEdicao.professor === 'Welma';
-            let profFiltroSerie = 'TODAS';
-            let admChkSeries = [];
-            if (isRural) {
-                if (isProf) { profFiltroSerie = document.getElementById('prof-filtro-serie').value; } 
-                else { admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value); }
-            }
-
-            let html = '<table class="modal-table"><thead><tr><th>Aluno</th>';
-            if (isRural) html += '<th>Série</th>';
-            html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
-            let exibiuAlunos = false;
-
-            turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
-                if (isRural) {
-                    if (isProf && profFiltroSerie !== "TODAS" && aluno.serieRural !== profFiltroSerie) return; 
-                    if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return; 
-                }
-                exibiuAlunos = true;
-
-                if (isProf) {
-                    let options = `<option value="">- Sem Nota -</option><option value="Ausente" ${aluno.nivel==='Ausente'?'selected':''}>Ausente</option>`;
-                    NIVEIS.forEach(n => { options += `<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`; });
-                    let ruralTd = '';
-                    if (isRural) {
-                        ruralTd = `<td><select onchange="turmaAtualEdicao.detalhes[${idx}].serieRural = this.value" ${aluno.transferido?'disabled':''} style="padding:4px; border-radius:4px; border:1px solid #ccc; max-width:85px;">
-                            <option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select></td>`;
-                    }
-                    html += `<tr class="${aluno.transferido ? 'transferido' : ''}">
-                        <td><strong>${aluno.nome}</strong></td>${ruralTd}
-                        <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].laudo = this.checked" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}></td>
-                        <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].transferido = this.checked; if(this.checked){turmaAtualEdicao.detalhes[${idx}].nivel=''} window.renderizarTabelaModal(true)" ${aluno.transferido?'checked':''}></td>
-                        <td><select onchange="turmaAtualEdicao.detalhes[${idx}].nivel = this.value" ${aluno.transferido?'disabled':''}>${options}</select></td>
-                    </tr>`;
-                } else {
-                    let badgeTransf = aluno.transferido ? '<span style="color:var(--gray)">Sim</span>' : 'Não';
-                    let badgeLaudo = aluno.laudo ? '<span style="color:var(--purple)">Sim</span>' : 'Não';
-                    let stilo = aluno.transferido ? 'class="transferido"' : '';
-                    let ruralTd = isRural ? `<td>${aluno.serieRural || '-'}</td>` : '';
-                    html += `<tr ${stilo}><td>${aluno.nome}</td>${ruralTd}<td>${badgeLaudo}</td><td>${badgeTransf}</td><td><strong>${aluno.nivel || '-'}</strong></td></tr>`;
-                }
-            });
-
-            if (!exibiuAlunos) html += `<tr><td colspan="${isRural ? 5 : 4}" style="text-align:center; padding: 20px;">Nenhum aluno corresponde ao filtro selecionado.</td></tr>`;
-            html += '</tbody></table>';
-            document.getElementById('modal-body').innerHTML = html;
-        };
-
-        window.abrirModalTurma = (id, isAdmin) => {
-            const listaBase = isAdmin ? todosDadosAdm : meusEnviosCache;
-            const item = listaBase.find(d => d.id === id);
-            if(item) {
-                turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
-                if(!turmaAtualEdicao.detalhes) turmaAtualEdicao.detalhes = [];
-                document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma} (${item.data_avaliacao})`;
-                window.renderizarTabelaModal(!isAdmin);
-                const footer = document.getElementById('modal-footer');
-                if (isAdmin) { footer.classList.add('hidden'); } else { footer.classList.remove('hidden'); }
-                document.getElementById('modal-detalhes').classList.remove('hidden');
-            }
-        };
-
-        window.salvarEdicaoModal = async () => {
-            const btn = document.querySelector('#modal-footer .btn-main');
-            btn.innerText = "⏳ Salvando...";
-            const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
-            const cont = {}; NIVEIS.forEach(n => cont[n] = 0); let aval = 0, aus = 0;
-            ativos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
-
-            turmaAtualEdicao.total_alunos = ativos.length;
-            turmaAtualEdicao.total_avaliados = aval;
-            turmaAtualEdicao.total_ausentes = aus;
-            turmaAtualEdicao.resultados = cont;
-
-            try {
-                await set(ref(db, 'avaliacoes/' + turmaAtualEdicao.id), turmaAtualEdicao);
-                alert("✅ Alterações salvas com sucesso!");
-                window.fecharModal();
-                window.carregarHistoricoProf(); 
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao salvar: " + e.message);
-            } finally { btn.innerText = "💾 SALVAR ALTERAÇÕES"; }
-        };
-
-        // ==========================================
-        // NOVO: LÓGICA DO RELATÓRIO AVANÇADO (MÚLTIPLOS NÍVEIS)
-        // ==========================================
-        window.abrirModalRelatorioAvancado = (isProf) => {
-            modoRelatorioAvancadoIsProf = isProf;
-            
-            document.querySelectorAll('.chk-nivel').forEach(chk => chk.checked = false);
-            document.getElementById('conteudo-pdf-avancado').innerHTML = "";
-            document.getElementById('btn-print-avancado').style.display = 'none';
-            
-            document.getElementById('modal-relatorio-avancado').classList.remove('hidden');
-        };
-
-        window.gerarVisualizacaoRelatorioAvancado = () => {
-            const checkboxes = document.querySelectorAll('.chk-nivel:checked');
-            const niveisSelecionados = Array.from(checkboxes).map(c => c.value);
-
-            if (niveisSelecionados.length === 0) {
-                alert("Selecione pelo menos um nível para visualizar a lista.");
-                return;
-            }
-
-            const listaBase = modoRelatorioAvancadoIsProf ? filteredProfData : filteredAdmData;
-            let temAlunos = false;
-            
-            let html = `<div id="documento-pdf-avancado" style="padding: 20px; font-family: 'Segoe UI', sans-serif; color: #333; background: white;">
-                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
-                    <h2 style="color: var(--primary); margin: 0 0 5px 0;">Relatório de Intervenção Pedagógica</h2>
-                    <h3 style="margin: 0; color: #555; font-weight: normal; font-size: 1rem;">Níveis: <strong style="color: black;">${niveisSelecionados.join(' | ')}</strong></h3>
-                </div>`;
-
-            listaBase.forEach(item => {
-                const d = item.originalData;
-                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
-                const fSer = modoRelatorioAvancadoIsProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
-                const admChkSeries = modoRelatorioAvancadoIsProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-
-                let alunosNesteFiltro = [];
-
-                if (d.detalhes) {
-                    d.detalhes.forEach(aluno => {
-                        if (aluno.transferido) return;
-                        if (!niveisSelecionados.includes(aluno.nivel)) return;
-
-                        if (isRural) {
-                            if (modoRelatorioAvancadoIsProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
-                            if (!modoRelatorioAvancadoIsProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
-                        }
-                        alunosNesteFiltro.push(aluno);
-                    });
-                }
-
-                if (alunosNesteFiltro.length > 0) {
-                    temAlunos = true;
-                    let tituloTurma = `${d.escola} | ${d.serie} ${d.turma}`;
-                    if (isRural && item.exibeSerie) {
-                       tituloTurma = `${d.escola} | ${item.exibeSerie.replace(/<[^>]*>?/gm, '')} ${d.turma}`;
-                    }
-
-                    html += `
-                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; page-break-inside: avoid;">
-                        <div style="background: #f4f4f9; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; font-size: 1rem;">
-                            🏫 ${tituloTurma} <span style="float: right; font-weight: normal; font-size: 0.85rem;">(${alunosNesteFiltro.length} aluno${alunosNesteFiltro.length>1?'s':''})</span>
-                        </div>
-                        <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
-                    
-                    alunosNesteFiltro.forEach(a => {
-                        let corNivel = "var(--primary)";
-                        if(a.nivel === "Nível 1" || a.nivel === "Nível 2") corNivel = "var(--red)";
-                        if(a.nivel === "Nível 3" || a.nivel === "Nível 4") corNivel = "var(--orange)";
-                        if(a.nivel === "Fluente") corNivel = "var(--success)";
-                        if(a.nivel === "Ausente") corNivel = "var(--red)";
-
-                        let infoExtra = ` <span style='color:${corNivel}; font-weight:bold; font-size: 0.85rem;'>[${a.nivel}]</span>`;
-                        if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
-                        if(isRural) infoExtra += ` <span style='color:var(--gray); font-size: 0.85rem;'>- ${a.serieRural}</span>`;
-                        
-                        html += `<li style="padding: 6px 0; border-bottom: 1px dashed #eee;">${a.nome}${infoExtra}</li>`;
-                    });
-                    
-                    html += `</ul></div>`;
-                }
-            });
-
-            html += `</div>`;
-
-            if (!temAlunos) {
-                html = `<div style="padding: 40px; text-align: center; color: #666; font-size: 1.1rem;">Nenhum aluno encontrado para os níveis selecionados.<br><br><small>Dica: Verifique se o mês e a escola estão filtrados corretamente no painel anterior.</small></div>`;
-                document.getElementById('btn-print-avancado').style.display = 'none';
-            } else {
-                document.getElementById('btn-print-avancado').style.display = 'inline-block';
-            }
-
-            document.getElementById('conteudo-pdf-avancado').innerHTML = html;
-        };
-
-        window.imprimirRelatorioAvancado = () => {
-            const btn = document.getElementById('btn-print-avancado');
-            btn.innerText = "⏳ GERANDO PDF...";
-            const el = document.getElementById('documento-pdf-avancado'); 
-            
-            const opt = {
-                margin:       10,
-                filename:     `SIAVEL_Relatorio_Intervencao.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(el).save().then(() => {
-                btn.innerText = "🖨️ GERAR PDF DESTA LISTA";
-            });
-        };
-
-        // LÓGICA DO MODAL SIMPLES (1 NÍVEL)
-        window.abrirModalIntervencao = (nivel, isProf) => {
-            nivelImpressaoAtual = nivel;
-            const listaBase = isProf ? filteredProfData : filteredAdmData;
-            let temAlunos = false;
-            
-            let html = `<div id="documento-pdf" style="padding: 20px; font-family: 'Segoe UI', sans-serif; color: #333; background: white;">
-                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
-                    <h2 style="color: var(--primary); margin: 0 0 5px 0;">Relatório de Intervenção Pedagógica</h2>
-                    <h3 style="margin: 0; color: #555; font-weight: normal;">Foco de Análise: <strong style="color: black;">${nivel}</strong></h3>
-                </div>`;
-
-            listaBase.forEach(item => {
-                const d = item.originalData;
-                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
-                const fSer = isProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
-                const admChkSeries = isProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-
-                let alunosNesteNivel = [];
-
-                if (d.detalhes) {
-                    d.detalhes.forEach(aluno => {
-                        if (aluno.transferido) return;
-                        if (aluno.nivel !== nivel) return;
-
-                        if (isRural) {
-                            if (isProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
-                            if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
-                        }
-                        alunosNesteNivel.push(aluno);
-                    });
-                }
-
-                if (alunosNesteNivel.length > 0) {
-                    temAlunos = true;
-                    let tituloTurma = `${d.escola} | ${d.serie} ${d.turma}`;
-                    if (isRural && item.exibeSerie) {
-                       tituloTurma = `${d.escola} | ${item.exibeSerie.replace(/<[^>]*>?/gm, '')} ${d.turma}`;
-                    }
-
-                    html += `
-                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; page-break-inside: avoid;">
-                        <div style="background: #f4f4f9; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; font-size: 1rem;">
-                            🏫 ${tituloTurma} <span style="float: right; font-weight: normal; font-size: 0.85rem;">(${alunosNesteNivel.length} aluno${alunosNesteNivel.length>1?'s':''})</span>
-                        </div>
-                        <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
-                    
-                    alunosNesteNivel.forEach(a => {
-                        let infoExtra = "";
-                        if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
-                        if(isRural) infoExtra += ` <span style='color:var(--gray); font-size: 0.85rem;'>- ${a.serieRural}</span>`;
-                        html += `<li style="padding: 6px 0; border-bottom: 1px dashed #eee;">${a.nome}${infoExtra}</li>`;
-                    });
-                    
-                    html += `</ul></div>`;
-                }
-            });
-
-            html += `</div>`;
-
-            if (!temAlunos) {
-                html = `<div style="padding: 40px; text-align: center; color: #666; font-size: 1.1rem;">Nenhum aluno no <b>${nivel}</b> com os filtros atuais.<br><br><small>Verifique os filtros de Data, Escola e Série.</small></div>`;
-                document.getElementById('modal-interv-btn-print').style.display = 'none';
-            } else {
-                document.getElementById('modal-interv-btn-print').style.display = 'inline-block';
-            }
-
-            document.getElementById('conteudo-pdf-intervencao').innerHTML = html;
-            document.getElementById('modal-intervencao').classList.remove('hidden');
-        };
-
-        window.imprimirIntervencao = () => {
-            const btn = document.getElementById('modal-interv-btn-print');
-            btn.innerText = "⏳ GERANDO PDF...";
-            const el = document.getElementById('documento-pdf'); 
-            
-            const opt = {
-                margin:       10,
-                filename:     `Intervencao_${nivelImpressaoAtual}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(el).save().then(() => {
-                btn.innerText = "🖨️ GERAR PDF DA LISTA";
-            });
-        };
-
-        // ==========================================
-        // DASHBOARD PROFESSOR
-        // ==========================================
-        window.carregarHistoricoProf = async () => {
-            const dbRef = ref(db, 'avaliacoes');
-            const snapshot = await get(dbRef);
-            meusEnviosCache = [];
-            
-            const sel = document.getElementById('prof-filtro-escola');
-            sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-            const escolasFixas = [...usuarioAtual.escolas].sort();
-            escolasFixas.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
-
-            if (snapshot.exists()) {
-                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
-                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                window.aplicarFiltrosProf();
-            } else { 
-                window.aplicarFiltrosProf(); 
-            }
-        };
-
-        window.excluirAvaliacao = async (id) => {
-            if(confirm("Tem certeza que deseja EXCLUIR essa avaliação inteira? Não poderá desfazer.")) {
-                try { await remove(ref(db, 'avaliacoes/' + id)); alert("Excluído!"); window.carregarHistoricoProf(); } 
-                catch(e) { alert("Erro ao excluir: " + e.message); }
-            }
-        };
-
-        window.aplicarFiltrosProf = () => {
-            const fEsc = document.getElementById('prof-filtro-escola').value;
-            const fSer = document.getElementById('prof-filtro-serie').value;
-            const fTur = document.getElementById('prof-filtro-turma').value;
-            const fMes = document.getElementById('prof-mes-filtro').value;
-            const fAno = document.getElementById('prof-ano-filtro').value;
-
-            let tAlunos=0, tAus=0, tAval=0, tLaudo=0;
-            let tN1=0, tN2=0, tN3=0, tN4=0, tIni=0, tFlu=0;
-            
-            filteredProfData = []; 
-
-            meusEnviosCache.forEach(d => {
-                let dia = "01", mes = "01", ano = "2026";
-                try {
-                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else if (d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
-                    if(mes) mes = mes.padStart(2, '0');
-                } catch(e) {}
-
-                let mostrar = true;
-                let ruralSeriesMatched = false;
-
-                if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
-                if (fTur !== "TODAS" && d.turma !== fTur) mostrar = false;
-                if (fMes !== "TODOS" && mes !== fMes) mostrar = false;
-                if (fAno !== "TODOS" && ano !== fAno) mostrar = false;
-
-                if (fSer !== "TODAS") {
-                    if (d.serie === "Multisseriada" || d.professor === "Welma") {
-                        const temAluno = d.detalhes && d.detalhes.some(a => a.serieRural === fSer && !a.transferido);
-                        if (!temAluno) mostrar = false;
-                        else ruralSeriesMatched = true;
-                    } else if (d.serie !== fSer) {
-                        mostrar = false;
-                    }
-                }
-
-                if (!mostrar) return;
-
-                let avalClass = 0, ausClass = 0, alunosClass = 0, laudoClass = 0;
-                let n1Class=0, n2Class=0, n3Class=0, n4Class=0, iniClass=0, fluClass=0;
-                
-                if (d.detalhes) {
-                    d.detalhes.forEach(a => {
-                        if (a.transferido) return;
-                        if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && fSer !== "TODAS" && a.serieRural !== fSer) {
-                            return; 
-                        }
-                        alunosClass++;
-                        if (a.laudo) laudoClass++;
-                        if (a.nivel === 'Ausente') { ausClass++; } 
-                        else if (a.nivel) {
-                            avalClass++;
-                            if (a.nivel === 'Nível 1') n1Class++;
-                            if (a.nivel === 'Nível 2') n2Class++;
-                            if (a.nivel === 'Nível 3') n3Class++;
-                            if (a.nivel === 'Nível 4') n4Class++;
-                            if (a.nivel === 'Iniciante') iniClass++;
-                            if (a.nivel === 'Fluente') fluClass++;
-                        }
-                    });
-                }
-
-                tAlunos += alunosClass;
-                tAval += avalClass;
-                tAus += ausClass;
-                tLaudo += laudoClass;
-                tN1 += n1Class; tN2 += n2Class; tN3 += n3Class; tN4 += n4Class; tIni += iniClass; tFlu += fluClass;
-
-                let txtSerie = d.serie || "?"; 
-                if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched) {
-                    txtSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${fSer})</small>`;
-                }
-
-                filteredProfData.push({
-                    originalData: d,
-                    exibeSerie: txtSerie,
-                    id: d.id, escola: d.escola || "Escola?", serie: txtSerie, turma: d.turma || "?", data: d.data_avaliacao || "Data?"
-                });
-            });
-
-            const pctN1 = tAval > 0 ? (tN1/tAval*100).toFixed(1) : 0;
-            const pctN2 = tAval > 0 ? (tN2/tAval*100).toFixed(1) : 0;
-            const pctN3 = tAval > 0 ? (tN3/tAval*100).toFixed(1) : 0;
-            const pctN4 = tAval > 0 ? (tN4/tAval*100).toFixed(1) : 0;
-            const pctIni = tAval > 0 ? (tIni/tAval*100).toFixed(1) : 0;
-            const pctFlu = tAval > 0 ? (tFlu/tAval*100).toFixed(1) : 0;
-
-            document.getElementById('prof-total').innerText = tAval;
-            document.getElementById('prof-ausente').innerText = tAus; 
-            document.getElementById('prof-laudo').innerText = tLaudo; 
-            
-            document.getElementById('prof-n1').innerText = pctN1 + "%";
-            document.getElementById('prof-n2').innerText = pctN2 + "%";
-            document.getElementById('prof-n3').innerText = pctN3 + "%";
-            document.getElementById('prof-n4').innerText = pctN4 + "%";
-            document.getElementById('prof-ini').innerText = pctIni + "%";
-            document.getElementById('prof-flu').innerText = pctFlu + "%";
-
-            currentPageProf = 1;
-            window.renderTableProf();
-            window.renderPaginationProf();
-        };
-
-        window.renderTableProf = () => {
-            let html = "";
-            const start = (currentPageProf - 1) * rowsPerPage;
-            const pageData = filteredProfData.slice(start, start + rowsPerPage);
-            if (pageData.length === 0) { html = "<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>"; } 
-            else {
-                pageData.forEach(d => {
-                    html += `<tr>
-                        <td>${d.escola}<br><small>${d.serie} - ${d.turma}</small></td><td>${d.data}</td>
-                        <td><button class="btn-table" onclick="window.abrirModalTurma('${d.id}', false)">🔍</button><button class="btn-table" onclick="window.excluirAvaliacao('${d.id}')">🗑️</button></td>
-                    </tr>`;
-                });
-            }
-            document.getElementById('tabela-prof').innerHTML = html;
-        };
-
-        window.mudarPaginaProf = (page) => { currentPageProf = page; window.renderTableProf(); window.renderPaginationProf(); };
-
-        window.renderPaginationProf = () => {
-            const totalPages = Math.ceil(filteredProfData.length / rowsPerPage);
-            let html = "";
-            if (totalPages > 1) {
-                html += `<button class="page-btn" ${currentPageProf === 1 ? 'disabled' : ''} onclick="window.mudarPaginaProf(${currentPageProf - 1})">« Ant</button>`;
-                for(let i=1; i<=totalPages; i++) { html += `<button class="page-btn ${currentPageProf === i ? 'active' : ''}" onclick="window.mudarPaginaProf(${i})">${i}</button>`; }
-                html += `<button class="page-btn" ${currentPageProf === totalPages ? 'disabled' : ''} onclick="window.mudarPaginaProf(${currentPageProf + 1})">Próx »</button>`;
-            }
-            document.getElementById('paginacao-prof').innerHTML = html;
-        };
-
-        // --- EVOLUÇÃO ---
-        window.prepararComparativo = () => {
-            const select = document.getElementById('filtro-evo-turma');
-            if(!select) return;
-            
-            select.innerHTML = '<option value="">Selecione a Turma...</option>';
-            
-            if (!meusEnviosCache || meusEnviosCache.length === 0) {
-                select.innerHTML = '<option value="">Nenhuma avaliação encontrada</option>';
-                return;
-            }
-
-            const chavesUnicas = new Set();
-            meusEnviosCache.forEach(d => { 
-                const esc = d.escola || "Escola Desconhecida";
-                const ser = d.serie || "Série Indefinida";
-                const tur = d.turma || "Única";
-                chavesUnicas.add(`${esc}|${ser}|${tur}`); 
-            });
-            
-            Array.from(chavesUnicas).sort().forEach(key => { 
-                const [esc, ser, tur] = key.split('|'); 
-                const opt = document.createElement('option'); 
-                opt.value = key; 
-                opt.innerText = `${esc} - ${ser} ${tur}`; 
-                select.appendChild(opt); 
-            });
-        };
-
-        window.gerarRelatorioEvolucao = () => {
-            const key = document.getElementById('filtro-evo-turma').value;
-            if(!key) return alert("Selecione uma turma.");
-            const [esc, ser, tur] = key.split('|');
-            const avaliacoesTurma = meusEnviosCache.filter(d => 
-                (d.escola || "Escola Desconhecida") === esc && 
-                (d.serie || "Série Indefinida") === ser && 
-                (d.turma || "Única") === tur
-            );
-            avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-
-            if(avaliacoesTurma.length < 2) {
-                document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações.</td></tr>";
-                document.getElementById('resultado-evo').classList.remove('hidden'); return;
-            }
-            const atual = avaliacoesTurma[0]; const anterior = avaliacoesTurma[1];
-            document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} vs ${anterior.data_avaliacao}`;
-
-            let html = "";
-            if(atual.detalhes) {
-                atual.detalhes.forEach(alunoAtual => {
-                    if(alunoAtual.transferido) return; 
-
-                    const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
-                    const nivelAtual = alunoAtual.nivel || "-";
-                    const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
-                    let badge = '<span class="badge badge-same">➖ Manteve</span>';
-                    if (alunoAnt && PESO_NIVEL[nivelAtual] !== undefined && PESO_NIVEL[nivelAnt] !== undefined) {
-                        if (PESO_NIVEL[nivelAtual] > PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-up">⬆️ Evoluiu</span>';
-                        else if (PESO_NIVEL[nivelAtual] < PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-down">⬇️ Regrediu</span>';
-                    } else if (nivelAnt === "Novo") { badge = '<span class="badge" style="background:#e3f2fd; color:#1565C0;">🆕 Novo</span>'; }
-                    html += `<tr><td>${alunoAtual.nome}</td><td>${nivelAnt}</td><td><strong>${nivelAtual}</strong></td><td>${badge}</td></tr>`;
-                });
-            }
-            document.getElementById('tabela-evo').innerHTML = html;
-            document.getElementById('resultado-evo').classList.remove('hidden');
-        };
-
-        // --- DASHBOARD ADMIN ---
-        window.carregarAdmin = async () => {
-            const dbRef = ref(db, 'avaliacoes');
-            const snapshot = await get(dbRef);
-            if (snapshot.exists()) {
-                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                todosDadosAdm = all.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                
-                const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
-                const selEscola = document.getElementById('filtro-escola');
-                selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-                escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
-                window.aplicarFiltros();
-            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
-        };
-
-        window.aplicarFiltros = () => {
-            const fEscola = document.getElementById('filtro-escola').value;
-            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
-            
-            let fDia = ""; let fMes = "TODOS"; let fAno = "TODOS";
-            
-            if (document.getElementById('adm-dia-ini')) fDia = document.getElementById('adm-dia-ini').value;
-            if (document.getElementById('adm-mes-ini')) fMes = document.getElementById('adm-mes-ini').value;
-            if (document.getElementById('adm-ano-ini')) fAno = document.getElementById('adm-ano-ini').value;
-            
-            let gAlunos=0, gAus=0, gAval=0, gLaudo=0;
-            let gN1=0, gN2=0, gN3=0, gN4=0, gIni=0, gFlu=0;
-            
-            filteredAdmData = [];
-
-            todosDadosAdm.forEach(d => {
-                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
-                
-                let dia = "", mes = "", ano = "";
-                try {
-                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else if(d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
-                    if(mes) mes = mes.padStart(2, '0');
-                } catch(e) {}
-
-                if(fDia && dia !== fDia) return;
-                if(fMes !== "TODOS" && mes !== fMes) return;
-                if(fAno !== "TODOS" && ano !== fAno) return;
-
-                let contribuiu = false; 
-                let tAvalLocal = 0, tFluLocal = 0;
-                let ruralSeriesMatched = new Set(); 
-
-                if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
-                    if (d.detalhes && Array.isArray(d.detalhes)) {
-                        d.detalhes.forEach(aluno => {
-                            if(aluno.transferido) return;
-                            
-                            if (chkSeries.length > 0 && chkSeries.includes(aluno.serieRural)) {
-                                gAlunos++;
-                                if (aluno.nivel === 'Ausente') { gAus++; }
-                                else if (aluno.nivel) {
-                                    gAval++; tAvalLocal++;
-                                    if (aluno.nivel === 'Nível 1') gN1++;
-                                    if (aluno.nivel === 'Nível 2') gN2++;
-                                    if (aluno.nivel === 'Nível 3') gN3++;
-                                    if (aluno.nivel === 'Nível 4') gN4++;
-                                    if (aluno.nivel === 'Iniciante') gIni++;
-                                    if (aluno.nivel === 'Fluente') { gFlu++; tFluLocal++; }
-                                }
-                                if(aluno.laudo) gLaudo++;
-                                contribuiu = true;
-                                ruralSeriesMatched.add(aluno.serieRural); 
-                            }
-                        });
-                    }
-                } else {
-                    if (chkSeries.length > 0 && chkSeries.includes(d.serie)) {
-                        if(d.detalhes) {
-                            d.detalhes.forEach(a => { 
-                                if(a.transferido) return;
-                                gAlunos++;
-                                if (a.nivel === 'Ausente') { gAus++; }
-                                else if (a.nivel) {
-                                    gAval++; tAvalLocal++;
-                                    if (a.nivel === 'Nível 1') gN1++;
-                                    if (a.nivel === 'Nível 2') gN2++;
-                                    if (a.nivel === 'Nível 3') gN3++;
-                                    if (a.nivel === 'Nível 4') gN4++;
-                                    if (a.nivel === 'Iniciante') gIni++;
-                                    if (a.nivel === 'Fluente') { gFlu++; tFluLocal++; }
-                                }
-                                if (a.laudo) gLaudo++; 
-                            });
-                        }
-                        contribuiu = true;
-                    }
-                }
-                
-                if (contribuiu) {
-                    let pct = tAvalLocal > 0 ? (tFluLocal/tAvalLocal*100).toFixed(0)+"%" : "-";
-                    let exibeSerie = d.serie;
-                    
-                    if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
-                        let arrS = Array.from(ruralSeriesMatched).sort();
-                        exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${arrS.join(', ')})</small>`;
-                    }
-
-                    filteredAdmData.push({
-                        originalData: d,
-                        exibeSerie: exibeSerie,
-                        id: d.id,
-                        escola: d.escola,
-                        serieTurma: `${exibeSerie} ${d.turma}`,
-                        data: d.data_avaliacao,
-                        prof: d.professor,
-                        pct: pct
-                    });
-                }
-            });
-
-            const pctN1 = gAval > 0 ? (gN1/gAval*100).toFixed(1) : 0;
-            const pctN2 = gAval > 0 ? (gN2/gAval*100).toFixed(1) : 0;
-            const pctN3 = gAval > 0 ? (gN3/gAval*100).toFixed(1) : 0;
-            const pctN4 = gAval > 0 ? (gN4/gAval*100).toFixed(1) : 0;
-            const pctIni = gAval > 0 ? (gIni/gAval*100).toFixed(1) : 0;
-            const pctFlu = gAval > 0 ? (gFlu/gAval*100).toFixed(1) : 0;
-
-            document.getElementById('adm-total').innerText = gAval;
-            document.getElementById('adm-ausente').innerText = gAus;
-            document.getElementById('adm-laudo').innerText = gLaudo;
-            
-            document.getElementById('adm-n1').innerText = pctN1 + "%";
-            document.getElementById('adm-n2').innerText = pctN2 + "%";
-            document.getElementById('adm-n3').innerText = pctN3 + "%";
-            document.getElementById('adm-n4').innerText = pctN4 + "%";
-            document.getElementById('adm-ini').innerText = pctIni + "%";
-            document.getElementById('adm-flu').innerText = pctFlu + "%";
-
-            currentPageAdm = 1;
-            window.renderTableAdm();
-            window.renderPaginationAdm();
-        };
-
-        window.renderTableAdm = () => {
-            let html = "";
-            const start = (currentPageAdm - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = filteredAdmData.slice(start, end);
-
-            if (pageData.length === 0) {
-                html = "<tr><td colspan='6'>Sem dados.</td></tr>";
-            } else {
-                pageData.forEach(d => {
-                    html += `<tr>
-                        <td>${d.escola}</td><td>${d.serieTurma}</td><td>${d.data}</td><td>${d.prof}</td><td>${d.pct}</td>
-                        <td><button class="btn-table" title="Inspecionar Avaliação" onclick="window.abrirModalTurma('${d.id}', true)">🔍</button></td>
-                    </tr>`;
-                });
-            }
-            document.getElementById('tabela-envios').innerHTML = html;
-        };
-
-        window.mudarPaginaAdm = (page) => {
-            currentPageAdm = page;
-            window.renderTableAdm();
-            window.renderPaginationAdm();
-        };
-
-        window.renderPaginationAdm = () => {
-            const totalPages = Math.ceil(filteredAdmData.length / rowsPerPage);
-            let html = "";
-            if (totalPages > 1) {
-                html += `<button class="page-btn" ${currentPageAdm === 1 ? 'disabled' : ''} onclick="window.mudarPaginaAdm(${currentPageAdm - 1})">« Ant</button>`;
-                
-                let startPage = Math.max(1, currentPageAdm - 2);
-                let endPage = Math.min(totalPages, currentPageAdm + 2);
-                
-                if (startPage > 1) html += `<span style="padding: 5px;">...</span>`;
-                
-                for(let i = startPage; i <= endPage; i++) {
-                    html += `<button class="page-btn ${currentPageAdm === i ? 'active' : ''}" onclick="window.mudarPaginaAdm(${i})">${i}</button>`;
-                }
-                
-                if (endPage < totalPages) html += `<span style="padding: 5px;">...</span>`;
-                
-                html += `<button class="page-btn" ${currentPageAdm === totalPages ? 'disabled' : ''} onclick="window.mudarPaginaAdm(${currentPageAdm + 1})">Próx »</button>`;
-            }
-            document.getElementById('paginacao-adm').innerHTML = html;
-        };
-    </script>
-</body>
-</html>
+                <div class="kpi-card hover-
