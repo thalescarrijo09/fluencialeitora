@@ -151,7 +151,7 @@
 
     <div id="screen-login" class="screen active">
         <div class="login-box">
-            <div class="logos-login">
+            <div class="logos-login" style="margin-bottom: 10px;">
                 <img src="logo-prefeitura.png" alt="Prefeitura" onerror="this.style.display='none'">
                 <img src="logo-secretaria.png" alt="Secretaria" onerror="this.style.display='none'">
             </div>
@@ -477,7 +477,7 @@
         let dadosTurma = {};
         let meusEnviosCache = [];
         let todosDadosAdm = []; 
-        window.turmaAtualEdicao = null; // Resolvido o erro de escopo
+        window.turmaAtualEdicao = null; 
 
         const rowsPerPage = 10;
         let currentPageProf = 1;
@@ -690,7 +690,17 @@
                 else { admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value); }
             }
 
-            let html = '<table class="modal-table"><thead><tr><th>Aluno</th>';
+            // NOVO: CAIXA DE EDIÇÃO DE DATA
+            let html = `<div style="margin-bottom: 15px; padding: 10px 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: bold; color: #555;">Data da Avaliação:</span>`;
+            if (isProf) {
+                html += `<input type="text" value="${window.turmaAtualEdicao.data_avaliacao}" oninput="window.turmaAtualEdicao.data_avaliacao = this.value" maxlength="10" placeholder="DD/MM/AAAA" style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; width: 110px; font-weight: bold; color: var(--secondary); font-size: 0.95rem; margin: 0; text-align: center;">`;
+            } else {
+                html += `<span style="font-weight: bold; color: var(--secondary); font-size: 0.95rem;">${window.turmaAtualEdicao.data_avaliacao}</span>`;
+            }
+            html += `</div>`;
+
+            html += '<table class="modal-table"><thead><tr><th>Aluno</th>';
             if (isRural) html += '<th>Série</th>';
             html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
             let exibiuAlunos = false;
@@ -736,7 +746,8 @@
             if(item) {
                 window.turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
                 if(!window.turmaAtualEdicao.detalhes) window.turmaAtualEdicao.detalhes = [];
-                document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma} (${item.data_avaliacao})`;
+                // A data foi removida daqui, pois agora é editável no corpo do modal
+                document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma}`;
                 window.renderizarTabelaModal(!isAdmin);
                 const footer = document.getElementById('modal-footer');
                 if (isAdmin) { footer.classList.add('hidden'); } else { footer.classList.remove('hidden'); }
@@ -756,7 +767,6 @@
             window.turmaAtualEdicao.total_ausentes = aus;
             window.turmaAtualEdicao.resultados = cont;
 
-            // Limpa o ID de dentro do payload para não duplicar no Firebase
             let idSalvar = window.turmaAtualEdicao.id;
             let payload = { ...window.turmaAtualEdicao };
             delete payload.id; 
