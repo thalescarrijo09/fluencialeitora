@@ -162,15 +162,9 @@
         /* RESPONSIVIDADE PARA CELULARES             */
         /* ========================================= */
         @media (max-width: 768px) { 
-            /* Transforma o fundo da tela inteira na imagem no celular */
             #screen-login.active { background: url('bg-login.jpg') center/cover no-repeat; }
-            
-            /* Coloca um efeito de "vidro fosco" atrás da caixa de login */
             .login-left { background: rgba(244, 244, 249, 0.85); backdrop-filter: blur(4px); }
-            
-            /* Esconde a div da direita que dividia a tela */
             .login-right { display: none; } 
-            
             .dash-grid { grid-template-columns: repeat(3, 1fr); } 
             .tabs { flex-wrap: wrap; } 
             .filter-row { flex-direction: column; align-items: stretch; }
@@ -183,12 +177,11 @@
     <div id="screen-login" class="screen active">
         <div class="login-left">
             <div class="login-box">
-                <div class="logos-login">
+                <div class="logos-login" style="margin-bottom: 10px;">
                     <img src="logo-prefeitura.png" alt="Prefeitura" onerror="this.style.display='none'">
                     <img src="logo-secretaria.png" alt="Secretaria" onerror="this.style.display='none'">
                 </div>
-                <h2 style="color: var(--secondary); margin-bottom: 5px; font-size: 1.8rem;">SIAVEL</h2>
-                <p style="margin-top: 0; font-weight: 500; font-size: 1rem; color: #666; margin-bottom: 25px;">Gestão & Evolução de Leitura</p>
+                <p style="margin-top: 10px; font-weight: 500; font-size: 1rem; color: #666; margin-bottom: 25px;">Gestão & Evolução de Leitura</p>
                 <input type="text" id="email" placeholder="Digite seu E-mail">
                 <input type="password" id="senha" placeholder="Digite sua Senha">
                 <button class="btn-main" onclick="window.login()" style="font-size: 1.1rem; padding: 14px; margin-top: 15px;">ACESSAR SISTEMA</button>
