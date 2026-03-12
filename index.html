@@ -471,7 +471,6 @@
             'adm@siavel.com': { nome: 'Admin', modo: 'admin' }
         };
 
-        // ... O restante das variáveis de escopo ...
         const NIVEIS = ["Nível 1", "Nível 2", "Nível 3", "Nível 4", "Iniciante", "Fluente"];
         const PESO_NIVEL = { "Ausente": 0, "Nível 1": 1, "Nível 2": 2, "Nível 3": 3, "Nível 4": 4, "Iniciante": 5, "Fluente": 6 };
         
@@ -490,29 +489,34 @@
         let nivelImpressaoAtual = "";
         let modoRelatorioAvancadoIsProf = true; 
 
-        // GARANTIR QUE A BUSCA DE ESCOLAS RODE ANTES DO FETCH
         window.carregarHistoricoProf = async () => {
-            // 1. CARREGA AS ESCOLAS INSTANTANEAMENTE (NÃO ESPERA O FIREBASE)
             const sel = document.getElementById('prof-filtro-escola');
-            sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-            if(usuarioAtual && usuarioAtual.escolas) {
-                const escolasFixas = [...usuarioAtual.escolas].sort();
-                escolasFixas.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+            if (sel) {
+                sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
+                if (usuarioAtual && usuarioAtual.escolas) {
+                    const escolasFixas = [...usuarioAtual.escolas].sort();
+                    escolasFixas.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+                }
             }
 
-            // 2. SÓ DEPOIS VAI BUSCAR NO BANCO
-            const dbRef = ref(db, 'avaliacoes');
-            const snapshot = await get(dbRef);
-            meusEnviosCache = [];
-
-            if (snapshot.exists()) {
-                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
-                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
-                window.aplicarFiltrosProf();
-            } else { 
-                window.aplicarFiltrosProf(); 
+            try {
+                const dbRef = ref(db, 'avaliacoes');
+                const snapshot = await get(dbRef);
+                meusEnviosCache = [];
+                
+                if (snapshot.exists()) {
+                    const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
+                    if (usuarioAtual && usuarioAtual.nome) {
+                        meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
+                        meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+                    }
+                }
+            } catch(e) {
+                console.error("Erro ao buscar histórico:", e);
             }
+            
+            window.aplicarFiltrosProf();
+            window.prepararComparativo(); 
         };
 
         (function initDias() { 
@@ -1023,18 +1027,21 @@
             filteredProfData = []; 
 
             meusEnviosCache.forEach(d => {
+                if (fEsc !== "TODAS" && (d.escola || "").trim() !== fEsc.trim()) return;
+                if (fTur !== "TODAS" && (d.turma || "").trim() !== fTur.trim()) return;
+
                 let dia = "01", mes = "01", ano = "2026";
                 try {
-                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else if (d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    let dData = d.data_avaliacao ? d.data_avaliacao.trim() : "";
+                    if(dData.includes('/')) { [dia, mes, ano] = dData.split('/'); } 
+                    else if (dData.includes('-')) { [ano, mes, dia] = dData.split('-'); }
                     if(mes) mes = mes.padStart(2, '0');
+                    if(ano) ano = ano.trim();
                 } catch(e) {}
 
                 let mostrar = true;
                 let ruralSeriesMatched = false;
 
-                if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
-                if (fTur !== "TODAS" && d.turma !== fTur) mostrar = false;
                 if (fMes !== "TODOS" && mes !== fMes) mostrar = false;
                 if (fAno !== "TODOS" && ano !== fAno) mostrar = false;
 
@@ -1158,9 +1165,9 @@
 
             const chavesUnicas = new Set();
             meusEnviosCache.forEach(d => { 
-                const esc = d.escola || "Escola Desconhecida";
-                const ser = d.serie || "Série Indefinida";
-                const tur = d.turma || "Única";
+                const esc = (d.escola || "Escola Desconhecida").trim();
+                const ser = (d.serie || "Série Indefinida").trim();
+                const tur = (d.turma || "Única").trim();
                 chavesUnicas.add(`${esc}|${ser}|${tur}`); 
             });
             
@@ -1178,9 +1185,9 @@
             if(!key) return alert("Selecione uma turma.");
             const [esc, ser, tur] = key.split('|');
             const avaliacoesTurma = meusEnviosCache.filter(d => 
-                (d.escola || "Escola Desconhecida") === esc && 
-                (d.serie || "Série Indefinida") === ser && 
-                (d.turma || "Única") === tur
+                (d.escola || "Escola Desconhecida").trim() === esc && 
+                (d.serie || "Série Indefinida").trim() === ser && 
+                (d.turma || "Única").trim() === tur
             );
             avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
@@ -1243,13 +1250,15 @@
             filteredAdmData = [];
 
             todosDadosAdm.forEach(d => {
-                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
+                if (fEscola !== "TODAS" && (d.escola || "").trim() !== fEscola.trim()) return;
                 
                 let dia = "", mes = "", ano = "";
                 try {
-                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
-                    else if(d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    let dData = d.data_avaliacao ? d.data_avaliacao.trim() : "";
+                    if(dData.includes('/')) { [dia, mes, ano] = dData.split('/'); } 
+                    else if(dData.includes('-')) { [ano, mes, dia] = dData.split('-'); }
                     if(mes) mes = mes.padStart(2, '0');
+                    if(ano) ano = ano.trim();
                 } catch(e) {}
 
                 if(fDia && dia !== fDia) return;
