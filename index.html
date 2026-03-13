@@ -29,14 +29,16 @@
 
         .app-container { max-width: 950px; margin: 0 auto; padding: 15px; }
 
-        /* LOGIN CENTRALIZADO E LIMPO */
+        /* ========================================= */
+        /* LOGIN CENTRALIZADO E LIMPO                */
+        /* ========================================= */
         #screen-login.active { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-light); }
         .login-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; margin: 20px; }
         .logos-login { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; align-items: center; }
         .logos-login img { max-height: 100px; max-width: 150px; object-fit: contain; }
         input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
 
-        /* HEADER */
+        /* HEADER: PATTERN EDUCACIONAL SUTIL */
         .app-header { 
             background-color: var(--primary); 
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -56,7 +58,7 @@
         .btn-main { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; box-shadow: 0 2px 4px rgba(230,81,0,0.3); }
         .btn-main:hover { background: #CC4800; transform: translateY(-1px); }
         
-        /* Alunos */
+        /* Alunos e Tabelas */
         .aluno-row { background: white; padding: 12px; margin-bottom: 8px; border-left: 5px solid #ccc; border-radius: 8px; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
         .aluno-row.avaliado { border-left-color: var(--primary); background: #FFF3E0; } 
         .aluno-row.ausente { border-left-color: var(--red); background: #ffebee; }
@@ -67,7 +69,7 @@
         select { padding: 8px; border-radius: 6px; flex: 1; border: 1px solid #ccc; font-family: inherit; }
         .laudo-chk { background: #eee; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; cursor: pointer; border: 1px solid transparent; }
         
-        /* Tabelas */
+        /* Tabela Comparativa */
         .comp-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .comp-table th { background: #f0f0f0; padding: 10px; text-align: left; color: #555; }
         .comp-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
@@ -76,21 +78,25 @@
         .badge-down { background: #ffebee; color: var(--red); }
         .badge-same { background: #f5f5f5; color: #777; }
         
-        .adm-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .adm-table th, .adm-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-        .btn-table { padding: 6px 8px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 1.2rem; margin-right: 5px; transition: background 0.2s; }
-        .btn-table:hover { background: #e0e0e0; }
-
         /* Dashboard KPI */
         .dash-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; justify-content: center; }
         .kpi-card { background: white; padding: 15px 10px; text-align: center; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
         .kpi-num { font-size: 1.5rem; font-weight: bold; color: var(--secondary); pointer-events: none; }
         .kpi-label { font-size: 0.8rem; color: #666; margin-top: 5px; font-weight: bold; pointer-events: none; }
+        
         .hover-card { cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; }
         .hover-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(230, 81, 0, 0.15); border: 1px solid var(--primary); }
 
+        /* Barra de Resumo */
         .stats-bar { display: flex; gap: 15px; font-size: 0.95rem; background: white; padding: 8px 20px; border-radius: 20px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.03); flex-wrap: wrap; }
         .stats-bar span { display: flex; align-items: center; gap: 5px; }
+
+        .adm-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .adm-table th, .adm-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        
+        /* Botões de Ação na Tabela */
+        .btn-table { padding: 6px 8px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 1.2rem; margin-right: 5px; transition: background 0.2s; }
+        .btn-table:hover { background: #e0e0e0; }
 
         /* Paginação */
         .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 20px; flex-wrap: wrap; }
@@ -126,6 +132,11 @@
         .close-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: white; font-weight: bold; line-height: 1; transition: 0.2s; }
         .close-btn:hover { transform: scale(1.1); }
         
+        .modal-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .modal-table th, .modal-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
+        .modal-table tr.transferido { background: #f0f0f0; opacity: 0.7; }
+        .modal-table tr.transferido td:first-child { text-decoration: line-through; color: #777; }
+        
         @media print { .no-print { display: none !important; } }
         
         @media (max-width: 768px) { 
@@ -140,7 +151,7 @@
 
     <div id="screen-login" class="screen active">
         <div class="login-box">
-            <div class="logos-login">
+            <div class="logos-login" style="margin-bottom: 10px;">
                 <img src="logo-prefeitura.png" alt="Prefeitura" onerror="this.style.display='none'">
                 <img src="logo-secretaria.png" alt="Secretaria" onerror="this.style.display='none'">
             </div>
@@ -301,8 +312,7 @@
                 </div>
             </div>
         </div>
-      </div> 
-    </div>
+      </div> </div>
 
     <div id="screen-admin" class="screen">
       <div class="app-container">
@@ -373,8 +383,7 @@
             </table>
             <div id="paginacao-adm" class="pagination"></div>
         </div>
-      </div> 
-    </div>
+      </div> </div>
 
     <div id="modal-detalhes" class="modal-overlay hidden">
         <div class="modal-content">
@@ -479,36 +488,6 @@
         let nivelImpressaoAtual = "";
         let modoRelatorioAvancadoIsProf = true; 
 
-        window.carregarHistoricoProf = async () => {
-            const sel = document.getElementById('prof-filtro-escola');
-            if (sel) {
-                sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-                if (usuarioAtual && usuarioAtual.escolas) {
-                    const escolasFixas = [...usuarioAtual.escolas].sort();
-                    escolasFixas.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
-                }
-            }
-
-            try {
-                const dbRef = ref(db, 'avaliacoes');
-                const snapshot = await get(dbRef);
-                meusEnviosCache = [];
-                
-                if (snapshot.exists()) {
-                    const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                    if (usuarioAtual && usuarioAtual.nome) {
-                        meusEnviosCache = all.filter(d => d.professor && String(d.professor).toLowerCase().includes(String(usuarioAtual.nome).toLowerCase()));
-                        meusEnviosCache.sort((a, b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
-                    }
-                }
-            } catch(e) {
-                console.error("Erro ao buscar histórico:", e);
-            }
-            
-            window.aplicarFiltrosProf();
-            window.prepararComparativo(); 
-        };
-
         (function initDias() { 
             const s = document.getElementById('sel-dia'); 
             for(let i=1; i<=31; i++){ 
@@ -587,10 +566,8 @@
                             matches.sort((a, b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
                             const ultima = matches[0];
                             
-                            let detArr = ultima.detalhes ? (Array.isArray(ultima.detalhes) ? ultima.detalhes : Object.values(ultima.detalhes)) : [];
-                            
-                            if (detArr.length > 0) {
-                                const nomes = detArr.map(a => a.nome).join('\n');
+                            if (ultima.detalhes && Array.isArray(ultima.detalhes)) {
+                                const nomes = ultima.detalhes.map(a => a.nome).join('\n');
                                 txtLista.value = nomes;
                                 msg.innerText = `📋 Lista importada de ${ultima.data_avaliacao}`;
                                 msg.style.color = "var(--primary)";
@@ -713,12 +690,13 @@
                 else { admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value); }
             }
 
+            // NOVO: CAIXA DE EDIÇÃO DE DATA
             let html = `<div style="margin-bottom: 15px; padding: 10px 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px;">
                 <span style="font-weight: bold; color: #555;">Data da Avaliação:</span>`;
             if (isProf) {
-                html += `<input type="text" value="${window.turmaAtualEdicao.data_avaliacao || ''}" oninput="window.turmaAtualEdicao.data_avaliacao = this.value" maxlength="10" placeholder="DD/MM/AAAA" style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; width: 110px; font-weight: bold; color: var(--secondary); font-size: 0.95rem; margin: 0; text-align: center;">`;
+                html += `<input type="text" value="${window.turmaAtualEdicao.data_avaliacao}" oninput="window.turmaAtualEdicao.data_avaliacao = this.value" maxlength="10" placeholder="DD/MM/AAAA" style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; width: 110px; font-weight: bold; color: var(--secondary); font-size: 0.95rem; margin: 0; text-align: center;">`;
             } else {
-                html += `<span style="font-weight: bold; color: var(--secondary); font-size: 0.95rem;">${window.turmaAtualEdicao.data_avaliacao || ''}</span>`;
+                html += `<span style="font-weight: bold; color: var(--secondary); font-size: 0.95rem;">${window.turmaAtualEdicao.data_avaliacao}</span>`;
             }
             html += `</div>`;
 
@@ -727,16 +705,10 @@
             html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
             let exibiuAlunos = false;
 
-            if (window.turmaAtualEdicao.detalhes) {
-                window.turmaAtualEdicao.detalhes = Array.isArray(window.turmaAtualEdicao.detalhes) ? window.turmaAtualEdicao.detalhes : Object.values(window.turmaAtualEdicao.detalhes);
-            } else {
-                window.turmaAtualEdicao.detalhes = [];
-            }
-
             window.turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
                 if (isRural) {
-                    if (isProf && profFiltroSerie !== "TODAS" && String(aluno.serieRural || "").trim() !== profFiltroSerie) return; 
-                    if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(String(aluno.serieRural || "").trim())) return; 
+                    if (isProf && profFiltroSerie !== "TODAS" && aluno.serieRural !== profFiltroSerie) return; 
+                    if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return; 
                 }
                 exibiuAlunos = true;
 
@@ -774,6 +746,7 @@
             if(item) {
                 window.turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
                 if(!window.turmaAtualEdicao.detalhes) window.turmaAtualEdicao.detalhes = [];
+                // A data foi removida daqui, pois agora é editável no corpo do modal
                 document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma}`;
                 window.renderizarTabelaModal(!isAdmin);
                 const footer = document.getElementById('modal-footer');
@@ -842,22 +815,20 @@
 
             listaBase.forEach(item => {
                 const d = item.originalData;
-                const isRural = String(d.serie || "").trim() === 'Multisseriada' || String(d.professor || "").trim() === 'Welma';
-                const fSer = modoRelatorioAvancadoIsProf ? String(document.getElementById('prof-filtro-serie').value).trim() : "TODAS"; 
-                const admChkSeries = modoRelatorioAvancadoIsProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => String(c.value).trim());
+                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
+                const fSer = modoRelatorioAvancadoIsProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
+                const admChkSeries = modoRelatorioAvancadoIsProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
 
                 let alunosNesteFiltro = [];
 
                 if (d.detalhes) {
-                    let detArr = Array.isArray(d.detalhes) ? d.detalhes : Object.values(d.detalhes);
-                    detArr.forEach(aluno => {
+                    d.detalhes.forEach(aluno => {
                         if (aluno.transferido) return;
-                        if (!niveisSelecionados.includes(String(aluno.nivel || "").trim())) return;
+                        if (!niveisSelecionados.includes(aluno.nivel)) return;
 
                         if (isRural) {
-                            let sRural = String(aluno.serieRural || "").trim();
-                            if (modoRelatorioAvancadoIsProf && fSer !== "TODAS" && sRural !== fSer) return;
-                            if (!modoRelatorioAvancadoIsProf && admChkSeries.length > 0 && !admChkSeries.includes(sRural)) return;
+                            if (modoRelatorioAvancadoIsProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
+                            if (!modoRelatorioAvancadoIsProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
                         }
                         alunosNesteFiltro.push(aluno);
                     });
@@ -878,14 +849,13 @@
                         <ul style="margin: 0; padding: 10px 15px 10px 35px; list-style-type: square; font-size: 0.95rem;">`;
                     
                     alunosNesteFiltro.forEach(a => {
-                        let nivelAluno = String(a.nivel || "").trim();
                         let corNivel = "var(--primary)";
-                        if(nivelAluno === "Nível 1" || nivelAluno === "Nível 2") corNivel = "var(--red)";
-                        if(nivelAluno === "Nível 3" || nivelAluno === "Nível 4") corNivel = "var(--orange)";
-                        if(nivelAluno === "Fluente") corNivel = "var(--success)";
-                        if(nivelAluno === "Ausente") corNivel = "var(--red)";
+                        if(a.nivel === "Nível 1" || a.nivel === "Nível 2") corNivel = "var(--red)";
+                        if(a.nivel === "Nível 3" || a.nivel === "Nível 4") corNivel = "var(--orange)";
+                        if(a.nivel === "Fluente") corNivel = "var(--success)";
+                        if(a.nivel === "Ausente") corNivel = "var(--red)";
 
-                        let infoExtra = ` <span style='color:${corNivel}; font-weight:bold; font-size: 0.85rem;'>[${nivelAluno}]</span>`;
+                        let infoExtra = ` <span style='color:${corNivel}; font-weight:bold; font-size: 0.85rem;'>[${a.nivel}]</span>`;
                         if(a.laudo) infoExtra += " <b style='color:var(--purple); font-size: 0.8rem;'>[Laudo]</b>";
                         if(isRural) infoExtra += ` <span style='color:var(--gray); font-size: 0.85rem;'>- ${a.serieRural}</span>`;
                         
@@ -940,22 +910,20 @@
 
             listaBase.forEach(item => {
                 const d = item.originalData;
-                const isRural = String(d.serie || "").trim() === 'Multisseriada' || String(d.professor || "").trim() === 'Welma';
-                const fSer = isProf ? String(document.getElementById('prof-filtro-serie').value).trim() : "TODAS"; 
-                const admChkSeries = isProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => String(c.value).trim());
+                const isRural = d.serie === 'Multisseriada' || d.professor === 'Welma';
+                const fSer = isProf ? document.getElementById('prof-filtro-serie').value : "TODAS"; 
+                const admChkSeries = isProf ? [] : Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
 
                 let alunosNesteNivel = [];
 
                 if (d.detalhes) {
-                    let detArr = Array.isArray(d.detalhes) ? d.detalhes : Object.values(d.detalhes);
-                    detArr.forEach(aluno => {
+                    d.detalhes.forEach(aluno => {
                         if (aluno.transferido) return;
-                        if (String(aluno.nivel || "").trim() !== nivel) return;
+                        if (aluno.nivel !== nivel) return;
 
                         if (isRural) {
-                            let sRural = String(aluno.serieRural || "").trim();
-                            if (isProf && fSer !== "TODAS" && sRural !== fSer) return;
-                            if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(sRural)) return;
+                            if (isProf && fSer !== "TODAS" && aluno.serieRural !== fSer) return;
+                            if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return;
                         }
                         alunosNesteNivel.push(aluno);
                     });
@@ -1017,12 +985,42 @@
             });
         };
 
+        // ==========================================
+        // DASHBOARD PROFESSOR
+        // ==========================================
+        window.carregarHistoricoProf = async () => {
+            const dbRef = ref(db, 'avaliacoes');
+            const snapshot = await get(dbRef);
+            meusEnviosCache = [];
+            
+            const sel = document.getElementById('prof-filtro-escola');
+            sel.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
+            const escolasFixas = [...usuarioAtual.escolas].sort();
+            escolasFixas.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+
+            if (snapshot.exists()) {
+                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
+                meusEnviosCache = all.filter(d => d.professor && d.professor.toLowerCase().includes(usuarioAtual.nome.toLowerCase()));
+                meusEnviosCache.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+                window.aplicarFiltrosProf();
+            } else { 
+                window.aplicarFiltrosProf(); 
+            }
+        };
+
+        window.excluirAvaliacao = async (id) => {
+            if(confirm("Tem certeza que deseja EXCLUIR essa avaliação inteira? Não poderá desfazer.")) {
+                try { await remove(ref(db, 'avaliacoes/' + id)); alert("Excluído!"); window.carregarHistoricoProf(); } 
+                catch(e) { alert("Erro ao excluir: " + e.message); }
+            }
+        };
+
         window.aplicarFiltrosProf = () => {
-            const fEsc = String(document.getElementById('prof-filtro-escola').value).trim();
-            const fSer = String(document.getElementById('prof-filtro-serie').value).trim();
-            const fTur = String(document.getElementById('prof-filtro-turma').value).trim();
-            const fMes = String(document.getElementById('prof-mes-filtro').value).trim();
-            const fAno = String(document.getElementById('prof-ano-filtro').value).trim();
+            const fEsc = document.getElementById('prof-filtro-escola').value;
+            const fSer = document.getElementById('prof-filtro-serie').value;
+            const fTur = document.getElementById('prof-filtro-turma').value;
+            const fMes = document.getElementById('prof-mes-filtro').value;
+            const fAno = document.getElementById('prof-ano-filtro').value;
 
             let tAlunos=0, tAus=0, tAval=0, tLaudo=0;
             let tN1=0, tN2=0, tN3=0, tN4=0, tIni=0, tFlu=0;
@@ -1030,38 +1028,27 @@
             filteredProfData = []; 
 
             meusEnviosCache.forEach(d => {
-                let esc = String(d.escola || "").trim();
-                let tur = String(d.turma || "").trim();
-
-                if (fEsc !== "TODAS" && esc !== fEsc) return;
-                if (fTur !== "TODAS" && tur !== fTur) return;
-
                 let dia = "01", mes = "01", ano = "2026";
                 try {
-                    let dData = String(d.data_avaliacao || "").trim();
-                    if(dData.includes('/')) { [dia, mes, ano] = dData.split('/'); } 
-                    else if (dData.includes('-')) { [ano, mes, dia] = dData.split('-'); }
-                    if(dia) dia = String(dia).trim().padStart(2, '0');
-                    if(mes) mes = String(mes).trim().padStart(2, '0');
-                    if(ano) ano = String(ano).trim();
+                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else if (d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    if(mes) mes = mes.padStart(2, '0');
                 } catch(e) {}
 
                 let mostrar = true;
                 let ruralSeriesMatched = false;
 
+                if (fEsc !== "TODAS" && d.escola !== fEsc) mostrar = false;
+                if (fTur !== "TODAS" && d.turma !== fTur) mostrar = false;
                 if (fMes !== "TODOS" && mes !== fMes) mostrar = false;
                 if (fAno !== "TODOS" && ano !== fAno) mostrar = false;
 
-                let serie = String(d.serie || "").trim();
-                let prof = String(d.professor || "").trim();
-                let detArr = d.detalhes ? (Array.isArray(d.detalhes) ? d.detalhes : Object.values(d.detalhes)) : [];
-
                 if (fSer !== "TODAS") {
-                    if (serie === "Multisseriada" || prof === "Welma") {
-                        const temAluno = detArr.some(a => String(a.serieRural || "").trim() === fSer && !a.transferido);
+                    if (d.serie === "Multisseriada" || d.professor === "Welma") {
+                        const temAluno = d.detalhes && d.detalhes.some(a => a.serieRural === fSer && !a.transferido);
                         if (!temAluno) mostrar = false;
                         else ruralSeriesMatched = true;
-                    } else if (serie !== fSer) {
+                    } else if (d.serie !== fSer) {
                         mostrar = false;
                     }
                 }
@@ -1071,26 +1058,26 @@
                 let avalClass = 0, ausClass = 0, alunosClass = 0, laudoClass = 0;
                 let n1Class=0, n2Class=0, n3Class=0, n4Class=0, iniClass=0, fluClass=0;
                 
-                detArr.forEach(a => {
-                    if (a.transferido) return;
-                    let sRural = String(a.serieRural || "").trim();
-                    if ((serie === 'Multisseriada' || prof === 'Welma') && fSer !== "TODAS" && sRural !== fSer) {
-                        return; 
-                    }
-                    alunosClass++;
-                    if (a.laudo) laudoClass++;
-                    let nivel = String(a.nivel || "").trim();
-                    if (nivel === 'Ausente') { ausClass++; } 
-                    else if (nivel) {
-                        avalClass++;
-                        if (nivel === 'Nível 1') n1Class++;
-                        if (nivel === 'Nível 2') n2Class++;
-                        if (nivel === 'Nível 3') n3Class++;
-                        if (nivel === 'Nível 4') n4Class++;
-                        if (nivel === 'Iniciante') iniClass++;
-                        if (nivel === 'Fluente') fluClass++;
-                    }
-                });
+                if (d.detalhes) {
+                    d.detalhes.forEach(a => {
+                        if (a.transferido) return;
+                        if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && fSer !== "TODAS" && a.serieRural !== fSer) {
+                            return; 
+                        }
+                        alunosClass++;
+                        if (a.laudo) laudoClass++;
+                        if (a.nivel === 'Ausente') { ausClass++; } 
+                        else if (a.nivel) {
+                            avalClass++;
+                            if (a.nivel === 'Nível 1') n1Class++;
+                            if (a.nivel === 'Nível 2') n2Class++;
+                            if (a.nivel === 'Nível 3') n3Class++;
+                            if (a.nivel === 'Nível 4') n4Class++;
+                            if (a.nivel === 'Iniciante') iniClass++;
+                            if (a.nivel === 'Fluente') fluClass++;
+                        }
+                    });
+                }
 
                 tAlunos += alunosClass;
                 tAval += avalClass;
@@ -1098,15 +1085,15 @@
                 tLaudo += laudoClass;
                 tN1 += n1Class; tN2 += n2Class; tN3 += n3Class; tN4 += n4Class; tIni += iniClass; tFlu += fluClass;
 
-                let txtSerie = serie || "?"; 
-                if ((serie === 'Multisseriada' || prof === 'Welma') && ruralSeriesMatched) {
+                let txtSerie = d.serie || "?"; 
+                if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched) {
                     txtSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${fSer})</small>`;
                 }
 
                 filteredProfData.push({
                     originalData: d,
                     exibeSerie: txtSerie,
-                    id: d.id, escola: esc || "Escola?", serie: txtSerie, turma: tur || "?", data: String(d.data_avaliacao || "").trim() || "Data?"
+                    id: d.id, escola: d.escola || "Escola?", serie: txtSerie, turma: d.turma || "?", data: d.data_avaliacao || "Data?"
                 });
             });
 
@@ -1176,9 +1163,9 @@
 
             const chavesUnicas = new Set();
             meusEnviosCache.forEach(d => { 
-                const esc = String(d.escola || "Escola Desconhecida").trim();
-                const ser = String(d.serie || "Série Indefinida").trim();
-                const tur = String(d.turma || "Única").trim();
+                const esc = d.escola || "Escola Desconhecida";
+                const ser = d.serie || "Série Indefinida";
+                const tur = d.turma || "Única";
                 chavesUnicas.add(`${esc}|${ser}|${tur}`); 
             });
             
@@ -1196,11 +1183,11 @@
             if(!key) return alert("Selecione uma turma.");
             const [esc, ser, tur] = key.split('|');
             const avaliacoesTurma = meusEnviosCache.filter(d => 
-                String(d.escola || "Escola Desconhecida").trim() === esc && 
-                String(d.serie || "Série Indefinida").trim() === ser && 
-                String(d.turma || "Única").trim() === tur
+                (d.escola || "Escola Desconhecida") === esc && 
+                (d.serie || "Série Indefinida") === ser && 
+                (d.turma || "Única") === tur
             );
-            avaliacoesTurma.sort((a, b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
+            avaliacoesTurma.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
             if(avaliacoesTurma.length < 2) {
                 document.getElementById('tabela-evo').innerHTML = "<tr><td colspan='4'>Precisa de pelo menos 2 avaliações.</td></tr>";
@@ -1210,16 +1197,13 @@
             document.getElementById('evo-info').innerText = `Comparando: ${atual.data_avaliacao} vs ${anterior.data_avaliacao}`;
 
             let html = "";
-            let detArrAtual = atual.detalhes ? (Array.isArray(atual.detalhes) ? atual.detalhes : Object.values(atual.detalhes)) : [];
-            let detArrAnt = anterior.detalhes ? (Array.isArray(anterior.detalhes) ? anterior.detalhes : Object.values(anterior.detalhes)) : [];
-
-            if(detArrAtual.length > 0) {
-                detArrAtual.forEach(alunoAtual => {
+            if(atual.detalhes) {
+                atual.detalhes.forEach(alunoAtual => {
                     if(alunoAtual.transferido) return; 
 
-                    const alunoAnt = detArrAnt.find(a => String(a.nome || "").toLowerCase().trim() === String(alunoAtual.nome || "").toLowerCase().trim());
-                    const nivelAtual = String(alunoAtual.nivel || "").trim() || "-";
-                    const nivelAnt = alunoAnt ? (String(alunoAnt.nivel || "").trim() || "-") : "Novo";
+                    const alunoAnt = anterior.detalhes ? anterior.detalhes.find(a => a.nome.toLowerCase().trim() === alunoAtual.nome.toLowerCase().trim()) : null;
+                    const nivelAtual = alunoAtual.nivel || "-";
+                    const nivelAnt = alunoAnt ? (alunoAnt.nivel || "-") : "Novo";
                     let badge = '<span class="badge badge-same">➖ Manteve</span>';
                     if (alunoAnt && PESO_NIVEL[nivelAtual] !== undefined && PESO_NIVEL[nivelAnt] !== undefined) {
                         if (PESO_NIVEL[nivelAtual] > PESO_NIVEL[nivelAnt]) badge = '<span class="badge badge-up">⬆️ Evoluiu</span>';
@@ -1234,39 +1218,29 @@
 
         // --- DASHBOARD ADMIN ---
         window.carregarAdmin = async () => {
-            try {
-                const dbRef = ref(db, 'avaliacoes');
-                const snapshot = await get(dbRef);
-                todosDadosAdm = [];
+            const dbRef = ref(db, 'avaliacoes');
+            const snapshot = await get(dbRef);
+            if (snapshot.exists()) {
+                const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
+                todosDadosAdm = all.sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
                 
+                const escolasUnicas = [...new Set(todosDadosAdm.map(d => d.escola))].sort();
                 const selEscola = document.getElementById('filtro-escola');
                 selEscola.innerHTML = '<option value="TODAS">Todas as Escolas</option>';
-
-                if (snapshot.exists()) {
-                    const all = Object.entries(snapshot.val()).map(([key, value]) => ({ ...value, id: key }));
-                    todosDadosAdm = all.sort((a, b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
-                    
-                    const escolasUnicas = [...new Set(todosDadosAdm.map(d => String(d.escola || "").trim()))].sort();
-                    escolasUnicas.forEach(esc => {
-                        if(esc) selEscola.innerHTML += `<option value="${esc}">${esc}</option>`;
-                    });
-                }
+                escolasUnicas.forEach(esc => selEscola.innerHTML += `<option value="${esc}">${esc}</option>`);
                 window.aplicarFiltros();
-            } catch(e) {
-                console.error("Erro ao carregar admin:", e);
-                document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Erro de conexão com o banco.</td></tr>";
-            }
+            } else { document.getElementById('tabela-envios').innerHTML = "<tr><td colspan='6'>Nenhum dado.</td></tr>"; }
         };
 
         window.aplicarFiltros = () => {
-            const fEscola = String(document.getElementById('filtro-escola').value).trim();
-            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => String(c.value).trim());
+            const fEscola = document.getElementById('filtro-escola').value;
+            const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value);
             
             let fDia = ""; let fMes = "TODOS"; let fAno = "TODOS";
             
-            if (document.getElementById('adm-dia-ini')) fDia = String(document.getElementById('adm-dia-ini').value).trim();
-            if (document.getElementById('adm-mes-ini')) fMes = String(document.getElementById('adm-mes-ini').value).trim();
-            if (document.getElementById('adm-ano-ini')) fAno = String(document.getElementById('adm-ano-ini').value).trim();
+            if (document.getElementById('adm-dia-ini')) fDia = document.getElementById('adm-dia-ini').value;
+            if (document.getElementById('adm-mes-ini')) fMes = document.getElementById('adm-mes-ini').value;
+            if (document.getElementById('adm-ano-ini')) fAno = document.getElementById('adm-ano-ini').value;
             
             let gAlunos=0, gAus=0, gAval=0, gLaudo=0;
             let gN1=0, gN2=0, gN3=0, gN4=0, gIni=0, gFlu=0;
@@ -1274,17 +1248,13 @@
             filteredAdmData = [];
 
             todosDadosAdm.forEach(d => {
-                let esc = String(d.escola || "").trim();
-                if (fEscola !== "TODAS" && esc !== fEscola) return;
+                if (fEscola !== "TODAS" && d.escola !== fEscola) return;
                 
                 let dia = "", mes = "", ano = "";
                 try {
-                    let dData = String(d.data_avaliacao || "").trim();
-                    if(dData.includes('/')) { [dia, mes, ano] = dData.split('/'); } 
-                    else if(dData.includes('-')) { [ano, mes, dia] = dData.split('-'); }
-                    if(dia) dia = String(dia).trim().padStart(2, '0');
-                    if(mes) mes = String(mes).trim().padStart(2, '0');
-                    if(ano) ano = String(ano).trim();
+                    if(d.data_avaliacao && d.data_avaliacao.includes('/')) { [dia, mes, ano] = d.data_avaliacao.split('/'); } 
+                    else if(d.data_avaliacao && d.data_avaliacao.includes('-')) { [ano, mes, dia] = d.data_avaliacao.split('-'); }
+                    if(mes) mes = mes.padStart(2, '0');
                 } catch(e) {}
 
                 if(fDia && dia !== fDia) return;
@@ -1294,59 +1264,58 @@
                 let contribuiu = false; 
                 let tAvalLocal = 0, tFluLocal = 0;
                 let ruralSeriesMatched = new Set(); 
-                let serie = String(d.serie || "").trim();
-                let prof = String(d.professor || "").trim();
-                let detArr = d.detalhes ? (Array.isArray(d.detalhes) ? d.detalhes : Object.values(d.detalhes)) : [];
 
-                if (serie === 'Multisseriada' || prof === 'Welma') {
-                    detArr.forEach(aluno => {
-                        if(aluno.transferido) return;
-                        let sRural = String(aluno.serieRural || "").trim();
-                        if (chkSeries.length > 0 && chkSeries.includes(sRural)) {
-                            gAlunos++;
-                            let nivel = String(aluno.nivel || "").trim();
-                            if (nivel === 'Ausente') { gAus++; }
-                            else if (nivel) {
-                                gAval++; tAvalLocal++;
-                                if (nivel === 'Nível 1') gN1++;
-                                if (nivel === 'Nível 2') gN2++;
-                                if (nivel === 'Nível 3') gN3++;
-                                if (nivel === 'Nível 4') gN4++;
-                                if (nivel === 'Iniciante') gIni++;
-                                if (nivel === 'Fluente') { gFlu++; tFluLocal++; }
+                if (d.serie === 'Multisseriada' || d.professor === 'Welma') {
+                    if (d.detalhes && Array.isArray(d.detalhes)) {
+                        d.detalhes.forEach(aluno => {
+                            if(aluno.transferido) return;
+                            
+                            if (chkSeries.length > 0 && chkSeries.includes(aluno.serieRural)) {
+                                gAlunos++;
+                                if (aluno.nivel === 'Ausente') { gAus++; }
+                                else if (aluno.nivel) {
+                                    gAval++; tAvalLocal++;
+                                    if (aluno.nivel === 'Nível 1') gN1++;
+                                    if (aluno.nivel === 'Nível 2') gN2++;
+                                    if (aluno.nivel === 'Nível 3') gN3++;
+                                    if (aluno.nivel === 'Nível 4') gN4++;
+                                    if (aluno.nivel === 'Iniciante') gIni++;
+                                    if (aluno.nivel === 'Fluente') { gFlu++; tFluLocal++; }
+                                }
+                                if(aluno.laudo) gLaudo++;
+                                contribuiu = true;
+                                ruralSeriesMatched.add(aluno.serieRural); 
                             }
-                            if(aluno.laudo) gLaudo++;
-                            contribuiu = true;
-                            ruralSeriesMatched.add(sRural); 
-                        }
-                    });
-                } else {
-                    if (chkSeries.length > 0 && chkSeries.includes(serie)) {
-                        detArr.forEach(a => { 
-                            if(a.transferido) return;
-                            gAlunos++;
-                            let nivel = String(a.nivel || "").trim();
-                            if (nivel === 'Ausente') { gAus++; }
-                            else if (nivel) {
-                                gAval++; tAvalLocal++;
-                                if (nivel === 'Nível 1') gN1++;
-                                if (nivel === 'Nível 2') gN2++;
-                                if (nivel === 'Nível 3') gN3++;
-                                if (nivel === 'Nível 4') gN4++;
-                                if (nivel === 'Iniciante') gIni++;
-                                if (nivel === 'Fluente') { gFlu++; tFluLocal++; }
-                            }
-                            if (a.laudo) gLaudo++; 
                         });
-                        if (detArr.length > 0) contribuiu = true;
+                    }
+                } else {
+                    if (chkSeries.length > 0 && chkSeries.includes(d.serie)) {
+                        if(d.detalhes) {
+                            d.detalhes.forEach(a => { 
+                                if(a.transferido) return;
+                                gAlunos++;
+                                if (a.nivel === 'Ausente') { gAus++; }
+                                else if (a.nivel) {
+                                    gAval++; tAvalLocal++;
+                                    if (a.nivel === 'Nível 1') gN1++;
+                                    if (a.nivel === 'Nível 2') gN2++;
+                                    if (a.nivel === 'Nível 3') gN3++;
+                                    if (a.nivel === 'Nível 4') gN4++;
+                                    if (a.nivel === 'Iniciante') gIni++;
+                                    if (a.nivel === 'Fluente') { gFlu++; tFluLocal++; }
+                                }
+                                if (a.laudo) gLaudo++; 
+                            });
+                        }
+                        contribuiu = true;
                     }
                 }
                 
                 if (contribuiu) {
                     let pct = tAvalLocal > 0 ? (tFluLocal/tAvalLocal*100).toFixed(0)+"%" : "-";
-                    let exibeSerie = serie;
+                    let exibeSerie = d.serie;
                     
-                    if ((serie === 'Multisseriada' || prof === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
+                    if ((d.serie === 'Multisseriada' || d.professor === 'Welma') && ruralSeriesMatched.size > 0 && ruralSeriesMatched.size < 5) {
                         let arrS = Array.from(ruralSeriesMatched).sort();
                         exibeSerie += `<br><small style="color:var(--primary); font-weight:bold;">(${arrS.join(', ')})</small>`;
                     }
@@ -1355,10 +1324,10 @@
                         originalData: d,
                         exibeSerie: exibeSerie,
                         id: d.id,
-                        escola: esc,
-                        serieTurma: `${exibeSerie} ${String(d.turma || "").trim()}`,
-                        data: String(d.data_avaliacao || "").trim(),
-                        prof: prof,
+                        escola: d.escola,
+                        serieTurma: `${exibeSerie} ${d.turma}`,
+                        data: d.data_avaliacao,
+                        prof: d.professor,
                         pct: pct
                     });
                 }
