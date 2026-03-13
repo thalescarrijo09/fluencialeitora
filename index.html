@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAVEL - Sistema Oficial</title>
+    <title>Leitura Mineiros</title>
+    
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath fill='%23E65100' d='M249.6 471.5c10.8 3.8 22.4-4.1 22.4-15.5V78.6c0-4.2-1.6-8.4-5-11C247.4 52 202.4 32 144 32C93.5 32 46.3 45.3 18.1 56.1C6.8 60.5 0 71.7 0 83.8V454.1c0 11.9 11.6 20.2 22.8 16.1C51.6 459 95.8 448 144 448c56 0 106.8 11.9 144.5 25.1c1.5 .5 3.3 1.2 5.1 2.3v-.1zM530.9 83.8l-40.2-40.2c-12.5-12.5-32.8-12.5-45.3 0L208 281.1V368h86.9L532.3 129.1c12.1-12.5 12.1-32.8-1.4-45.3z'/%3E%3C/svg%3E" type="image/svg+xml">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -19,44 +22,25 @@
             --success: #2E7D32; 
         }
         
-        /* Ajuste no body para o fundo de tela cheia do login funcionar perfeitamente */
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:0; }
         
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* Container centralizador para as telas de dentro do sistema */
         .app-container { max-width: 950px; margin: 0 auto; padding: 15px; }
 
         /* ========================================= */
-        /* NOVO LOGIN: TELA DIVIDIDA COM SUA IMAGEM  */
+        /* LOGIN CENTRALIZADO E LIMPO                */
         /* ========================================= */
-        #screen-login.active { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
-        .login-left { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-light); padding: 20px; z-index: 2; }
-        
-        /* A imagem do Canva vai aparecer aqui! */
-        .login-right { 
-            flex: 1.2; 
-            background: url('bg-login.jpg') center/cover no-repeat; 
-            position: relative; 
-        }
-        /* Efeito de transição suave (degradê) entre a cor de fundo e a imagem */
-        .login-right::after { 
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%; 
-            background: linear-gradient(to right, rgba(244, 244, 249, 1) 0%, rgba(244, 244, 249, 0) 15%); 
-        }
-
-        .login-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 380px; }
-        .logos-login { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; align-items: center; }
+        #screen-login.active { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-light); }
+        .login-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; margin: 20px; }
+        .logos-login { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; align-items: center; }
         .logos-login img { max-height: 100px; max-width: 150px; object-fit: contain; }
-        
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        /* ========================================= */
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
 
-        /* NOVO HEADER: PATTERN EDUCACIONAL SUTIL */
+        /* HEADER: PATTERN EDUCACIONAL SUTIL */
         .app-header { 
             background-color: var(--primary); 
-            /* Desenho sutil em base64 SVG (estrelinhas e cruzes) */
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             color: white; padding: 20px; border-radius: 0 0 12px 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
         }
@@ -154,8 +138,8 @@
         .modal-table tr.transferido td:first-child { text-decoration: line-through; color: #777; }
         
         @media print { .no-print { display: none !important; } }
+        
         @media (max-width: 768px) { 
-            .login-right { display: none; } /* Esconde a foto no celular para não atrapalhar o login */
             .dash-grid { grid-template-columns: repeat(3, 1fr); } 
             .tabs { flex-wrap: wrap; } 
             .filter-row { flex-direction: column; align-items: stretch; }
@@ -166,26 +150,23 @@
 <body>
 
     <div id="screen-login" class="screen active">
-        <div class="login-left">
-            <div class="login-box">
-                <div class="logos-login">
-                    <img src="logo-prefeitura.png" alt="Prefeitura" onerror="this.style.display='none'">
-                    <img src="logo-secretaria.png" alt="Secretaria" onerror="this.style.display='none'">
-                </div>
-                <h2 style="color: var(--secondary); margin-bottom: 5px; font-size: 1.8rem;">SIAVEL</h2>
-                <p style="margin-top: 0; font-weight: 500; font-size: 1rem; color: #666; margin-bottom: 25px;">Gestão & Evolução de Leitura</p>
-                <input type="text" id="email" placeholder="Digite seu E-mail">
-                <input type="password" id="senha" placeholder="Digite sua Senha">
-                <button class="btn-main" onclick="window.login()" style="font-size: 1.1rem; padding: 14px; margin-top: 15px;">ACESSAR SISTEMA</button>
-                <p id="msg-login" style="color:var(--red); margin-top:15px; font-weight: bold;"></p>
+        <div class="login-box">
+            <div class="logos-login" style="margin-bottom: 10px;">
+                <img src="logo-prefeitura.png" alt="Prefeitura" onerror="this.style.display='none'">
+                <img src="logo-secretaria.png" alt="Secretaria" onerror="this.style.display='none'">
             </div>
+            <p style="margin-top: 10px; font-weight: 500; font-size: 1.1rem; color: #666; margin-bottom: 25px;">Gestão & Evolução de Leitura</p>
+            <input type="text" id="email" placeholder="Digite seu E-mail">
+            <input type="password" id="senha" placeholder="Digite sua Senha">
+            <button class="btn-main" onclick="window.login()" style="font-size: 1.1rem; padding: 14px; margin-top: 15px;">ACESSAR SISTEMA</button>
+            <p id="msg-login" style="color:var(--red); margin-top:15px; font-weight: bold;"></p>
         </div>
-        <div class="login-right"></div> </div>
+    </div>
 
     <div id="screen-app" class="screen">
       <div class="app-container">
         <div class="app-header">
-            <span id="header-user">Avaliadora</span>
+            <span id="header-user">Olá, Jane (Avaliadora)</span>
             <button class="btn-logout" onclick="window.logout()">Sair do Sistema</button>
         </div>
 
@@ -336,7 +317,7 @@
     <div id="screen-admin" class="screen">
       <div class="app-container">
         <div class="app-header" style="background:#333; background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
-            <span>Painel Gestor | SIAVEL</span>
+            <span>Painel Gestor</span>
             <button class="btn-logout" onclick="window.logout()">Sair do Sistema</button>
         </div>
 
@@ -496,7 +477,7 @@
         let dadosTurma = {};
         let meusEnviosCache = [];
         let todosDadosAdm = []; 
-        let turmaAtualEdicao = null; 
+        window.turmaAtualEdicao = null; 
 
         const rowsPerPage = 10;
         let currentPageProf = 1;
@@ -697,11 +678,11 @@
         
         window.fecharModal = () => {
             document.getElementById('modal-detalhes').classList.add('hidden');
-            turmaAtualEdicao = null;
+            window.turmaAtualEdicao = null;
         };
 
         window.renderizarTabelaModal = (isProf) => {
-            const isRural = turmaAtualEdicao.serie === 'Multisseriada' || turmaAtualEdicao.professor === 'Welma';
+            const isRural = window.turmaAtualEdicao.serie === 'Multisseriada' || window.turmaAtualEdicao.professor === 'Welma';
             let profFiltroSerie = 'TODAS';
             let admChkSeries = [];
             if (isRural) {
@@ -709,12 +690,22 @@
                 else { admChkSeries = Array.from(document.querySelectorAll('#chk-series input:checked')).map(c => c.value); }
             }
 
-            let html = '<table class="modal-table"><thead><tr><th>Aluno</th>';
+            // NOVO: CAIXA DE EDIÇÃO DE DATA
+            let html = `<div style="margin-bottom: 15px; padding: 10px 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: bold; color: #555;">Data da Avaliação:</span>`;
+            if (isProf) {
+                html += `<input type="text" value="${window.turmaAtualEdicao.data_avaliacao}" oninput="window.turmaAtualEdicao.data_avaliacao = this.value" maxlength="10" placeholder="DD/MM/AAAA" style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; width: 110px; font-weight: bold; color: var(--secondary); font-size: 0.95rem; margin: 0; text-align: center;">`;
+            } else {
+                html += `<span style="font-weight: bold; color: var(--secondary); font-size: 0.95rem;">${window.turmaAtualEdicao.data_avaliacao}</span>`;
+            }
+            html += `</div>`;
+
+            html += '<table class="modal-table"><thead><tr><th>Aluno</th>';
             if (isRural) html += '<th>Série</th>';
             html += '<th>Laudo</th><th>Transf.</th><th>Avaliação</th></tr></thead><tbody>';
             let exibiuAlunos = false;
 
-            turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
+            window.turmaAtualEdicao.detalhes.forEach((aluno, idx) => {
                 if (isRural) {
                     if (isProf && profFiltroSerie !== "TODAS" && aluno.serieRural !== profFiltroSerie) return; 
                     if (!isProf && admChkSeries.length > 0 && !admChkSeries.includes(aluno.serieRural)) return; 
@@ -726,14 +717,14 @@
                     NIVEIS.forEach(n => { options += `<option value="${n}" ${aluno.nivel===n?'selected':''}>${n}</option>`; });
                     let ruralTd = '';
                     if (isRural) {
-                        ruralTd = `<td><select onchange="turmaAtualEdicao.detalhes[${idx}].serieRural = this.value" ${aluno.transferido?'disabled':''} style="padding:4px; border-radius:4px; border:1px solid #ccc; max-width:85px;">
+                        ruralTd = `<td><select onchange="window.turmaAtualEdicao.detalhes[${idx}].serieRural = this.value" ${aluno.transferido?'disabled':''} style="padding:4px; border-radius:4px; border:1px solid #ccc; max-width:85px;">
                             <option value="">Série...</option>${["1º Ano","2º Ano","3º Ano","4º Ano","5º Ano"].map(s=>`<option value="${s}" ${aluno.serieRural===s?'selected':''}>${s}</option>`).join('')}</select></td>`;
                     }
                     html += `<tr class="${aluno.transferido ? 'transferido' : ''}">
                         <td><strong>${aluno.nome}</strong></td>${ruralTd}
-                        <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].laudo = this.checked" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}></td>
-                        <td><input type="checkbox" onchange="turmaAtualEdicao.detalhes[${idx}].transferido = this.checked; if(this.checked){turmaAtualEdicao.detalhes[${idx}].nivel=''} window.renderizarTabelaModal(true)" ${aluno.transferido?'checked':''}></td>
-                        <td><select onchange="turmaAtualEdicao.detalhes[${idx}].nivel = this.value" ${aluno.transferido?'disabled':''}>${options}</select></td>
+                        <td><input type="checkbox" onchange="window.turmaAtualEdicao.detalhes[${idx}].laudo = this.checked" ${aluno.laudo?'checked':''} ${aluno.transferido?'disabled':''}></td>
+                        <td><input type="checkbox" onchange="window.turmaAtualEdicao.detalhes[${idx}].transferido = this.checked; if(this.checked){window.turmaAtualEdicao.detalhes[${idx}].nivel=''} window.renderizarTabelaModal(true)" ${aluno.transferido?'checked':''}></td>
+                        <td><select onchange="window.turmaAtualEdicao.detalhes[${idx}].nivel = this.value" ${aluno.transferido?'disabled':''}>${options}</select></td>
                     </tr>`;
                 } else {
                     let badgeTransf = aluno.transferido ? '<span style="color:var(--gray)">Sim</span>' : 'Não';
@@ -753,9 +744,10 @@
             const listaBase = isAdmin ? todosDadosAdm : meusEnviosCache;
             const item = listaBase.find(d => d.id === id);
             if(item) {
-                turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
-                if(!turmaAtualEdicao.detalhes) turmaAtualEdicao.detalhes = [];
-                document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma} (${item.data_avaliacao})`;
+                window.turmaAtualEdicao = JSON.parse(JSON.stringify(item)); 
+                if(!window.turmaAtualEdicao.detalhes) window.turmaAtualEdicao.detalhes = [];
+                // A data foi removida daqui, pois agora é editável no corpo do modal
+                document.getElementById('modal-titulo').innerText = `${item.escola} | ${item.serie} ${item.turma}`;
                 window.renderizarTabelaModal(!isAdmin);
                 const footer = document.getElementById('modal-footer');
                 if (isAdmin) { footer.classList.add('hidden'); } else { footer.classList.remove('hidden'); }
@@ -766,17 +758,21 @@
         window.salvarEdicaoModal = async () => {
             const btn = document.querySelector('#modal-footer .btn-main');
             btn.innerText = "⏳ Salvando...";
-            const ativos = turmaAtualEdicao.detalhes.filter(a => !a.transferido);
+            const ativos = window.turmaAtualEdicao.detalhes.filter(a => !a.transferido);
             const cont = {}; NIVEIS.forEach(n => cont[n] = 0); let aval = 0, aus = 0;
             ativos.forEach(a => { if (a.nivel === 'Ausente') aus++; else if (a.nivel) { aval++; cont[a.nivel]++; } });
 
-            turmaAtualEdicao.total_alunos = ativos.length;
-            turmaAtualEdicao.total_avaliados = aval;
-            turmaAtualEdicao.total_ausentes = aus;
-            turmaAtualEdicao.resultados = cont;
+            window.turmaAtualEdicao.total_alunos = ativos.length;
+            window.turmaAtualEdicao.total_avaliados = aval;
+            window.turmaAtualEdicao.total_ausentes = aus;
+            window.turmaAtualEdicao.resultados = cont;
+
+            let idSalvar = window.turmaAtualEdicao.id;
+            let payload = { ...window.turmaAtualEdicao };
+            delete payload.id; 
 
             try {
-                await set(ref(db, 'avaliacoes/' + turmaAtualEdicao.id), turmaAtualEdicao);
+                await set(ref(db, 'avaliacoes/' + idSalvar), payload);
                 alert("✅ Alterações salvas com sucesso!");
                 window.fecharModal();
                 window.carregarHistoricoProf(); 
@@ -787,7 +783,7 @@
         };
 
         // ==========================================
-        // NOVO: LÓGICA DO RELATÓRIO AVANÇADO (MÚLTIPLOS NÍVEIS)
+        // LÓGICA DO RELATÓRIO AVANÇADO (MÚLTIPLOS NÍVEIS)
         // ==========================================
         window.abrirModalRelatorioAvancado = (isProf) => {
             modoRelatorioAvancadoIsProf = isProf;
@@ -889,7 +885,7 @@
             
             const opt = {
                 margin:       10,
-                filename:     `SIAVEL_Relatorio_Intervencao.pdf`,
+                filename:     `LeituraMineiros_Relatorio.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
