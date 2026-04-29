@@ -1070,4 +1070,541 @@ window.renderPaginationAdm = () => {
         html += `<button class="page-btn" ${currentPageAdm === totalPages ? 'disabled' : ''} onclick="window.mudarPaginaAdm(${currentPageAdm + 1})">Próx »</button>`;
     }
     document.getElementById('paginacao-adm').innerHTML = html;
+    /* ============================================================ */
+/* 🆕 RELATÓRIOS CONSOLIDADOS (Por Escola / Por Turma / Por Aluno) */
+/* ============================================================ */
+
+let tipoRelatorioConsolidadoAtual = 'escola'; // 'escola' | 'turma' | 'aluno'
+
+// Mapeia o nível para a classe CSS correspondente
+const MAPA_CLASSE_NIVEL = {
+    "Nível 1": "n1",
+    "Nível 2": "n2",
+    "Nível 3": "n3",
+    "Nível 4": "n4",
+    "Iniciante": "ini",
+    "Fluente": "flu",
+    "Ausente": "aus"
+};
+
+/**
+ * Calcula a distribuição de níveis sobre uma lista de alunos ativos.
+ * Base = total de alunos ativos (não transferidos). Inclui ausentes com % próprio.
+ * @returns objeto com totais e percentuais
+ */
+window.calcularDistribuicaoNiveis = (alunosAtivos) => {
+    const cont = { "Nível 1": 0, "Nível 2": 0, "Nível 3": 0, "Nível 4": 0, "Iniciante": 0, "Fluente": 0, "Ausente": 0 };
+    let totalLaudos = 0;
+
+    alunosAtivos.forEach(a => {
+        const nivel = String(a.nivel || "").trim();
+        if (cont.hasOwnProperty(nivel)) cont[nivel]++;
+        if (a.laudo) totalLaudos++;
+    });
+
+    const total = alunosAtivos.length;
+    const pct = {};
+    Object.keys(cont).forEach(k => {
+        pct[k] = total > 0 ? (cont[k] / total * 100) : 0;
+    });
+
+    return {
+        total,
+        contagem: cont,
+        percentuais: pct,
+        laudos: totalLaudos
+    };
+};
+
+/**
+ * Coleta todos os alunos ativos (não transferidos) considerando os filtros admin.
+ * Retorna objeto com array de alunos enriquecidos + agrupamentos auxiliares.
+ */
+window.coletarAlunosFiltrados = () => {
+    const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked'))
+        .map(c => String(c.value).trim());
+
+    const todosAlunos = [];
+
+    filteredAdmData.forEach(item => {
+        const d = item.originalData;
+        const serie = String(d.serie || "").trim();
+        const prof = String(d.professor || "").trim();
+        const isRural = serie === 'Multisseriada' || prof === 'Welma';
+
+        let detArr = d.detalhes ? (Array.isArray(d.detalhes) ? d.detalhes : Object.values(d.detalhes)) : [];
+        detArr = detArr.filter(a => a !== null);
+
+        detArr.forEach(aluno => {
+            if (aluno.transferido) return;
+
+            // Filtro de série para rural
+            if (isRural) {
+                const sRural = String(aluno.serieRural || "").trim();
+                if (chkSeries.length > 0 && !chkSeries.includes(sRural)) return;
+            } else {
+                if (chkSeries.length > 0 && !chkSeries.includes(serie)) return;
+            }
+
+            todosAlunos.push({
+                nome: aluno.nome || "?",
+                nivel: String(aluno.nivel || "").trim(),
+                laudo: !!aluno.laudo,
+                escola: String(d.escola || "?").trim(),
+                serie: isRural ? String(aluno.serieRural || "Multisseriada").trim() : serie,
+                turma: String(d.turma || "?").trim(),
+                professor: prof,
+                isRural: isRural,
+                data_avaliacao: d.data_avaliacao || ""
+            });
+        });
+    });
+
+    return todosAlunos;
+};
+
+/**
+ * Abre o modal de relatório consolidado e dispara a geração inicial.
+ */
+window.abrirModalRelatorioConsolidado = (tipo) => {
+    tipoRelatorioConsolidadoAtual = tipo;
+
+    const titulos = {
+        'escola': '🏫 Relatório Consolidado por Escola',
+        'turma': '📚 Relatório Consolidado por Turma',
+        'aluno': '👤 Relatório Detalhado por Aluno'
+    };
+
+    document.getElementById('modal-cons-titulo').innerText = titulos[tipo] || 'Relatório Consolidado';
+
+    // Mostra/esconde filtro de nível (só aparece no modo "aluno")
+    const filtroAlunoExtra = document.getElementById('filtro-aluno-extra');
+    if (tipo === 'aluno') {
+        filtroAlunoExtra.classList.remove('hidden');
+        document.getElementById('filtro-cons-nivel').value = 'TODOS';
+    } else {
+        filtroAlunoExtra.classList.add('hidden');
+    }
+
+    document.getElementById('btn-print-consolidado').style.display = 'none';
+    document.getElementById('conteudo-pdf-consolidado').innerHTML = "";
+    document.getElementById('modal-relatorio-consolidado').classList.remove('hidden');
+
+    // Gera a visualização
+    window.gerarVisualizacaoConsolidado();
+};
+
+/**
+ * Roteador: chama a função de geração apropriada conforme o tipo.
+ */
+window.gerarVisualizacaoConsolidado = () => {
+    if (tipoRelatorioConsolidadoAtual === 'escola') {
+        window.gerarRelatorioPorEscola();
+    } else if (tipoRelatorioConsolidadoAtual === 'turma') {
+        window.gerarRelatorioPorTurma();
+    } else if (tipoRelatorioConsolidadoAtual === 'aluno') {
+        window.gerarRelatorioPorAluno();
+    }
+};
+
+/**
+ * Constrói o cabeçalho do PDF mostrando filtros aplicados.
+ */
+window.construirCabecalhoPDFConsolidado = (titulo, subtitulo) => {
+    const fEscola = String(document.getElementById('filtro-escola').value).trim();
+    const chkSeries = Array.from(document.querySelectorAll('#chk-series input:checked'))
+        .map(c => String(c.value).trim());
+    const fMes = document.getElementById('adm-mes-ini') ? document.getElementById('adm-mes-ini').value : 'TODOS';
+    const fAno = document.getElementById('adm-ano-ini') ? document.getElementById('adm-ano-ini').value : 'TODOS';
+
+    const meses = { '01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro' };
+
+    let filtros = [];
+    filtros.push(`<strong>Escola:</strong> ${fEscola === 'TODAS' ? 'Todas' : fEscola}`);
+    filtros.push(`<strong>Séries:</strong> ${chkSeries.length === 0 ? 'Nenhuma' : chkSeries.join(', ')}`);
+    filtros.push(`<strong>Período:</strong> ${fMes === 'TODOS' ? 'Todos os meses' : meses[fMes]} / ${fAno === 'TODOS' ? 'Todos os anos' : fAno}`);
+
+    const dataGeracao = new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR').substring(0,5);
+
+    return `
+        <div class="pdf-consolidado-header">
+            <h2>${titulo}</h2>
+            <p class="pdf-subtitulo">${subtitulo}</p>
+            <div class="pdf-filtros">
+                ${filtros.join(' &nbsp;|&nbsp; ')}<br>
+                <small style="color:#888;">Gerado em: ${dataGeracao}</small>
+            </div>
+        </div>
+    `;
+};
+
+/**
+ * Renderiza uma linha de tabela com os 7 percentuais (N1, N2, N3, N4, Ini, Flu, Ausente)
+ */
+window.renderLinhaPercentuais = (dist, nomeColuna, posicao = null) => {
+    const ordem = ["Nível 1", "Nível 2", "Nível 3", "Nível 4", "Iniciante", "Fluente", "Ausente"];
+    let cells = "";
+    ordem.forEach(nivel => {
+        const pct = dist.percentuais[nivel];
+        const qtd = dist.contagem[nivel];
+        const classe = MAPA_CLASSE_NIVEL[nivel];
+        const pctFmt = pct.toFixed(1).replace('.', ',');
+        const isZero = pct === 0;
+        cells += `<td>
+            <div class="pct-cell ${isZero ? 'pct-zero' : 'pct-' + classe}">
+                ${pctFmt}%
+            </div>
+            <small style="color:#999; font-size:0.7rem;">(${qtd})</small>
+        </td>`;
+    });
+
+    let posHtml = "";
+    if (posicao !== null) {
+        let topClass = "";
+        if (posicao === 1) topClass = "top-1";
+        else if (posicao === 2) topClass = "top-2";
+        else if (posicao === 3) topClass = "top-3";
+        posHtml = `<span class="ranking-pos ${topClass}">${posicao}</span>`;
+    }
+
+    return `<tr>
+        <td class="col-nome">${posHtml}${nomeColuna}</td>
+        <td class="col-total">${dist.total}</td>
+        ${cells}
+        <td class="col-total" style="color:var(--purple);">${dist.laudos}</td>
+    </tr>`;
+};
+
+/**
+ * Cabeçalho da tabela de percentuais (colunas)
+ */
+window.cabecalhoTabelaPercentuais = (primeiraColuna) => {
+    return `
+        <thead>
+            <tr>
+                <th class="col-nome" style="text-align:left;">${primeiraColuna}</th>
+                <th>Total</th>
+                <th class="th-n1">Nível 1</th>
+                <th class="th-n2">Nível 2</th>
+                <th class="th-n3">Nível 3</th>
+                <th class="th-n4">Nível 4</th>
+                <th class="th-ini">Iniciante</th>
+                <th class="th-flu">Fluente</th>
+                <th class="th-aus">Ausente</th>
+                <th style="color:var(--purple);">Laudos</th>
+            </tr>
+        </thead>
+    `;
+};
+
+/**
+ * Ordena grupos: melhor → pior (mais Fluentes primeiro; em empate, menor % de Nível 1).
+ */
+window.ordenarMelhorParaPior = (grupos) => {
+    return grupos.sort((a, b) => {
+        const fluA = a.dist.percentuais["Fluente"];
+        const fluB = b.dist.percentuais["Fluente"];
+        if (fluB !== fluA) return fluB - fluA;
+        const n1A = a.dist.percentuais["Nível 1"];
+        const n1B = b.dist.percentuais["Nível 1"];
+        return n1A - n1B;
+    });
+};
+
+/* ---------------------------------------------- */
+/* RELATÓRIO POR ESCOLA                          */
+/* ---------------------------------------------- */
+window.gerarRelatorioPorEscola = () => {
+    const alunos = window.coletarAlunosFiltrados();
+
+    if (alunos.length === 0) {
+        document.getElementById('conteudo-pdf-consolidado').innerHTML =
+            `<div style="padding: 40px; text-align: center; color: #666;">Nenhum aluno encontrado com os filtros atuais.</div>`;
+        document.getElementById('btn-print-consolidado').style.display = 'none';
+        return;
+    }
+
+    // Agrupa por escola
+    const grupos = {};
+    alunos.forEach(a => {
+        if (!grupos[a.escola]) grupos[a.escola] = [];
+        grupos[a.escola].push(a);
+    });
+
+    // Calcula distribuição de cada escola
+    let arrGrupos = Object.keys(grupos).map(esc => ({
+        nome: esc,
+        dist: window.calcularDistribuicaoNiveis(grupos[esc])
+    }));
+
+    // Ordena melhor → pior
+    arrGrupos = window.ordenarMelhorParaPior(arrGrupos);
+
+    // Resumo geral
+    const distGeral = window.calcularDistribuicaoNiveis(alunos);
+
+    let html = `<div id="documento-pdf-consolidado">`;
+    html += window.construirCabecalhoPDFConsolidado(
+        "Relatório Consolidado por Escola",
+        `Total de ${arrGrupos.length} escola(s) | ${alunos.length} alunos avaliados`
+    );
+
+    // Resumo geral
+    html += `<div class="relatorio-resumo-geral">
+        <h4>📊 Resumo Geral da Rede</h4>
+        <table class="tabela-percentuais">
+            ${window.cabecalhoTabelaPercentuais("Indicador")}
+            <tbody>
+                ${window.renderLinhaPercentuais(distGeral, "<strong>TOTAL GERAL</strong>")}
+            </tbody>
+        </table>
+    </div>`;
+
+    // Tabela com todas as escolas
+    html += `<div class="relatorio-grupo-card">
+        <div class="relatorio-grupo-header">
+            <span class="grupo-titulo">🏫 Ranking de Escolas (Melhor → Pior)</span>
+            <span class="grupo-meta">${arrGrupos.length} escola(s)</span>
+        </div>
+        <table class="tabela-percentuais">
+            ${window.cabecalhoTabelaPercentuais("Escola")}
+            <tbody>`;
+
+    arrGrupos.forEach((g, idx) => {
+        html += window.renderLinhaPercentuais(g.dist, g.nome, idx + 1);
+    });
+
+    html += `</tbody></table></div>`;
+    html += `</div>`;
+
+    document.getElementById('conteudo-pdf-consolidado').innerHTML = html;
+    document.getElementById('btn-print-consolidado').style.display = 'inline-block';
+};
+
+/* ---------------------------------------------- */
+/* RELATÓRIO POR TURMA                           */
+/* ---------------------------------------------- */
+window.gerarRelatorioPorTurma = () => {
+    const alunos = window.coletarAlunosFiltrados();
+
+    if (alunos.length === 0) {
+        document.getElementById('conteudo-pdf-consolidado').innerHTML =
+            `<div style="padding: 40px; text-align: center; color: #666;">Nenhum aluno encontrado com os filtros atuais.</div>`;
+        document.getElementById('btn-print-consolidado').style.display = 'none';
+        return;
+    }
+
+    // Agrupa por escola → série → turma
+    const gruposEscola = {};
+    alunos.forEach(a => {
+        const chaveTurma = `${a.serie}|${a.turma}`;
+        if (!gruposEscola[a.escola]) gruposEscola[a.escola] = {};
+        if (!gruposEscola[a.escola][chaveTurma]) gruposEscola[a.escola][chaveTurma] = [];
+        gruposEscola[a.escola][chaveTurma].push(a);
+    });
+
+    // Resumo geral
+    const distGeral = window.calcularDistribuicaoNiveis(alunos);
+
+    let html = `<div id="documento-pdf-consolidado">`;
+    html += window.construirCabecalhoPDFConsolidado(
+        "Relatório Consolidado por Turma",
+        `Análise detalhada por escola e turma | ${alunos.length} alunos`
+    );
+
+    // Resumo geral
+    html += `<div class="relatorio-resumo-geral">
+        <h4>📊 Resumo Geral da Rede</h4>
+        <table class="tabela-percentuais">
+            ${window.cabecalhoTabelaPercentuais("Indicador")}
+            <tbody>
+                ${window.renderLinhaPercentuais(distGeral, "<strong>TOTAL GERAL</strong>")}
+            </tbody>
+        </table>
+    </div>`;
+
+    // Para cada escola: ordena turmas internamente melhor → pior
+    const escolasOrdenadas = Object.keys(gruposEscola).sort();
+
+    escolasOrdenadas.forEach(escola => {
+        const turmasObj = gruposEscola[escola];
+        let arrTurmas = Object.keys(turmasObj).map(chave => {
+            const [serie, turma] = chave.split('|');
+            return {
+                nome: `${serie} - Turma ${turma}`,
+                dist: window.calcularDistribuicaoNiveis(turmasObj[chave])
+            };
+        });
+        arrTurmas = window.ordenarMelhorParaPior(arrTurmas);
+
+        // Calcula distribuição agregada da escola
+        const todosAlunosEscola = [].concat(...Object.values(turmasObj));
+        const distEscola = window.calcularDistribuicaoNiveis(todosAlunosEscola);
+
+        html += `<div class="relatorio-grupo-card">
+            <div class="relatorio-grupo-header">
+                <span class="grupo-titulo">🏫 ${escola}</span>
+                <span class="grupo-meta">${arrTurmas.length} turma(s) | ${distEscola.total} alunos</span>
+            </div>
+            <table class="tabela-percentuais">
+                ${window.cabecalhoTabelaPercentuais("Turma")}
+                <tbody>`;
+
+        // Linha agregada da escola
+        html += `<tr style="background:#fff3e0; font-weight:bold;">`
+              + window.renderLinhaPercentuais(distEscola, "<em>📊 Subtotal Escola</em>").replace('<tr>', '').replace('</tr>', '')
+              + `</tr>`;
+
+        arrTurmas.forEach((t, idx) => {
+            html += window.renderLinhaPercentuais(t.dist, t.nome, idx + 1);
+        });
+
+        html += `</tbody></table></div>`;
+    });
+
+    html += `</div>`;
+
+    document.getElementById('conteudo-pdf-consolidado').innerHTML = html;
+    document.getElementById('btn-print-consolidado').style.display = 'inline-block';
+};
+
+/* ---------------------------------------------- */
+/* RELATÓRIO POR ALUNO                           */
+/* ---------------------------------------------- */
+window.gerarRelatorioPorAluno = () => {
+    const alunos = window.coletarAlunosFiltrados();
+    const filtroNivel = String(document.getElementById('filtro-cons-nivel').value).trim();
+
+    // Filtra por nível se aplicável
+    const alunosExibir = filtroNivel === 'TODOS'
+        ? alunos
+        : alunos.filter(a => a.nivel === filtroNivel);
+
+    if (alunosExibir.length === 0) {
+        document.getElementById('conteudo-pdf-consolidado').innerHTML =
+            `<div style="padding: 40px; text-align: center; color: #666;">Nenhum aluno encontrado${filtroNivel !== 'TODOS' ? ` no <strong>${filtroNivel}</strong>` : ''}.</div>`;
+        document.getElementById('btn-print-consolidado').style.display = 'none';
+        return;
+    }
+
+    // Resumo geral (sempre baseado em TODOS os alunos filtrados, não apenas exibidos)
+    const distGeral = window.calcularDistribuicaoNiveis(alunos);
+
+    let html = `<div id="documento-pdf-consolidado">`;
+    html += window.construirCabecalhoPDFConsolidado(
+        "Relatório Detalhado por Aluno",
+        `${alunosExibir.length} aluno(s) listado(s)${filtroNivel !== 'TODOS' ? ` | Filtro: ${filtroNivel}` : ''}`
+    );
+
+    // Resumo geral
+    html += `<div class="relatorio-resumo-geral">
+        <h4>📊 Resumo Geral da Rede (todos os alunos filtrados)</h4>
+        <table class="tabela-percentuais">
+            ${window.cabecalhoTabelaPercentuais("Indicador")}
+            <tbody>
+                ${window.renderLinhaPercentuais(distGeral, "<strong>TOTAL GERAL</strong>")}
+            </tbody>
+        </table>
+    </div>`;
+
+    // Ordena alunos: por escola → série → turma → nome
+    alunosExibir.sort((a, b) => {
+        if (a.escola !== b.escola) return a.escola.localeCompare(b.escola);
+        if (a.serie !== b.serie) return a.serie.localeCompare(b.serie);
+        if (a.turma !== b.turma) return a.turma.localeCompare(b.turma);
+        return a.nome.localeCompare(b.nome);
+    });
+
+    html += `<div class="relatorio-grupo-card">
+        <div class="relatorio-grupo-header">
+            <span class="grupo-titulo">👤 Lista Detalhada de Alunos</span>
+            <span class="grupo-meta">${alunosExibir.length} aluno(s)</span>
+        </div>
+        <table class="tabela-alunos-consolidado">
+            <thead>
+                <tr>
+                    <th style="width:40px;">#</th>
+                    <th>Aluno</th>
+                    <th>Escola</th>
+                    <th>Série / Turma</th>
+                    <th>Nível</th>
+                    <th>Laudo</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+    alunosExibir.forEach((a, idx) => {
+        const nivel = a.nivel || "";
+        const classeNivel = MAPA_CLASSE_NIVEL[nivel] || "vazio";
+        const tagNivel = nivel
+            ? `<span class="nivel-tag nivel-tag-${classeNivel}">${nivel}</span>`
+            : `<span class="nivel-tag nivel-tag-vazio">— Sem avaliação</span>`;
+        const laudoHtml = a.laudo
+            ? `<span style="color:var(--purple); font-weight:bold;">✓ Sim</span>`
+            : `<span style="color:#bbb;">—</span>`;
+
+        html += `<tr>
+            <td>${idx + 1}</td>
+            <td><strong>${a.nome}</strong></td>
+            <td>${a.escola}</td>
+            <td>${a.serie} / ${a.turma}</td>
+            <td>${tagNivel}</td>
+            <td>${laudoHtml}</td>
+        </tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+    html += `</div>`;
+
+    document.getElementById('conteudo-pdf-consolidado').innerHTML = html;
+    document.getElementById('btn-print-consolidado').style.display = 'inline-block';
+};
+
+/* ---------------------------------------------- */
+/* IMPRIMIR PDF DO RELATÓRIO CONSOLIDADO         */
+/* ---------------------------------------------- */
+window.imprimirRelatorioConsolidado = () => {
+    const btn = document.getElementById('btn-print-consolidado');
+    const textoOriginal = btn.innerText;
+    btn.innerText = "⏳ GERANDO PDF...";
+    btn.disabled = true;
+
+    const el = document.getElementById('documento-pdf-consolidado');
+
+    if (!el) {
+        alert("Erro: conteúdo não encontrado para gerar PDF.");
+        btn.innerText = textoOriginal;
+        btn.disabled = false;
+        return;
+    }
+
+    document.querySelector('#modal-relatorio-consolidado .modal-body').scrollTop = 0;
+
+    const nomeArquivo = {
+        'escola': 'Relatorio_Por_Escola',
+        'turma': 'Relatorio_Por_Turma',
+        'aluno': 'Relatorio_Por_Aluno'
+    }[tipoRelatorioConsolidadoAtual] || 'Relatorio_Consolidado';
+
+    // Orientação paisagem para tabelas largas (escola/turma); retrato para alunos
+    const orientacao = tipoRelatorioConsolidadoAtual === 'aluno' ? 'portrait' : 'landscape';
+
+    const opt = {
+        margin:       [10, 10, 10, 10],
+        filename:     `${nomeArquivo}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, scrollY: 0, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: orientacao },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(el).save().then(() => {
+        btn.innerText = textoOriginal;
+        btn.disabled = false;
+    }).catch(err => {
+        console.error("Erro ao gerar PDF:", err);
+        alert("Erro ao gerar PDF: " + err.message);
+        btn.innerText = textoOriginal;
+        btn.disabled = false;
+    });
 };
