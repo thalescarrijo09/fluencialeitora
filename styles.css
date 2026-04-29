@@ -7,6 +7,14 @@
     --purple: #8e24aa; 
     --gray: #9e9e9e; 
     --success: #2E7D32; 
+    /* 🆕 NOVO: Cores específicas para os níveis nos relatórios consolidados */
+    --nivel-1: #c62828;
+    --nivel-2: #e53935;
+    --nivel-3: #fb8c00;
+    --nivel-4: #fdd835;
+    --nivel-ini: #43a047;
+    --nivel-flu: #2E7D32;
+    --nivel-aus: #757575;
 }
 
 body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); color: var(--text); margin:0; padding:0; }
@@ -107,10 +115,251 @@ select { padding: 8px; border-radius: 6px; flex: 1; border: 1px solid #ccc; font
 .modal-table tr.transferido { background: #f0f0f0; opacity: 0.7; }
 .modal-table tr.transferido td:first-child { text-decoration: line-through; color: #777; }
 
+/* ============================================== */
+/* 🆕 NOVO: BOTÕES DE RELATÓRIOS CONSOLIDADOS    */
+/* ============================================== */
+.btn-relatorio-consolidado {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.btn-relatorio-consolidado:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(230, 81, 0, 0.3);
+}
+
+/* ============================================== */
+/* 🆕 NOVO: TABELAS DE PERCENTUAIS POR NÍVEL     */
+/* ============================================== */
+.tabela-percentuais {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin-top: 10px;
+    background: white;
+}
+.tabela-percentuais th,
+.tabela-percentuais td {
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+.tabela-percentuais thead th {
+    background: #f4f4f9;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-bottom: 2px solid #ddd;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.tabela-percentuais tbody tr:hover {
+    background: #fafafa;
+}
+.tabela-percentuais .col-nome {
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+    min-width: 180px;
+}
+.tabela-percentuais .col-total {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: var(--secondary);
+}
+
+/* Cabeçalhos de cor por nível */
+.th-n1 { background: #ffebee !important; color: var(--nivel-1) !important; }
+.th-n2 { background: #ffebee !important; color: var(--nivel-2) !important; }
+.th-n3 { background: #fff3e0 !important; color: var(--nivel-3) !important; }
+.th-n4 { background: #fffde7 !important; color: #f57f17 !important; }
+.th-ini { background: #e8f5e9 !important; color: var(--nivel-ini) !important; }
+.th-flu { background: #e8f5e9 !important; color: var(--nivel-flu) !important; }
+.th-aus { background: #f5f5f5 !important; color: var(--nivel-aus) !important; }
+
+/* Células de percentual coloridas */
+.pct-cell {
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 6px 4px;
+}
+.pct-n1 { color: var(--nivel-1); background: #ffebee; }
+.pct-n2 { color: var(--nivel-2); background: #ffebee; }
+.pct-n3 { color: var(--nivel-3); background: #fff3e0; }
+.pct-n4 { color: #f57f17; background: #fffde7; }
+.pct-ini { color: var(--nivel-ini); background: #e8f5e9; }
+.pct-flu { color: var(--nivel-flu); background: #e8f5e9; }
+.pct-aus { color: var(--nivel-aus); background: #f5f5f5; }
+.pct-zero { color: #bbb; background: transparent; font-weight: normal; }
+
+/* ============================================== */
+/* 🆕 NOVO: CARDS DOS RELATÓRIOS CONSOLIDADOS    */
+/* ============================================== */
+.relatorio-grupo-card {
+    margin-bottom: 18px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+    page-break-inside: avoid;
+}
+.relatorio-grupo-header {
+    background: linear-gradient(135deg, var(--primary), #f57c00);
+    color: white;
+    padding: 12px 16px;
+    font-weight: bold;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.relatorio-grupo-header .grupo-titulo {
+    flex: 1;
+    min-width: 200px;
+}
+.relatorio-grupo-header .grupo-meta {
+    font-weight: normal;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+.relatorio-resumo-geral {
+    background: linear-gradient(135deg, #f8f9fa, #eef2f5);
+    border: 2px solid var(--secondary);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.relatorio-resumo-geral h4 {
+    margin: 0 0 10px 0;
+    color: var(--secondary);
+    font-size: 1rem;
+}
+
+/* Tabela "Por Aluno" */
+.tabela-alunos-consolidado {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    background: white;
+    margin-top: 10px;
+}
+.tabela-alunos-consolidado th,
+.tabela-alunos-consolidado td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+.tabela-alunos-consolidado thead th {
+    background: var(--secondary);
+    color: white;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.tabela-alunos-consolidado tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+.tabela-alunos-consolidado tbody tr:hover {
+    background: #fff3e0;
+}
+.tabela-alunos-consolidado .nivel-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* Tags de nível na tabela de alunos */
+.nivel-tag-n1 { background: #ffebee; color: var(--nivel-1); }
+.nivel-tag-n2 { background: #ffebee; color: var(--nivel-2); }
+.nivel-tag-n3 { background: #fff3e0; color: var(--nivel-3); }
+.nivel-tag-n4 { background: #fffde7; color: #f57f17; }
+.nivel-tag-ini { background: #e8f5e9; color: var(--nivel-ini); }
+.nivel-tag-flu { background: #e8f5e9; color: var(--nivel-flu); font-weight: 700; }
+.nivel-tag-aus { background: #f5f5f5; color: var(--nivel-aus); }
+.nivel-tag-vazio { background: #fafafa; color: #bbb; }
+
+/* Cabeçalho do PDF consolidado */
+.pdf-consolidado-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 12px;
+}
+.pdf-consolidado-header h2 {
+    color: var(--primary);
+    margin: 0 0 5px 0;
+    font-size: 1.4rem;
+}
+.pdf-consolidado-header .pdf-subtitulo {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 5px 0 0 0;
+}
+.pdf-consolidado-header .pdf-filtros {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #555;
+    text-align: left;
+    display: inline-block;
+}
+
+/* Linha de "ranking" / posição */
+.ranking-pos {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    background: var(--secondary);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-right: 8px;
+}
+.ranking-pos.top-1 { background: #ffd700; color: #333; }
+.ranking-pos.top-2 { background: #c0c0c0; color: #333; }
+.ranking-pos.top-3 { background: #cd7f32; color: white; }
+
+/* ============================================== */
+/* IMPRESSÃO E RESPONSIVO                        */
+/* ============================================== */
 @media print { .no-print { display: none !important; } }
 @media (max-width: 768px) { 
     .dash-grid { grid-template-columns: repeat(3, 1fr); } 
     .tabs { flex-wrap: wrap; } 
     .filter-row { flex-direction: column; align-items: stretch; }
     .stats-bar { justify-content: center; width: 100%; }
+    /* 🆕 NOVO: responsivo dos novos componentes */
+    .btn-relatorio-consolidado { flex: 1; justify-content: center; min-width: 130px; }
+    .tabela-percentuais { font-size: 0.78rem; }
+    .tabela-percentuais th, .tabela-percentuais td { padding: 6px 3px; }
+    .tabela-percentuais .col-nome { min-width: 120px; font-size: 0.8rem; }
+    .relatorio-grupo-header { font-size: 0.9rem; padding: 10px; }
+    .tabela-alunos-consolidado { font-size: 0.8rem; }
+    .tabela-alunos-consolidado th, .tabela-alunos-consolidado td { padding: 6px; }
 }
