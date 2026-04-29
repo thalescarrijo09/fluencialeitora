@@ -225,9 +225,23 @@
                 </div>
             </div>
             
-            <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
-                <button class="btn-main" style="width: auto; padding: 8px 15px; margin: 0; font-size: 0.9rem; background: var(--secondary);" onclick="window.abrirModalRelatorioAvancado(false)">📄 Gerar Relatório Múltiplo</button>
+            <!-- 🆕 NOVO BLOCO: BOTÕES DE RELATÓRIOS CONSOLIDADOS -->
+            <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                <div style="font-weight: bold; color: #555; margin-bottom: 10px; font-size: 0.95rem;">📑 Relatórios Consolidados</div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-relatorio-consolidado" onclick="window.abrirModalRelatorioConsolidado('escola')">
+                        🏫 Por Escola
+                    </button>
+                    <button class="btn-relatorio-consolidado" onclick="window.abrirModalRelatorioConsolidado('turma')">
+                        📚 Por Turma
+                    </button>
+                    <button class="btn-relatorio-consolidado" onclick="window.abrirModalRelatorioConsolidado('aluno')">
+                        👤 Por Aluno
+                    </button>
+                    <button class="btn-main" style="width: auto; padding: 8px 15px; margin: 0; font-size: 0.9rem; background: var(--secondary); margin-left: auto;" onclick="window.abrirModalRelatorioAvancado(false)">📄 Relatório Múltiplo (por Nível)</button>
+                </div>
             </div>
+            <!-- FIM NOVO BLOCO -->
         </div>
 
         <div class="dash-grid">
@@ -303,6 +317,43 @@
             </div>
         </div>
     </div>
+
+    <!-- 🆕 NOVO MODAL: RELATÓRIO CONSOLIDADO (Por Escola / Por Turma / Por Aluno) -->
+    <div id="modal-relatorio-consolidado" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 1100px;">
+            <div class="modal-header" style="background: var(--primary);">
+                <h3 id="modal-cons-titulo" style="margin: 0; font-size: 1.1rem; color: white; font-weight: 500;">📑 Relatório Consolidado</h3>
+                <button class="close-btn" onclick="document.getElementById('modal-relatorio-consolidado').classList.add('hidden')">×</button>
+            </div>
+            <div class="modal-body" style="background: white;">
+                
+                <!-- Filtro extra: aparece somente no modo "Por Aluno" -->
+                <div id="filtro-aluno-extra" class="hidden" style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                    <label style="font-weight: bold; color: #555; display: block; margin-bottom: 8px;">Filtrar por Nível:</label>
+                    <select id="filtro-cons-nivel" onchange="window.gerarVisualizacaoConsolidado()" style="width: 100%; max-width: 300px; padding: 10px;">
+                        <option value="TODOS">Todos os Níveis</option>
+                        <option value="Nível 1">Nível 1</option>
+                        <option value="Nível 2">Nível 2</option>
+                        <option value="Nível 3">Nível 3</option>
+                        <option value="Nível 4">Nível 4</option>
+                        <option value="Iniciante">Iniciante</option>
+                        <option value="Fluente">Fluente</option>
+                        <option value="Ausente">Ausente</option>
+                    </select>
+                </div>
+                
+                <p id="msg-cons-info" style="margin: 0 0 15px 0; padding: 10px; background: #fff3e0; border-radius: 6px; color: #555; font-size: 0.9rem; border-left: 4px solid var(--primary);">
+                    ℹ️ Este relatório respeita os filtros aplicados no painel (escola, séries, mês/ano). Ordenação: <strong>melhor → pior desempenho</strong>.
+                </p>
+                
+                <div id="conteudo-pdf-consolidado"></div>
+            </div>
+            <div class="modal-footer" style="text-align: center; background: #eef2f5;">
+                <button class="btn-main" id="btn-print-consolidado" onclick="window.imprimirRelatorioConsolidado()" style="width: auto; padding: 12px 25px; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ GERAR PDF DO RELATÓRIO</button>
+            </div>
+        </div>
+    </div>
+    <!-- FIM NOVO MODAL -->
 
     <div id="modal-sucesso" class="modal-overlay hidden">
         <div class="modal-content" style="max-width: 500px; text-align: center;">
