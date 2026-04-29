@@ -1607,4 +1607,5 @@ window.imprimirRelatorioConsolidado = () => {
         btn.innerText = textoOriginal;
         btn.disabled = false;
     });
-};
+};      
+}; 
