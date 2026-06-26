@@ -111,24 +111,39 @@
                 </div>
                 
                 <div class="filter-row" style="background:#f8f9fa; padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #eee;">
-                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                        <span style="font-size:0.9rem; font-weight:bold; color: var(--secondary);">Filtrar Data:</span>
-                        <div class="date-select-group">
-                            <select id="prof-mes-filtro" onchange="window.aplicarFiltrosProf()" style="margin: 0; padding: 6px 10px;">
-                                <option value="TODOS">Mês (Todos)</option>
-                                <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-                            </select>
-                            <select id="prof-ano-filtro" onchange="window.aplicarFiltrosProf()" style="margin: 0; padding: 6px 10px;">
-                                <option value="TODOS">Todos os Anos</option>
-                                <option value="2026">2026</option><option value="2025">2025</option>
-                            </select>
+                    <div style="display:flex; flex-direction:column; gap:10px; width: 100%;">
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <span style="font-size:0.9rem; font-weight:bold; color: var(--secondary);">Filtrar Mês:</span>
+                            <div class="chk-group" id="chk-meses-prof">
+                                <label class="chk-label"><input type="checkbox" value="01" onchange="window.aplicarFiltrosProf()"> Jan</label>
+                                <label class="chk-label"><input type="checkbox" value="02" onchange="window.aplicarFiltrosProf()"> Fev</label>
+                                <label class="chk-label"><input type="checkbox" value="03" onchange="window.aplicarFiltrosProf()"> Mar</label>
+                                <label class="chk-label"><input type="checkbox" value="04" onchange="window.aplicarFiltrosProf()"> Abr</label>
+                                <label class="chk-label"><input type="checkbox" value="05" onchange="window.aplicarFiltrosProf()"> Mai</label>
+                                <label class="chk-label"><input type="checkbox" value="06" onchange="window.aplicarFiltrosProf()"> Jun</label>
+                                <label class="chk-label"><input type="checkbox" value="07" onchange="window.aplicarFiltrosProf()"> Jul</label>
+                                <label class="chk-label"><input type="checkbox" value="08" onchange="window.aplicarFiltrosProf()"> Ago</label>
+                                <label class="chk-label"><input type="checkbox" value="09" onchange="window.aplicarFiltrosProf()"> Set</label>
+                                <label class="chk-label"><input type="checkbox" value="10" onchange="window.aplicarFiltrosProf()"> Out</label>
+                                <label class="chk-label"><input type="checkbox" value="11" onchange="window.aplicarFiltrosProf()"> Nov</label>
+                                <label class="chk-label"><input type="checkbox" value="12" onchange="window.aplicarFiltrosProf()"> Dez</label>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="stats-bar">
-                        <span style="color:var(--secondary)"><strong>Avaliados:</strong> <span id="prof-total" style="font-size: 1.1rem;">0</span></span>
-                        <span style="color:var(--orange)"><strong>Ausentes:</strong> <span id="prof-ausente" style="font-size: 1.1rem;">0</span></span>
-                        <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="prof-laudo" style="font-size: 1.1rem;">0</span></span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-top:5px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:0.9rem; font-weight:bold; color: var(--secondary);">Ano:</span>
+                                <select id="prof-ano-filtro" onchange="window.aplicarFiltrosProf()" style="margin: 0; padding: 6px 10px;">
+                                    <option value="TODOS">Todos os Anos</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                </select>
+                            </div>
+                            <div class="stats-bar">
+                                <span style="color:var(--secondary)"><strong>Avaliados:</strong> <span id="prof-total" style="font-size: 1.1rem;">0</span></span>
+                                <span style="color:var(--orange)"><strong>Ausentes:</strong> <span id="prof-ausente" style="font-size: 1.1rem;">0</span></span>
+                                <span style="color:var(--purple)"><strong>Laudos:</strong> <span id="prof-laudo" style="font-size: 1.1rem;">0</span></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -225,7 +240,6 @@
                 </div>
             </div>
             
-            <!-- 🆕 NOVO BLOCO: BOTÕES DE RELATÓRIOS CONSOLIDADOS -->
             <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
                 <div style="font-weight: bold; color: #555; margin-bottom: 10px; font-size: 0.95rem;">📑 Relatórios Consolidados</div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -241,7 +255,6 @@
                     <button class="btn-main" style="width: auto; padding: 8px 15px; margin: 0; font-size: 0.9rem; background: var(--secondary); margin-left: auto;" onclick="window.abrirModalRelatorioAvancado(false)">📄 Relatório Múltiplo (por Nível)</button>
                 </div>
             </div>
-            <!-- FIM NOVO BLOCO -->
         </div>
 
         <div class="dash-grid">
@@ -318,7 +331,6 @@
         </div>
     </div>
 
-    <!-- 🆕 NOVO MODAL: RELATÓRIO CONSOLIDADO (Por Escola / Por Turma / Por Aluno) -->
     <div id="modal-relatorio-consolidado" class="modal-overlay hidden">
         <div class="modal-content" style="max-width: 1100px;">
             <div class="modal-header" style="background: var(--primary);">
@@ -327,7 +339,6 @@
             </div>
             <div class="modal-body" style="background: white;">
                 
-                <!-- Filtro extra: aparece somente no modo "Por Aluno" -->
                 <div id="filtro-aluno-extra" class="hidden" style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e0e0e0;">
                     <label style="font-weight: bold; color: #555; display: block; margin-bottom: 8px;">Filtrar por Nível:</label>
                     <select id="filtro-cons-nivel" onchange="window.gerarVisualizacaoConsolidado()" style="width: 100%; max-width: 300px; padding: 10px;">
@@ -353,7 +364,6 @@
             </div>
         </div>
     </div>
-    <!-- FIM NOVO MODAL -->
 
     <div id="modal-sucesso" class="modal-overlay hidden">
         <div class="modal-content" style="max-width: 500px; text-align: center;">
