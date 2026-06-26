@@ -363,3 +363,7 @@ select { padding: 8px; border-radius: 6px; flex: 1; border: 1px solid #ccc; font
     .tabela-alunos-consolidado { font-size: 0.8rem; }
     .tabela-alunos-consolidado th, .tabela-alunos-consolidado td { padding: 6px; }
 }
+/* Ajuste para compactar os filtros de meses e poupar espaço na tela */
+#chk-meses-prof { gap: 6px; }
+#chk-meses-prof .chk-label { padding: 4px 10px; font-size: 0.85rem; 
+}
